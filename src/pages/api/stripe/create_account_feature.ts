@@ -1,17 +1,16 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { checkCors } from '../../../cors'
 import stripe from '../../../stripe'
+import { checkCors } from '../../../cors'
 import { supabase } from '../../../supabase/client'
 
-type Data = {
-  data: any[]
-}
+type Data = {}
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>,
 ) {
   await checkCors(req, res)
+
   const sig = req.headers['stripe-signature'] as string
   const payload = JSON.stringify(req.body)
 
@@ -25,21 +24,23 @@ export default async function handler(
     res.status(400).send(error.message)
     return
   }
+  console.log(req.body)
 
   // TODO: handle all errors
   const { account_id } = req.body
+  const { name, key, type, value_flag, value_limit } = req.body
+  const { data, error } = await supabase.from('features').insert({
+    name,
+    key,
+    type,
+    value_flag,
+    value_limit,
+    stripe_account_id: account_id,
+  })
 
-  const { data: account, error: accountError } = await supabase
-    .from('stripe_accounts')
-    .insert([{ stripe_id: account_id }])
-
-  const { data: features, error: featuresError } = await supabase
-    .from('features')
-    .select('id,name,key,type,value_flag,value_limit')
-    .eq('stripe_account_id', account_id)
-    .order('name', { ascending: true })
+  console.log(data, error)
 
   res.status(200).json({
-    data: features || [],
+    success: true,
   })
 }
