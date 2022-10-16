@@ -144,11 +144,11 @@ export const syncAllAccountModeData = async (
   account_id: string,
   mode: Mode,
 ) => {
-  console.log('check1')
+  const stripe = mode === 'live' ? liveStripe : testStripe
+
   // TODO: the creation is really inefficient as it stands
   const { data, error } = await syncStripeAccount(account_id)
-  console.log('check2', error)
-  const stripe = mode === 'live' ? liveStripe : testStripe
+  console.log(error)
 
   // Customers
   for await (const stripeCustomer of stripe.customers.list({
