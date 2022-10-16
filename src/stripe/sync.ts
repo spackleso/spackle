@@ -8,18 +8,13 @@ const stripeSyncEndpoint = process.env.STRIPE_SYNC_ENDPOINT
 export const syncStripeAccount = async (id: string) => {
   const stripeAccount = await liveStripe.accounts.retrieve(id)
 
-  const response = await supabase
-    .from('stripe_accounts')
-    .upsert(
-      {
-        stripe_id: stripeAccount.id,
-        stripe_json: JSON.stringify(stripeAccount),
-      },
-      { onConflict: 'stripe_id' },
-    )
-    .select()
-
-  return response
+  return await supabase.from('stripe_accounts').upsert(
+    {
+      stripe_id: stripeAccount.id,
+      stripe_json: JSON.stringify(stripeAccount),
+    },
+    { onConflict: 'stripe_id' },
+  )
 }
 
 export const syncStripeProduct = async (
