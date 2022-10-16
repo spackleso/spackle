@@ -1,7 +1,7 @@
 import { BackgroundHandler } from '@netlify/functions'
 import { syncAllAccountData } from '../../stripe/sync'
 
-export const handler: BackgroundHandler = async (event) => {
+export const handler: BackgroundHandler = async (event, context) => {
   if (event.httpMethod !== 'POST' || !event.body) {
     return
   }

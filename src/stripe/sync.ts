@@ -1,16 +1,41 @@
 import stripe from '.'
 import { supabase } from '../supabase'
 
+const stripeSyncEndpoint = process.env.STRIPE_SYNC_ENDPOINT
+
 export const syncStripeAccount = async (id: string) => {
   const stripeAccount = await stripe.accounts.retrieve(id)
 
-  return await supabase.from('stripe_accounts').upsert(
-    {
-      stripe_id: stripeAccount.id,
-      stripe_json: JSON.stringify(stripeAccount),
-    },
-    { onConflict: 'stripe_id' },
-  )
+  const response = await supabase
+    .from('stripe_accounts')
+    .upsert(
+      {
+        stripe_id: stripeAccount.id,
+        stripe_json: JSON.stringify(stripeAccount),
+      },
+      { onConflict: 'stripe_id' },
+    )
+    .select()
+
+  if (
+    stripeSyncEndpoint &&
+    response.data &&
+    !response.data[0].initial_sync_complete
+  ) {
+    const payload = JSON.stringify({
+      account_id: stripeAccount.id,
+    })
+    console.log(payload)
+    await fetch(stripeSyncEndpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: payload,
+    })
+  }
+
+  return response
 }
 
 export const syncStripeProduct = async (account_id: string, id: string) => {

@@ -1,6 +1,14 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import stripe from '../../../stripe'
 import type { Readable } from 'node:stream'
+import {
+  syncStripeAccount,
+  syncStripeCustomer,
+  syncStripePrice,
+  syncStripeProduct,
+  syncStripeSubscriptions,
+} from '../../../stripe/sync'
+import Stripe from 'stripe'
 
 export const config = {
   api: {
@@ -38,8 +46,53 @@ export default async function handler(
       return
     }
 
-    res.json({ success: true })
-    console.log(`Unhandled event type ${event.type}`)
+    if (event.type === 'account.updated') {
+      await syncStripeAccount((event.data.object as Stripe.Account).id)
+    } else if (event.type === 'account.application.authorized') {
+      await syncStripeAccount((event.data.object as Stripe.Account).id)
+    } else if (event.type === 'account.application.deauthorized') {
+      console.log(`${event.type} not handled`)
+    } else if (event.type === 'customer.created') {
+      await syncStripeCustomer(
+        event.account!,
+        (event.data.object as Stripe.Customer).id,
+      )
+    } else if (event.type === 'customer.deleted') {
+      console.log(`${event.type} not handled`)
+    } else if (event.type === 'customer.updated') {
+      await syncStripeCustomer(
+        event.account!,
+        (event.data.object as Stripe.Customer).id,
+      )
+    } else if (event.type === 'customer.subscription.created') {
+      await syncStripeSubscriptions(
+        event.account!,
+        (event.data.object as any).customer,
+      )
+    } else if (event.type === 'customer.subscription.deleted') {
+      console.log(`${event.type} not handled`)
+    } else if (event.type === 'customer.subscription.updated') {
+      await syncStripeSubscriptions(
+        event.account!,
+        (event.data.object as any).customer,
+      )
+    } else if (event.type === 'price.created') {
+      await syncStripePrice(event.account!, (event.data.object as any).id)
+    } else if (event.type === 'price.deleted') {
+      console.log(`${event.type} not handled`)
+    } else if (event.type === 'price.updated') {
+      await syncStripePrice(event.account!, (event.data.object as any).id)
+    } else if (event.type === 'product.created') {
+      await syncStripeProduct(event.account!, (event.data.object as any).id)
+    } else if (event.type === 'product.deleted') {
+      console.log(`${event.type} not handled`)
+    } else if (event.type === 'product.updated') {
+      await syncStripeProduct(event.account!, (event.data.object as any).id)
+    } else {
+      console.log(`Unhandled event type ${event.type}`)
+    }
+
+    res.status(200).json({ success: true })
   } else {
     res.setHeader('Allow', 'POST')
     res.status(405).end('Method Not Allowed')
