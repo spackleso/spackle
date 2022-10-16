@@ -3,6 +3,7 @@ import { syncAllAccountData } from '../../stripe/sync'
 
 export const handler: BackgroundHandler = async (event, context) => {
   if (event.httpMethod !== 'POST' || !event.body) {
+    console.log('Invalid request', event)
     return
   }
 
