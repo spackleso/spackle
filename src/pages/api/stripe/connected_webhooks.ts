@@ -6,7 +6,7 @@ export default async function handler(
   res: NextApiResponse<any>,
 ) {
   const sig = req.headers['stripe-signature'] as string
-  const payload = req.body
+  const payload = JSON.stringify(req.body)
 
   let event
   try {
