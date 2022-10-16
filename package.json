@@ -7,6 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "yarn format-check && next lint",
+    "web": "netlify dev --port 3001",
+    "webhooks": "stripe listen --forward-to http://localhost:3001/api/stripe/connected_webhooks",
     "format": "yarn format-base -w",
     "format-check": "yarn format-base -c",
     "format-base": "prettier --config .prettierrc --ignore-path .gitignore src/**/*.ts src/**/*.tsx"
@@ -28,6 +30,7 @@
     "eslint": "^8.25.0",
     "eslint-config-next": "12.3.1",
     "eslint-config-prettier": "^8.5.0",
+    "netlify-cli": "^12.0.9",
     "prettier": "^2.7.1",
     "typescript": "4.8.4"
   }
