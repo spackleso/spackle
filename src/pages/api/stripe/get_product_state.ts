@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { checkCors } from '../../../cors'
 import { getProductState } from '../../../state'
-import stripe from '../../../stripe'
+import { liveStripe as stripe } from '../../../stripe'
 import { syncStripeAccount, syncStripeProduct } from '../../../stripe/sync'
 
 type Data = {
@@ -28,10 +28,10 @@ export default async function handler(
   }
 
   // TODO: handle all errors
-  const { account_id, product_id } = req.body
+  const { account_id, product_id, mode } = req.body
 
   await syncStripeAccount(account_id)
-  await syncStripeProduct(account_id, product_id)
+  await syncStripeProduct(account_id, product_id, mode)
 
   const features = await getProductState(account_id, product_id)
 

@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { checkCors } from '../../../cors'
-import stripe from '../../../stripe'
+import { liveStripe as stripe } from '../../../stripe'
 import { syncStripeAccount } from '../../../stripe/sync'
 import { supabase } from '../../../supabase'
 

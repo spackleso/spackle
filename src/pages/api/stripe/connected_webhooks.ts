@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import stripe from '../../../stripe'
+import { liveStripe as stripe } from '../../../stripe'
 import type { Readable } from 'node:stream'
 import {
   syncStripeAccount,
@@ -56,6 +56,7 @@ export default async function handler(
       await syncStripeCustomer(
         event.account!,
         (event.data.object as Stripe.Customer).id,
+        event.livemode ? 'live' : 'test',
       )
     } else if (event.type === 'customer.deleted') {
       console.log(`${event.type} not handled`)
@@ -63,11 +64,13 @@ export default async function handler(
       await syncStripeCustomer(
         event.account!,
         (event.data.object as Stripe.Customer).id,
+        event.livemode ? 'live' : 'test',
       )
     } else if (event.type === 'customer.subscription.created') {
       await syncStripeSubscriptions(
         event.account!,
         (event.data.object as any).customer,
+        event.livemode ? 'live' : 'test',
       )
     } else if (event.type === 'customer.subscription.deleted') {
       console.log(`${event.type} not handled`)
@@ -75,19 +78,36 @@ export default async function handler(
       await syncStripeSubscriptions(
         event.account!,
         (event.data.object as any).customer,
+        event.livemode ? 'live' : 'test',
       )
     } else if (event.type === 'price.created') {
-      await syncStripePrice(event.account!, (event.data.object as any).id)
+      await syncStripePrice(
+        event.account!,
+        (event.data.object as any).id,
+        event.livemode ? 'live' : 'test',
+      )
     } else if (event.type === 'price.deleted') {
       console.log(`${event.type} not handled`)
     } else if (event.type === 'price.updated') {
-      await syncStripePrice(event.account!, (event.data.object as any).id)
+      await syncStripePrice(
+        event.account!,
+        (event.data.object as any).id,
+        event.livemode ? 'live' : 'test',
+      )
     } else if (event.type === 'product.created') {
-      await syncStripeProduct(event.account!, (event.data.object as any).id)
+      await syncStripeProduct(
+        event.account!,
+        (event.data.object as any).id,
+        event.livemode ? 'live' : 'test',
+      )
     } else if (event.type === 'product.deleted') {
       console.log(`${event.type} not handled`)
     } else if (event.type === 'product.updated') {
-      await syncStripeProduct(event.account!, (event.data.object as any).id)
+      await syncStripeProduct(
+        event.account!,
+        (event.data.object as any).id,
+        event.livemode ? 'live' : 'test',
+      )
     } else {
       console.log(`Unhandled event type ${event.type}`)
     }

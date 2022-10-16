@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import stripe from '../../../stripe'
+import { liveStripe as stripe } from '../../../stripe'
 import { checkCors } from '../../../cors'
 import { supabase } from '../../../supabase'
 import { syncStripeAccount } from '../../../stripe/sync'
@@ -25,7 +25,6 @@ export default async function handler(
     res.status(400).send(error.message)
     return
   }
-  console.log(req.body)
 
   // TODO: handle all errors
   const { account_id, id, name, value_flag, value_limit } = req.body

@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { checkCors } from '../../../cors'
 import { getAccountState } from '../../../state'
-import stripe from '../../../stripe'
+import { liveStripe as stripe } from '../../../stripe'
 import { syncStripeAccount } from '../../../stripe/sync'
 
 type Data = {

@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import stripe from '../../../stripe'
+import { liveStripe as stripe } from '../../../stripe'
 import { checkCors } from '../../../cors'
 import { syncStripeAccount, syncStripePrice } from '../../../stripe/sync'
 import { supabase } from '../../../supabase'
@@ -28,10 +28,10 @@ export default async function handler(
     return
   }
 
-  const { account_id, price_id } = req.body
+  const { account_id, price_id, mode } = req.body
 
   await syncStripeAccount(account_id)
-  await syncStripePrice(account_id, price_id)
+  await syncStripePrice(account_id, price_id, mode)
 
   const { data, error } = await supabase
     .from('price_features')

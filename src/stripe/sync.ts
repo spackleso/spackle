@@ -1,10 +1,12 @@
-import stripe from '.'
+import { liveStripe, testStripe } from '.'
 import { supabase } from '../supabase'
+
+type Mode = 'test' | 'live'
 
 const stripeSyncEndpoint = process.env.STRIPE_SYNC_ENDPOINT
 
 export const syncStripeAccount = async (id: string) => {
-  const stripeAccount = await stripe.accounts.retrieve(id)
+  const stripeAccount = await liveStripe.accounts.retrieve(id)
 
   const response = await supabase
     .from('stripe_accounts')
@@ -38,7 +40,12 @@ export const syncStripeAccount = async (id: string) => {
   return response
 }
 
-export const syncStripeProduct = async (account_id: string, id: string) => {
+export const syncStripeProduct = async (
+  account_id: string,
+  id: string,
+  mode: Mode,
+) => {
+  const stripe = mode === 'live' ? liveStripe : testStripe
   const stripeProduct = await stripe.products.retrieve(id, {
     stripeAccount: account_id,
   })
@@ -53,7 +60,12 @@ export const syncStripeProduct = async (account_id: string, id: string) => {
   )
 }
 
-export const syncStripePrice = async (account_id: string, id: string) => {
+export const syncStripePrice = async (
+  account_id: string,
+  id: string,
+  mode: Mode,
+) => {
+  const stripe = mode === 'live' ? liveStripe : testStripe
   const stripePrice = await stripe.prices.retrieve(id, {
     stripeAccount: account_id,
   })
@@ -69,7 +81,12 @@ export const syncStripePrice = async (account_id: string, id: string) => {
   )
 }
 
-export const syncStripeCustomer = async (account_id: string, id: string) => {
+export const syncStripeCustomer = async (
+  account_id: string,
+  id: string,
+  mode: Mode,
+) => {
+  const stripe = mode === 'live' ? liveStripe : testStripe
   const stripeCustomer = await stripe.customers.retrieve(id, {
     stripeAccount: account_id,
   })
@@ -87,7 +104,9 @@ export const syncStripeCustomer = async (account_id: string, id: string) => {
 export const syncStripeSubscriptions = async (
   account_id: string,
   customer_id: string,
+  mode: Mode,
 ) => {
+  const stripe = mode === 'live' ? liveStripe : testStripe
   for await (const subscription of stripe.subscriptions.list(
     {
       customer: customer_id,
@@ -107,14 +126,16 @@ export const syncStripeSubscriptions = async (
       { onConflict: 'stripe_id' },
     )
 
-    await syncStripeSubscriptionItems(account_id, subscription.id)
+    await syncStripeSubscriptionItems(account_id, subscription.id, mode)
   }
 }
 
 export const syncStripeSubscriptionItems = async (
   account_id: string,
   subscription_id: string,
+  mode: Mode,
 ) => {
+  const stripe = mode === 'live' ? liveStripe : testStripe
   for await (const subscriptionItem of stripe.subscriptionItems.list(
     {
       subscription: subscription_id,
@@ -137,7 +158,16 @@ export const syncStripeSubscriptionItems = async (
 }
 
 export const syncAllAccountData = async (account_id: string) => {
+  syncAllAccountModeData(account_id, 'live')
+  syncAllAccountModeData(account_id, 'test')
+}
+
+export const syncAllAccountModeData = async (
+  account_id: string,
+  mode: Mode,
+) => {
   // TODO: the creation is reall inefficient as it stands
+  const stripe = mode === 'live' ? liveStripe : testStripe
 
   console.log(`Syncing account ${account_id}`)
   const { data, error } = await syncStripeAccount(account_id)
@@ -206,7 +236,7 @@ export const syncAllAccountData = async (account_id: string) => {
       },
       { onConflict: 'stripe_id' },
     )
-    await syncStripeSubscriptionItems(account_id, stripeSubscription.id)
+    await syncStripeSubscriptionItems(account_id, stripeSubscription.id, mode)
   }
 
   await supabase
