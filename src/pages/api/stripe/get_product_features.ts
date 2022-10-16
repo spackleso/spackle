@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import stripe from '../../../stripe'
 import { checkCors } from '../../../cors'
-import { supabase } from '../../../supabase/client'
+import { supabase } from '../../../supabase'
 import { syncStripeAccount, syncStripeProduct } from '../../../stripe/sync'
 
 type Data = {
@@ -37,12 +37,12 @@ export default async function handler(
     .from('product_features')
     .select(
       `
-      id,
-      feature_id,
-      value_flag,
-      value_limit,
-      features(name)
-    `,
+        id,
+        feature_id,
+        value_flag,
+        value_limit,
+        features(name)
+      `,
     )
     .eq('stripe_account_id', account_id)
     .eq('stripe_product_id', product_id)

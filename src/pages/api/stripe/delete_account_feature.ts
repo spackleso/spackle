@@ -1,12 +1,10 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import stripe from '../../../stripe'
 import { checkCors } from '../../../cors'
-import { syncStripeAccount, syncStripePrice } from '../../../stripe/sync'
 import { supabase } from '../../../supabase'
+import { syncStripeAccount } from '../../../stripe/sync'
 
-type Data = {
-  data: any[]
-}
+type Data = {}
 
 export default async function handler(
   req: NextApiRequest,
@@ -28,27 +26,20 @@ export default async function handler(
     return
   }
 
-  const { account_id, price_id } = req.body
-
+  // TODO: handle all errors
+  const { account_id, feature_id } = req.body
   await syncStripeAccount(account_id)
-  await syncStripePrice(account_id, price_id)
 
-  const { data, error } = await supabase
-    .from('price_features')
-    .select(
-      `
-        id,
-        feature_id,
-        value_flag,
-        value_limit,
-        features(name)
-      `,
-    )
-    .eq('stripe_account_id', account_id)
-    .eq('stripe_price_id', price_id)
-    .order('name', { foreignTable: 'features', ascending: true })
+  if (feature_id) {
+    const { data, error } = await supabase
+      .from('features')
+      .delete()
+      .eq('stripe_account_id', account_id)
+      .eq('id', feature_id)
+    console.log(data, error)
+  }
 
   res.status(200).json({
-    data: data || [],
+    success: true,
   })
 }

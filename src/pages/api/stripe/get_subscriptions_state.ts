@@ -1,8 +1,12 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import stripe from '../../../stripe'
 import { checkCors } from '../../../cors'
-import { syncStripeAccount, syncStripePrice } from '../../../stripe/sync'
-import { supabase } from '../../../supabase'
+import { getSubscriptionState } from '../../../state'
+import stripe from '../../../stripe'
+import {
+  syncStripeAccount,
+  syncStripeCustomer,
+  syncStripeSubscriptions,
+} from '../../../stripe/sync'
 
 type Data = {
   data: any[]
@@ -13,7 +17,6 @@ export default async function handler(
   res: NextApiResponse<Data>,
 ) {
   await checkCors(req, res)
-
   const sig = req.headers['stripe-signature'] as string
   const payload = JSON.stringify(req.body)
 
@@ -28,27 +31,16 @@ export default async function handler(
     return
   }
 
-  const { account_id, price_id } = req.body
+  // TODO: handle all errors
+  const { account_id, customer_id } = req.body
 
   await syncStripeAccount(account_id)
-  await syncStripePrice(account_id, price_id)
+  await syncStripeCustomer(account_id, customer_id)
+  await syncStripeSubscriptions(account_id, customer_id)
 
-  const { data, error } = await supabase
-    .from('price_features')
-    .select(
-      `
-        id,
-        feature_id,
-        value_flag,
-        value_limit,
-        features(name)
-      `,
-    )
-    .eq('stripe_account_id', account_id)
-    .eq('stripe_price_id', price_id)
-    .order('name', { foreignTable: 'features', ascending: true })
+  const features = await getSubscriptionState(account_id, customer_id)
 
   res.status(200).json({
-    data: data || [],
+    data: features || [],
   })
 }

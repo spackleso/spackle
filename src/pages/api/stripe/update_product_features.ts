@@ -1,8 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import stripe from '../../../stripe'
 import { checkCors } from '../../../cors'
-import { supabase } from '../../../supabase/client'
-import { syncStripeAccount } from '../../../stripe/sync'
+import { supabase } from '../../../supabase'
+import { syncStripeAccount, syncStripeProduct } from '../../../stripe/sync'
 
 type Data = {}
 
@@ -28,6 +28,9 @@ export default async function handler(
 
   // TODO: handle all errors
   const { account_id, product_id, product_features } = req.body
+
+  await syncStripeAccount(account_id)
+  await syncStripeProduct(account_id, product_id)
 
   // Create
   const newProductFeatures = product_features

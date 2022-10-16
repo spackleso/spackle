@@ -1,4 +1,4 @@
-import { supabase } from './supabase/client'
+import { supabase } from './supabase'
 
 export const getAccountState = async (accountId: string) => {
   const { data, error } = await supabase
@@ -76,6 +76,100 @@ export const getPriceState = async (
           ...f,
           value_flag: priceFeature.value_flag,
           value_limit: priceFeature.value_limit,
+        }
+      }
+      return f
+    }) || []
+  )
+}
+
+export const getSubscriptionState = async (
+  accountId: string,
+  customerId: string,
+) => {
+  const { data: prices, error } = await supabase
+    .from('stripe_subscription_items')
+    .select(
+      'stripe_price_id, stripe_subscriptions(stripe_customer_id, status), stripe_prices(stripe_product_id)',
+    )
+    .eq('stripe_account_id', accountId)
+    .eq('stripe_subscriptions.stripe_customer_id', customerId)
+
+  const priceStates = []
+  for (const price of prices!) {
+    if (
+      ['active', 'past_due', 'incomplete', 'trialing'].includes(
+        (price.stripe_subscriptions as any).status,
+      )
+    ) {
+      const state = await getPriceState(
+        accountId,
+        (price.stripe_prices as any).stripe_product_id,
+        price.stripe_price_id,
+      )
+      priceStates.push(state)
+    }
+  }
+
+  // TODO: test
+  const priceMap = priceStates.reduce((a, v) => {
+    for (const feature of v) {
+      const stale = a[feature.id]
+      if (!stale) {
+        a = {
+          ...a,
+          [feature.id]: feature,
+        }
+      } else if (feature.type === 0 && feature.value_flag) {
+        a = {
+          ...a,
+          [feature.id]: feature,
+        }
+      } else if (
+        feature.type === 1 &&
+        feature.value_limit >= stale.value_limit
+      ) {
+        a = {
+          ...a,
+          [feature.id]: feature,
+        }
+      }
+    }
+    return a
+  }, {} as { [key: number]: any })
+
+  return Object.values(priceMap)
+}
+
+export const getCustomerState = async (
+  accountId: string,
+  customerId: string,
+): Promise<any[]> => {
+  const subscriptionsState = await getSubscriptionState(accountId, customerId)
+
+  const { data: customerFeatures, error: productFeaturesError } = await supabase
+    .from('customer_features')
+    .select('id,value_flag,value_limit,feature_id,features(name)')
+    .eq('stripe_account_id', accountId)
+    .eq('stripe_customer_id', customerId)
+
+  const customerFeaturesMap: { [key: string]: any } =
+    customerFeatures?.reduce(
+      (a, v) => ({
+        ...a,
+        [v.feature_id]: v,
+      }),
+      {},
+    ) || {}
+
+  return (
+    subscriptionsState?.map((f) => {
+      const customerFeature = customerFeaturesMap[f.id]
+      if (customerFeature) {
+        return {
+          ...f,
+          value_flag: customerFeature.value_flag,
+          value_limit: customerFeature.value_limit,
         }
       }
       return f
