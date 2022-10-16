@@ -136,8 +136,8 @@ export const syncStripeSubscriptionItems = async (
 
 export const syncAllAccountData = async (account_id: string) => {
   console.log(`Syncing account ${account_id}`)
-  syncAllAccountModeData(account_id, 'live')
-  syncAllAccountModeData(account_id, 'test')
+  await syncAllAccountModeData(account_id, 'live')
+  await syncAllAccountModeData(account_id, 'test')
 }
 
 export const syncAllAccountModeData = async (
