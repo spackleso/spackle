@@ -19,22 +19,6 @@ export const syncStripeAccount = async (id: string) => {
     )
     .select()
 
-  if (
-    stripeSyncEndpoint &&
-    response.data &&
-    !response.data[0].initial_sync_complete
-  ) {
-    await fetch(stripeSyncEndpoint, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        account_id: stripeAccount.id,
-      }),
-    })
-  }
-
   return response
 }
 
@@ -165,6 +149,7 @@ export const syncAllAccountModeData = async (
   account_id: string,
   mode: Mode,
 ) => {
+  console.log('check1')
   // TODO: the creation is really inefficient as it stands
   const stripe = mode === 'live' ? liveStripe : testStripe
   const { data, error } = await syncStripeAccount(account_id)
