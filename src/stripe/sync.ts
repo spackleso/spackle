@@ -24,16 +24,14 @@ export const syncStripeAccount = async (id: string) => {
     response.data &&
     !response.data[0].initial_sync_complete
   ) {
-    const payload = JSON.stringify({
-      account_id: stripeAccount.id,
-    })
-    console.log(payload)
     await fetch(stripeSyncEndpoint, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: payload,
+      body: JSON.stringify({
+        account_id: stripeAccount.id,
+      }),
     })
   }
 
@@ -158,6 +156,7 @@ export const syncStripeSubscriptionItems = async (
 }
 
 export const syncAllAccountData = async (account_id: string) => {
+  console.log(`Syncing account ${account_id}`)
   syncAllAccountModeData(account_id, 'live')
   syncAllAccountModeData(account_id, 'test')
 }
@@ -166,13 +165,17 @@ export const syncAllAccountModeData = async (
   account_id: string,
   mode: Mode,
 ) => {
-  // TODO: the creation is reall inefficient as it stands
+  // TODO: the creation is really inefficient as it stands
   const stripe = mode === 'live' ? liveStripe : testStripe
-
-  console.log(`Syncing account ${account_id}`)
   const { data, error } = await syncStripeAccount(account_id)
+  console.log(error)
 
   // Customers
+  console.log(
+    stripe.customers.list({
+      stripeAccount: account_id,
+    }),
+  )
   for await (const stripeCustomer of stripe.customers.list({
     stripeAccount: account_id,
   })) {
