@@ -1,10 +1,12 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import stripe from '../../../stripe'
 import { checkCors } from '../../../cors'
+import { syncStripeAccount, syncStripePrice } from '../../../stripe/sync'
 import { supabase } from '../../../supabase/client'
-import { syncStripeAccount } from '../../../stripe/sync'
 
-type Data = {}
+type Data = {
+  data: any[]
+}
 
 export default async function handler(
   req: NextApiRequest,
@@ -26,22 +28,26 @@ export default async function handler(
     return
   }
 
-  // TODO: handle all errors
-  const { account_id, name, key, type, value_flag, value_limit } = req.body
+  const { account_id, price_id } = req.body
   await syncStripeAccount(account_id)
+  await syncStripePrice(account_id, price_id)
 
-  const { data, error } = await supabase.from('features').insert({
-    name,
-    key,
-    type,
-    value_flag,
-    value_limit,
-    stripe_account_id: account_id,
-  })
-
-  console.log(data, error)
+  const { data, error } = await supabase
+    .from('price_features')
+    .select(
+      `
+      id,
+      feature_id,
+      value_flag,
+      value_limit,
+      features(name)
+    `,
+    )
+    .eq('stripe_account_id', account_id)
+    .eq('stripe_price_id', price_id)
+    .order('name', { foreignTable: 'features', ascending: true })
 
   res.status(200).json({
-    success: true,
+    data: data || [],
   })
 }

@@ -1,31 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import Cors from 'cors'
 import stripe from '../../../stripe'
 import { checkCors } from '../../../cors'
-
-const customerFeatures = [
-  {
-    id: 1,
-    key: 'prediction_filters',
-    name: 'Prediction Filters',
-    type: 0,
-    value_flag: false,
-  },
-  {
-    id: 2,
-    key: 'training',
-    name: 'Training Plans',
-    type: 0,
-    value_flag: false,
-  },
-  {
-    id: 3,
-    key: 'activities',
-    name: 'Number of Activities',
-    type: 1,
-    value_limit: 100,
-  },
-]
+import { supabase } from '../../../supabase/client'
 
 type Data = {
   data: any[]
@@ -51,7 +27,16 @@ export default async function handler(
     return
   }
 
+  const { account_id, customer_id } = req.body
+
+  const { data, error } = await supabase
+    .from('customer_features')
+    .select('id,feature_id,value_flag,value_limit')
+    .eq('stripe_account_id', account_id)
+    .eq('stripe_customer_id', customer_id)
+    .order('name', { ascending: true })
+
   res.status(200).json({
-    data: customerFeatures,
+    data: data || [],
   })
 }

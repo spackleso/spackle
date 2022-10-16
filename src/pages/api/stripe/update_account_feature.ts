@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import stripe from '../../../stripe'
 import { checkCors } from '../../../cors'
 import { supabase } from '../../../supabase/client'
+import { syncStripeAccount } from '../../../stripe/sync'
 
 type Data = {}
 
@@ -27,8 +28,10 @@ export default async function handler(
   console.log(req.body)
 
   // TODO: handle all errors
-  const { account_id, id } = req.body
-  const { name, key, type, value_flag, value_limit } = req.body
+  const { account_id, id, name, key, type, value_flag, value_limit } = req.body
+
+  await syncStripeAccount(account_id)
+
   const { data, error } = await supabase
     .from('features')
     .update({

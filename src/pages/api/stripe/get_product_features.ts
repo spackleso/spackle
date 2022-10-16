@@ -1,30 +1,11 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import stripe from '../../../stripe'
 import { checkCors } from '../../../cors'
-
-const customerFeatures = [
-  {
-    id: 'prediction_filters',
-    name: 'Prediction Filters',
-    type: 'flag',
-    value: false,
-  },
-  {
-    id: 'training',
-    name: 'Training Plans',
-    type: 'flag',
-    value: false,
-  },
-  {
-    id: 'activities',
-    name: 'Number of Activities',
-    type: 'limit',
-    value: 100,
-  },
-]
+import { supabase } from '../../../supabase/client'
+import { syncStripeAccount, syncStripeProduct } from '../../../stripe/sync'
 
 type Data = {
-  data: any
+  data: any[]
 }
 
 export default async function handler(
@@ -47,7 +28,28 @@ export default async function handler(
     return
   }
 
+  const { account_id, product_id } = req.body
+
+  await syncStripeAccount(account_id)
+  await syncStripeProduct(account_id, product_id)
+
+  const { data, error } = await supabase
+    .from('product_features')
+    .select(
+      `
+      id,
+      feature_id,
+      value_flag,
+      value_limit,
+      features(name)
+    `,
+    )
+    .eq('stripe_account_id', account_id)
+    .eq('stripe_product_id', product_id)
+    .order('name', { foreignTable: 'features', ascending: true })
+
+  // TODO: pop features key before serialization
   res.status(200).json({
-    data: customerFeatures,
+    data: data || [],
   })
 }
