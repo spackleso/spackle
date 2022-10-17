@@ -87,25 +87,34 @@ export const getSubscriptionState = async (
   accountId: string,
   customerId: string,
 ) => {
-  const { data: prices, error } = await supabase
+  const { data: items, error } = await supabase
     .from('stripe_subscription_items')
-    .select(
-      'stripe_price_id, stripe_subscriptions(stripe_customer_id, status), stripe_prices(stripe_product_id)',
-    )
+    .select('stripe_price_id, stripe_subscriptions(*), stripe_prices(*)')
     .eq('stripe_account_id', accountId)
     .eq('stripe_subscriptions.stripe_customer_id', customerId)
+  console.log(accountId, customerId, items)
+
+  const accountState = await getAccountState(accountId)
+  const accountMap: { [key: string]: any } =
+    accountState?.reduce(
+      (a, v) => ({
+        ...a,
+        [v.id]: v,
+      }),
+      {},
+    ) || {}
 
   const priceStates = []
-  for (const price of prices!) {
+  for (const item of items!) {
     if (
       ['active', 'past_due', 'incomplete', 'trialing'].includes(
-        (price.stripe_subscriptions as any).status,
+        (item.stripe_subscriptions as any).status,
       )
     ) {
       const state = await getPriceState(
         accountId,
-        (price.stripe_prices as any).stripe_product_id,
-        price.stripe_price_id,
+        (item.stripe_prices as any).stripe_product_id,
+        item.stripe_price_id,
       )
       priceStates.push(state)
     }
@@ -136,7 +145,7 @@ export const getSubscriptionState = async (
       }
     }
     return a
-  }, {} as { [key: number]: any })
+  }, accountMap)
 
   return Object.values(priceMap)
 }
