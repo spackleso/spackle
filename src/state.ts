@@ -89,7 +89,9 @@ export const getSubscriptionState = async (
 ) => {
   const { data: items, error } = await supabase
     .from('stripe_subscription_items')
-    .select('stripe_price_id, stripe_subscriptions(*), stripe_prices(*)')
+    .select(
+      'stripe_price_id, stripe_subscriptions!inner(*), stripe_prices!inner(*)',
+    )
     .eq('stripe_account_id', accountId)
     .eq('stripe_subscriptions.stripe_customer_id', customerId)
 
