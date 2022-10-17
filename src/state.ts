@@ -92,7 +92,6 @@ export const getSubscriptionState = async (
     .select('stripe_price_id, stripe_subscriptions(*), stripe_prices(*)')
     .eq('stripe_account_id', accountId)
     .eq('stripe_subscriptions.stripe_customer_id', customerId)
-  console.log(accountId, customerId, items)
 
   const accountState = await getAccountState(accountId)
   const accountMap: { [key: string]: any } =
@@ -106,6 +105,7 @@ export const getSubscriptionState = async (
 
   const priceStates = []
   for (const item of items!) {
+    console.log(item)
     if (
       ['active', 'past_due', 'incomplete', 'trialing'].includes(
         (item.stripe_subscriptions as any).status,
