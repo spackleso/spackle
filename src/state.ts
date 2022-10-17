@@ -106,7 +106,6 @@ export const getSubscriptionState = async (
     ) || {}
 
   const priceStates = []
-  console.log(items)
   for (const item of items!) {
     if (
       ['active', 'past_due', 'incomplete', 'trialing'].includes(
