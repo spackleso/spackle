@@ -7,6 +7,7 @@ export const getAccountState = async (accountId: string) => {
     .eq('stripe_account_id', accountId)
     .order('name', { ascending: true })
 
+  console.log(accountId, data, error)
   return data || []
 }
 
@@ -157,11 +158,12 @@ export const getCustomerState = async (
 ): Promise<any[]> => {
   const subscriptionsState = await getSubscriptionState(accountId, customerId)
 
-  const { data: customerFeatures, error: productFeaturesError } = await supabase
-    .from('customer_features')
-    .select('id,value_flag,value_limit,feature_id,features(name)')
-    .eq('stripe_account_id', accountId)
-    .eq('stripe_customer_id', customerId)
+  const { data: customerFeatures, error: customerFeaturesError } =
+    await supabase
+      .from('customer_features')
+      .select('id,value_flag,value_limit,feature_id,features(name)')
+      .eq('stripe_account_id', accountId)
+      .eq('stripe_customer_id', customerId)
 
   const customerFeaturesMap: { [key: string]: any } =
     customerFeatures?.reduce(
