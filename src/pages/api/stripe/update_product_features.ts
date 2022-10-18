@@ -1,29 +1,18 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { liveStripe as stripe } from '../../../stripe'
 import { checkCors } from '../../../cors'
 import { supabase } from '../../../supabase'
 import { syncStripeAccount, syncStripeProduct } from '../../../stripe/sync'
-
-type Data = {}
+import { verifySignature } from '../../../stripe/signature'
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<Data>,
+  res: NextApiResponse,
 ) {
   await checkCors(req, res)
 
-  const sig = req.headers['stripe-signature'] as string
-  const payload = JSON.stringify(req.body)
-
-  try {
-    stripe.webhooks.signature.verifyHeader(
-      payload,
-      sig,
-      process.env.STRIPE_SIGNING_SECRET as string,
-    )
-  } catch (error: any) {
-    res.status(400).send(error.message)
-    return
+  const { success } = verifySignature(req)
+  if (!success) {
+    return res.status(400).send('')
   }
 
   // TODO: handle all errors
