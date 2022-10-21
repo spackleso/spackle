@@ -1,6 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { checkCors } from '../../../cors'
-import { getAccountState } from '../../../state'
 import { verifySignature } from '../../../stripe/signature'
 import { syncStripeAccount } from '../../../stripe/sync'
 import { supabase } from '../../../supabase'
@@ -25,10 +24,10 @@ export default async function handler(
     .from('stripe_accounts')
     .select(
       `
-      id,
-      initial_sync_complete,
-      initial_sync_started_at
-    `,
+        id,
+        initial_sync_complete,
+        initial_sync_started_at
+      `,
     )
     .eq('stripe_id', account_id)
 
