@@ -7,7 +7,6 @@ export const getAccountState = async (accountId: string) => {
     .eq('stripe_account_id', accountId)
     .order('name', { ascending: true })
 
-  console.log(accountId, data, error)
   return data || []
 }
 
