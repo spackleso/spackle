@@ -3,13 +3,11 @@ import { checkCors } from '../../../cors'
 import { supabase } from '../../../supabase'
 import { syncStripeAccount } from '../../../stripe/sync'
 import { verifySignature } from '../../../stripe/signature'
+import { withLogging } from '../../../logger'
 
 type Data = {}
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<Data>,
-) {
+const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   await checkCors(req, res)
 
   const { success } = verifySignature(req)
@@ -33,3 +31,5 @@ export default async function handler(
     success: true,
   })
 }
+
+export default withLogging(handler)

@@ -9,6 +9,7 @@ import {
   syncStripeSubscriptions,
 } from '../../../stripe/sync'
 import Stripe from 'stripe'
+import { withLogging } from '../../../logger'
 
 export const config = {
   api: {
@@ -24,10 +25,7 @@ async function buffer(readable: Readable) {
   return Buffer.concat(chunks)
 }
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse,
-) {
+const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === 'POST') {
     const sig = req.headers['stripe-signature'] as string
     const buf = await buffer(req)
@@ -118,3 +116,5 @@ export default async function handler(
     res.status(405).end('Method Not Allowed')
   }
 }
+
+export default withLogging(handler)

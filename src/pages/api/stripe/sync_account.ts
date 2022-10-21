@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { checkCors } from '../../../cors'
+import { withLogging } from '../../../logger'
 import { getAccountState } from '../../../state'
 import { verifySignature } from '../../../stripe/signature'
 import { syncStripeAccount } from '../../../stripe/sync'
@@ -8,10 +9,7 @@ import { supabase } from '../../../supabase'
 const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http'
 
 // TODO: secure via Stripe signature
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse,
-) {
+const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   await checkCors(req, res)
 
   const { success } = verifySignature(req)
@@ -28,3 +26,5 @@ export default async function handler(
 
   res.status(200).json({})
 }
+
+export default withLogging(handler)
