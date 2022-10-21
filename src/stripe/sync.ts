@@ -136,8 +136,20 @@ export const syncStripeSubscriptionItems = async (
 
 export const syncAllAccountData = async (account_id: string) => {
   console.log(`Syncing account ${account_id}`)
+  await supabase
+    .from('stripe_accounts')
+    .update({
+      initial_sync_started_at: new Date(),
+    })
+    .eq('stripe_id', account_id)
   await syncAllAccountModeData(account_id, 'live')
   await syncAllAccountModeData(account_id, 'test')
+  await supabase
+    .from('stripe_accounts')
+    .update({
+      initial_sync_complete: true,
+    })
+    .eq('stripe_id', account_id)
 }
 
 export const syncAllAccountModeData = async (
@@ -216,11 +228,4 @@ export const syncAllAccountModeData = async (
     )
     await syncStripeSubscriptionItems(account_id, stripeSubscription.id, mode)
   }
-
-  await supabase
-    .from('stripe_accounts')
-    .update({
-      initial_sync_complete: true,
-    })
-    .eq('stripe_id', account_id)
 }

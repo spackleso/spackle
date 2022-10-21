@@ -27,7 +27,6 @@ export default async function handler(
       .delete()
       .eq('stripe_account_id', account_id)
       .eq('id', feature_id)
-    console.log(data, error)
   }
 
   res.status(200).json({
