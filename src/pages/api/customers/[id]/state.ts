@@ -2,13 +2,11 @@ import { NextApiRequest, NextApiResponse } from 'next'
 import { getCustomerState } from '../../../../state'
 import { supabase } from '../../../../supabase'
 import * as Sentry from '@sentry/nextjs'
+import { withLogging } from '../../../../logger'
 
 type Data = {}
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<Data>,
-) {
+const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   const accountId = req.headers['spackle-account-id']
   const { data: accountList, error: accountError } = await supabase
     .from('stripe_accounts')
@@ -36,3 +34,5 @@ export default async function handler(
     data: state,
   })
 }
+
+export default withLogging(handler)
