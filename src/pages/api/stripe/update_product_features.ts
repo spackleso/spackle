@@ -4,6 +4,7 @@ import { supabase } from '../../../supabase'
 import { syncStripeAccount, syncStripeProduct } from '../../../stripe/sync'
 import { verifySignature } from '../../../stripe/signature'
 import { withLogging } from '../../../logger'
+import * as Sentry from '@sentry/nextjs'
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   await checkCors(req, res)
@@ -30,7 +31,12 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       value_flag: pf.value_flag,
     }))
 
-  await supabase.from('product_features').insert(newProductFeatures)
+  const { error: insertProductFeaturesError } = await supabase
+    .from('product_features')
+    .insert(newProductFeatures)
+  if (insertProductFeaturesError) {
+    Sentry.captureException(insertProductFeaturesError)
+  }
 
   // Update
   const updatedProductFeatures = product_features
@@ -44,7 +50,13 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       value_limit: pf.value_limit,
     }))
 
-  await supabase.from('product_features').upsert(updatedProductFeatures)
+  const { error: upsertProductFeaturesError } = await supabase
+    .from('product_features')
+    .upsert(updatedProductFeatures)
+
+  if (upsertProductFeaturesError) {
+    Sentry.captureException(upsertProductFeaturesError)
+  }
 
   // Delete
   const { data: all } = await supabase

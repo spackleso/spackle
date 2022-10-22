@@ -1,4 +1,5 @@
 import { supabase } from './supabase'
+import * as Sentry from '@sentry/nextjs'
 
 export const getAccountState = async (accountId: string) => {
   const { data, error } = await supabase
@@ -6,6 +7,10 @@ export const getAccountState = async (accountId: string) => {
     .select('id,name,key,type,value_flag,value_limit')
     .eq('stripe_account_id', accountId)
     .order('name', { ascending: true })
+
+  if (error) {
+    Sentry.captureException(error)
+  }
 
   return data || []
 }
@@ -21,6 +26,10 @@ export const getProductState = async (
     .select('id,value_flag,value_limit,feature_id,features(name)')
     .eq('stripe_account_id', accountId)
     .eq('stripe_product_id', productId)
+
+  if (productFeaturesError) {
+    Sentry.captureException(productFeaturesError)
+  }
 
   const productFeaturesMap: { [key: string]: any } =
     productFeatures?.reduce(
@@ -59,6 +68,10 @@ export const getPriceState = async (
     .eq('stripe_account_id', accountId)
     .eq('stripe_price_id', priceId)
 
+  if (productFeaturesError) {
+    Sentry.captureException(productFeaturesError)
+  }
+
   const priceFeaturesMap: { [key: string]: any } =
     priceFeatures?.reduce(
       (a, v) => ({
@@ -94,6 +107,10 @@ export const getSubscriptionState = async (
     )
     .eq('stripe_account_id', accountId)
     .eq('stripe_subscriptions.stripe_customer_id', customerId)
+
+  if (error) {
+    Sentry.captureException(error)
+  }
 
   const accountState = await getAccountState(accountId)
   const accountMap: { [key: string]: any } =
@@ -163,6 +180,10 @@ export const getCustomerState = async (
       .select('id,value_flag,value_limit,feature_id,features(name)')
       .eq('stripe_account_id', accountId)
       .eq('stripe_customer_id', customerId)
+
+  if (customerFeaturesError) {
+    Sentry.captureException(customerFeaturesError)
+  }
 
   const customerFeaturesMap: { [key: string]: any } =
     customerFeatures?.reduce(

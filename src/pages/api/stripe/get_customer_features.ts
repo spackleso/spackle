@@ -4,6 +4,7 @@ import { supabase } from '../../../supabase'
 import { syncStripeAccount, syncStripeCustomer } from '../../../stripe/sync'
 import { verifySignature } from '../../../stripe/signature'
 import { withLogging } from '../../../logger'
+import * as Sentry from '@sentry/nextjs'
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   await checkCors(req, res)
@@ -32,6 +33,10 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     .eq('stripe_account_id', account_id)
     .eq('stripe_customer_id', customer_id)
     .order('name', { foreignTable: 'features', ascending: true })
+
+  if (error) {
+    Sentry.captureException(error)
+  }
 
   res.status(200).json({
     data: data || [],

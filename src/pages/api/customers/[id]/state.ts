@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import { getCustomerState } from '../../../../state'
 import { supabase } from '../../../../supabase'
+import * as Sentry from '@sentry/nextjs'
 
 type Data = {}
 
@@ -15,6 +16,7 @@ export default async function handler(
     .eq('stripe_id', accountId)
 
   if (!accountList || accountError) {
+    Sentry.captureException(accountError)
     res.status(403).send('')
     return
   }

@@ -4,6 +4,7 @@ import { supabase } from '../../../supabase'
 import { syncStripeAccount, syncStripeProduct } from '../../../stripe/sync'
 import { verifySignature } from '../../../stripe/signature'
 import { withLogging } from '../../../logger'
+import * as Sentry from '@sentry/nextjs'
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   await checkCors(req, res)
@@ -32,6 +33,10 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     .eq('stripe_account_id', account_id)
     .eq('stripe_product_id', product_id)
     .order('name', { foreignTable: 'features', ascending: true })
+
+  if (error) {
+    Sentry.captureException(error)
+  }
 
   // TODO: pop features key before serialization
   res.status(200).json({

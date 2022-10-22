@@ -4,6 +4,7 @@ import { supabase } from '../../../supabase'
 import { syncStripeAccount, syncStripePrice } from '../../../stripe/sync'
 import { verifySignature } from '../../../stripe/signature'
 import { withLogging } from '../../../logger'
+import * as Sentry from '@sentry/nextjs'
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   await checkCors(req, res)
@@ -33,6 +34,10 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     .from('price_features')
     .insert(newPriceFeatures)
 
+  if (error) {
+    Sentry.captureException(error)
+  }
+
   // Update
   const updatedPriceFeatures = price_features
     .filter((pf: any) => pf.hasOwnProperty('id'))
@@ -45,7 +50,13 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       value_limit: pf.value_limit,
     }))
 
-  await supabase.from('price_features').upsert(updatedPriceFeatures)
+  const { error: upsertPriceFeaturesError } = await supabase
+    .from('price_features')
+    .upsert(updatedPriceFeatures)
+
+  if (upsertPriceFeaturesError) {
+    Sentry.captureException(upsertPriceFeaturesError)
+  }
 
   // Delete
   const { data: all } = await supabase

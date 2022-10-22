@@ -4,6 +4,7 @@ import { supabase } from '../../../supabase'
 import { syncStripeAccount, syncStripeCustomer } from '../../../stripe/sync'
 import { verifySignature } from '../../../stripe/signature'
 import { withLogging } from '../../../logger'
+import * as Sentry from '@sentry/nextjs'
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   await checkCors(req, res)
@@ -29,9 +30,13 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       value_flag: pf.value_flag,
     }))
 
-  const { data, error } = await supabase
+  const { data, error: customerFeaturesError } = await supabase
     .from('customer_features')
     .insert(newCustomerFeatures)
+
+  if (customerFeaturesError) {
+    Sentry.captureException(customerFeaturesError)
+  }
 
   // Update
   const updatedCustomerFeatures = customer_features
@@ -45,14 +50,24 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       value_limit: pf.value_limit,
     }))
 
-  await supabase.from('customer_features').upsert(updatedCustomerFeatures)
+  const { error: upsertCustomerFeaturesError } = await supabase
+    .from('customer_features')
+    .upsert(updatedCustomerFeatures)
+
+  if (upsertCustomerFeaturesError) {
+    Sentry.captureException(upsertCustomerFeaturesError)
+  }
 
   // Delete
-  const { data: all } = await supabase
+  const { data: all, error } = await supabase
     .from('customer_features')
     .select('*')
     .eq('stripe_account_id', account_id)
     .eq('stripe_customer_id', customer_id)
+
+  if (error) {
+    Sentry.captureEvent(error)
+  }
 
   const featureIds = customer_features.map((pf: any) => pf.feature_id)
   const deleted = all?.filter((pf) => !featureIds.includes(pf.feature_id))
