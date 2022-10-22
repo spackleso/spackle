@@ -6,20 +6,11 @@ import { verifySignature } from '../../../stripe/signature'
 import { withLogging } from '../../../logger'
 import * as Sentry from '@sentry/nextjs'
 
-const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  await checkCors(req, res)
-
-  const { success } = verifySignature(req)
-  if (!success) {
-    return res.status(400).send('')
-  }
-
-  // TODO: handle all errors
-  const { account_id, product_id, product_features, mode } = req.body
-
-  await syncStripeAccount(account_id)
-  await syncStripeProduct(account_id, product_id, mode)
-
+const updateProductFeatures = async (
+  account_id: string,
+  product_id: string,
+  product_features: any[],
+) => {
   // Create
   const newProductFeatures = product_features
     .filter((pf: any) => !pf.hasOwnProperty('id'))
@@ -31,11 +22,12 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       value_flag: pf.value_flag,
     }))
 
-  const { error: insertProductFeaturesError } = await supabase
+  const { error: createError } = await supabase
     .from('product_features')
     .insert(newProductFeatures)
-  if (insertProductFeaturesError) {
-    Sentry.captureException(insertProductFeaturesError)
+
+  if (createError) {
+    throw new Error(createError.message)
   }
 
   // Update
@@ -50,31 +42,61 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       value_limit: pf.value_limit,
     }))
 
-  const { error: upsertProductFeaturesError } = await supabase
+  const { error: updateError } = await supabase
     .from('product_features')
     .upsert(updatedProductFeatures)
 
-  if (upsertProductFeaturesError) {
-    Sentry.captureException(upsertProductFeaturesError)
+  if (updateError) {
+    throw new Error(updateError.message)
   }
 
   // Delete
-  const { data: all } = await supabase
+  const { data: all, error: getError } = await supabase
     .from('product_features')
     .select('*')
     .eq('stripe_account_id', account_id)
     .eq('stripe_product_id', product_id)
 
+  if (getError) {
+    throw new Error(getError.message)
+  }
+
   const featureIds = product_features.map((pf: any) => pf.feature_id)
   const deleted = all?.filter((pf) => !featureIds.includes(pf.feature_id))
   if (deleted) {
-    await supabase
+    const { error: deleteError } = await supabase
       .from('product_features')
       .delete()
       .in(
         'id',
         deleted?.map((pf) => pf.id),
       )
+
+    if (deleteError) {
+      throw new Error(deleteError.message)
+    }
+  }
+}
+
+const handler = async (req: NextApiRequest, res: NextApiResponse) => {
+  await checkCors(req, res)
+
+  const { success } = verifySignature(req)
+  if (!success) {
+    return res.status(400).send('')
+  }
+
+  const { account_id, product_id, product_features, mode } = req.body
+
+  await syncStripeAccount(account_id)
+  await syncStripeProduct(account_id, product_id, mode)
+  try {
+    await updateProductFeatures(account_id, product_id, product_features)
+  } catch (error) {
+    Sentry.captureException(error)
+    return res.status(400).json({
+      error: (error as Error).message,
+    })
   }
 
   res.status(200).json({
