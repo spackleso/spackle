@@ -1,6 +1,7 @@
 import { BackgroundHandler } from '@netlify/functions'
 import { syncAllAccountData } from '../../stripe/sync'
 import * as Sentry from '@sentry/serverless'
+import { logger } from '../../logger'
 
 const { SENTRY_DSN } = process.env
 
@@ -15,7 +16,7 @@ export const handler: BackgroundHandler = Sentry.AWSLambda.wrapHandler(
       !event.queryStringParameters ||
       !event.queryStringParameters.account_id
     ) {
-      console.log('Invalid request', event)
+      logger.warn('Invalid request', event)
       return
     }
 
@@ -23,7 +24,7 @@ export const handler: BackgroundHandler = Sentry.AWSLambda.wrapHandler(
     if (account_id) {
       await syncAllAccountData(account_id)
     } else {
-      console.log(`Invalid account: ${account_id}`, event.body)
+      logger.warn(`Invalid account: ${account_id}`, event.body)
     }
   },
 ) as BackgroundHandler

@@ -1,7 +1,7 @@
 import { Logtail } from '@logtail/node'
 import { NextApiHandler, NextApiRequest, NextApiResponse } from 'next'
 
-let logger =
+export const logger =
   process.env.NODE_ENV === 'production'
     ? new Logtail(process.env.LOGTAIL_API_KEY || '')
     : console

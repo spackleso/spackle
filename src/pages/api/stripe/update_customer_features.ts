@@ -32,7 +32,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { data, error } = await supabase
     .from('customer_features')
     .insert(newCustomerFeatures)
-  console.log(error)
 
   // Update
   const updatedCustomerFeatures = customer_features

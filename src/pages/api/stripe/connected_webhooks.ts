@@ -9,7 +9,7 @@ import {
   syncStripeSubscriptions,
 } from '../../../stripe/sync'
 import Stripe from 'stripe'
-import { withLogging } from '../../../logger'
+import { logger, withLogging } from '../../../logger'
 
 export const config = {
   api: {
@@ -39,9 +39,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         process.env.STRIPE_WEBHOOK_SECRET as string,
       )
     } catch (err: any) {
-      console.log(err.message)
       res.status(400).json({ error: `Webhook Error: ${err.message}` })
-      return
+      throw err
     }
 
     if (event.type === 'account.updated') {
@@ -49,7 +48,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     } else if (event.type === 'account.application.authorized') {
       await syncStripeAccount((event.data.object as Stripe.Account).id)
     } else if (event.type === 'account.application.deauthorized') {
-      console.log(`${event.type} not handled`)
+      logger.error(`${event.type} not handled`)
     } else if (event.type === 'customer.created') {
       await syncStripeCustomer(
         event.account!,
@@ -57,7 +56,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         event.livemode ? 'live' : 'test',
       )
     } else if (event.type === 'customer.deleted') {
-      console.log(`${event.type} not handled`)
+      logger.error(`${event.type} not handled`)
     } else if (event.type === 'customer.updated') {
       await syncStripeCustomer(
         event.account!,
@@ -71,7 +70,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         event.livemode ? 'live' : 'test',
       )
     } else if (event.type === 'customer.subscription.deleted') {
-      console.log(`${event.type} not handled`)
+      logger.error(`${event.type} not handled`)
     } else if (event.type === 'customer.subscription.updated') {
       await syncStripeSubscriptions(
         event.account!,
@@ -85,7 +84,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         event.livemode ? 'live' : 'test',
       )
     } else if (event.type === 'price.deleted') {
-      console.log(`${event.type} not handled`)
+      logger.error(`${event.type} not handled`)
     } else if (event.type === 'price.updated') {
       await syncStripePrice(
         event.account!,
@@ -99,7 +98,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         event.livemode ? 'live' : 'test',
       )
     } else if (event.type === 'product.deleted') {
-      console.log(`${event.type} not handled`)
+      logger.error(`${event.type} not handled`)
     } else if (event.type === 'product.updated') {
       await syncStripeProduct(
         event.account!,
@@ -107,7 +106,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         event.livemode ? 'live' : 'test',
       )
     } else {
-      console.log(`Unhandled event type ${event.type}`)
+      logger.error(`Unhandled event type ${event.type}`)
     }
 
     res.status(200).json({ success: true })

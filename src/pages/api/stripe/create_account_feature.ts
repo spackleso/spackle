@@ -28,8 +28,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
     stripe_account_id: account_id,
   })
 
-  console.log(data, error)
-
   res.status(200).json({
     success: true,
   })

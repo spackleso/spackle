@@ -1,4 +1,5 @@
 import { liveStripe, testStripe } from '.'
+import { logger } from '../logger'
 import { supabase } from '../supabase'
 
 type Mode = 'test' | 'live'
@@ -135,7 +136,7 @@ export const syncStripeSubscriptionItems = async (
 }
 
 export const syncAllAccountData = async (account_id: string) => {
-  console.log(`Syncing account ${account_id}`)
+  logger.info(`Syncing account ${account_id}`)
   await supabase
     .from('stripe_accounts')
     .update({
@@ -160,13 +161,12 @@ export const syncAllAccountModeData = async (
 
   // TODO: the creation is really inefficient as it stands
   const { data, error } = await syncStripeAccount(account_id)
-  console.log(error)
 
   // Customers
   for await (const stripeCustomer of stripe.customers.list({
     stripeAccount: account_id,
   })) {
-    console.log(`Syncing customer ${stripeCustomer.id}`)
+    logger.info(`Syncing customer ${stripeCustomer.id}`)
     const { data, error } = await supabase.from('stripe_customers').upsert(
       {
         stripe_id: stripeCustomer.id,
@@ -175,14 +175,13 @@ export const syncAllAccountModeData = async (
       },
       { onConflict: 'stripe_id' },
     )
-    console.log(error)
   }
 
   // Products
   for await (const stripeProduct of stripe.products.list({
     stripeAccount: account_id,
   })) {
-    console.log(`Syncing product ${stripeProduct.id}`)
+    logger.info(`Syncing product ${stripeProduct.id}`)
     const { data, error } = await supabase.from('stripe_products').upsert(
       {
         stripe_id: stripeProduct.id,
@@ -191,14 +190,13 @@ export const syncAllAccountModeData = async (
       },
       { onConflict: 'stripe_id' },
     )
-    console.log(error)
   }
 
   // Prices
   for await (const stripePrice of stripe.prices.list({
     stripeAccount: account_id,
   })) {
-    console.log(`Syncing price ${stripePrice.id}`)
+    logger.info(`Syncing price ${stripePrice.id}`)
     const { data, error } = await supabase.from('stripe_prices').upsert(
       {
         stripe_id: stripePrice.id,
@@ -208,14 +206,13 @@ export const syncAllAccountModeData = async (
       },
       { onConflict: 'stripe_id' },
     )
-    console.log(error)
   }
 
   // Subscriptions & Subscription Items
   for await (const stripeSubscription of stripe.subscriptions.list({
     stripeAccount: account_id,
   })) {
-    console.log(`Syncing subscription ${stripeSubscription.id}`)
+    logger.info(`Syncing subscription ${stripeSubscription.id}`)
     const { data, error } = await supabase.from('stripe_subscriptions').upsert(
       {
         stripe_id: stripeSubscription.id,
