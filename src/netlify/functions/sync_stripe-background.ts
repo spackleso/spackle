@@ -19,7 +19,6 @@ export const handler: BackgroundHandler = Sentry.AWSLambda.wrapHandler(
       logger.warn('Invalid request', event)
       return
     }
-
     const { account_id } = event.queryStringParameters
     if (account_id) {
       await syncAllAccountData(account_id)

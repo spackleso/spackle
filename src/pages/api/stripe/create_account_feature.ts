@@ -4,23 +4,23 @@ import { supabase } from '../../../supabase'
 import { syncStripeAccount } from '../../../stripe/sync'
 import { verifySignature } from '../../../stripe/signature'
 import { withLogging } from '../../../logger'
+import { PostgrestResponse } from '@supabase/supabase-js'
 import * as Sentry from '@sentry/nextjs'
 
-type Data = {}
+type Data = {
+  success?: boolean
+  error?: string
+}
 
-const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
-  await checkCors(req, res)
-
-  const { success } = verifySignature(req)
-  if (!success) {
-    return res.status(400).send('')
-  }
-
-  // TODO: handle all errors
-  const { account_id, name, key, type, value_flag, value_limit } = req.body
-  await syncStripeAccount(account_id)
-
-  const { data, error } = await supabase.from('features').insert({
+const createFeature = async (
+  account_id: string,
+  name: string,
+  key: string,
+  type: number,
+  value_flag: boolean,
+  value_limit: number,
+): Promise<PostgrestResponse<any>> => {
+  const response = await supabase.from('features').insert({
     name,
     key,
     type,
@@ -29,11 +29,36 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
     stripe_account_id: account_id,
   })
 
-  if (error) {
-    Sentry.captureException(error)
+  if (response.error) {
+    throw new Error(response.error.message)
   }
 
-  res.status(200).json({
+  return response
+}
+
+const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
+  await checkCors(req, res)
+
+  const { success } = verifySignature(req)
+  if (!success) {
+    return res.status(400).json({
+      error: 'Signature verification failed',
+    })
+  }
+
+  const { account_id, name, key, type, value_flag, value_limit } = req.body
+
+  await syncStripeAccount(account_id)
+  try {
+    await createFeature(account_id, name, key, type, value_flag, value_limit)
+  } catch (error) {
+    Sentry.captureException(error)
+    return res.status(400).json({
+      error: (error as Error).message,
+    })
+  }
+
+  return res.status(201).json({
     success: true,
   })
 }

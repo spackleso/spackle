@@ -1,7 +1,7 @@
 import { liveStripe, testStripe } from '.'
 import { logger } from '../logger'
 import { supabase } from '../supabase'
-import * as Sentry from '@sentry/nextjs'
+import * as Sentry from '@sentry/node'
 
 type Mode = 'test' | 'live'
 
