@@ -1,6 +1,7 @@
 import { liveStripe, testStripe } from '.'
 import { logger } from '../logger'
 import { supabase } from '../supabase'
+import * as Sentry from '@sentry/nextjs'
 
 type Mode = 'test' | 'live'
 
@@ -175,6 +176,9 @@ export const syncAllAccountModeData = async (
       },
       { onConflict: 'stripe_id' },
     )
+    if (error) {
+      Sentry.captureException(error)
+    }
   }
 
   // Products
@@ -190,6 +194,9 @@ export const syncAllAccountModeData = async (
       },
       { onConflict: 'stripe_id' },
     )
+    if (error) {
+      Sentry.captureException(error)
+    }
   }
 
   // Prices
@@ -206,6 +213,9 @@ export const syncAllAccountModeData = async (
       },
       { onConflict: 'stripe_id' },
     )
+    if (error) {
+      Sentry.captureException(error)
+    }
   }
 
   // Subscriptions & Subscription Items
@@ -223,6 +233,9 @@ export const syncAllAccountModeData = async (
       },
       { onConflict: 'stripe_id' },
     )
+    if (error) {
+      Sentry.captureException(error)
+    }
     await syncStripeSubscriptionItems(account_id, stripeSubscription.id, mode)
   }
 }
