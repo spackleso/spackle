@@ -6,20 +6,14 @@ import { verifySignature } from '../../../stripe/signature'
 import { withLogging } from '../../../logger'
 import * as Sentry from '@sentry/nextjs'
 
-const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  await checkCors(req, res)
-
-  const { success } = verifySignature(req)
-  if (!success) {
-    return res.status(400).send('')
-  }
-
-  // TODO: handle all errors
-  const { account_id, id, name, value_flag, value_limit } = req.body
-
-  await syncStripeAccount(account_id)
-
-  const { data, error } = await supabase
+const updateFeature = async (
+  account_id: string,
+  id: string,
+  name: string,
+  value_flag: boolean | null,
+  value_limit: number | null,
+) => {
+  const response = await supabase
     .from('features')
     .update({
       name,
@@ -29,8 +23,31 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     .eq('stripe_account_id', account_id)
     .eq('id', id)
 
-  if (error) {
+  if (response.error) {
+    throw new Error(response.error?.message)
+  }
+
+  return response
+}
+
+const handler = async (req: NextApiRequest, res: NextApiResponse) => {
+  await checkCors(req, res)
+
+  const { success } = verifySignature(req)
+  if (!success) {
+    return res.status(400).send('')
+  }
+
+  const { account_id, id, name, value_flag, value_limit } = req.body
+
+  await syncStripeAccount(account_id)
+  try {
+    await updateFeature(account_id, id, name, value_flag, value_limit)
+  } catch (error) {
     Sentry.captureException(error)
+    return res.status(400).json({
+      error: (error as Error).message,
+    })
   }
 
   res.status(200).json({

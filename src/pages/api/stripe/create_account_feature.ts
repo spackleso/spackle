@@ -17,8 +17,8 @@ const createFeature = async (
   name: string,
   key: string,
   type: number,
-  value_flag: boolean,
-  value_limit: number,
+  value_flag: boolean | null,
+  value_limit: number | null,
 ): Promise<PostgrestResponse<any>> => {
   const response = await supabase.from('features').insert({
     name,
