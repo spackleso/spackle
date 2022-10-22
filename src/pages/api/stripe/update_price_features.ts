@@ -6,19 +6,11 @@ import { verifySignature } from '../../../stripe/signature'
 import { withLogging } from '../../../logger'
 import * as Sentry from '@sentry/nextjs'
 
-const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  await checkCors(req, res)
-
-  const { success } = verifySignature(req)
-  if (!success) {
-    return res.status(400).send('')
-  }
-  // TODO: handle all errors
-  const { account_id, price_id, price_features, mode } = req.body
-
-  await syncStripeAccount(account_id)
-  await syncStripePrice(account_id, price_id, mode)
-
+const updatePriceFeatures = async (
+  account_id: string,
+  price_id: string,
+  price_features: any[],
+) => {
   // Create
   const newPriceFeatures = price_features
     .filter((pf: any) => !pf.hasOwnProperty('id'))
@@ -30,12 +22,12 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       value_flag: pf.value_flag,
     }))
 
-  const { data, error } = await supabase
+  const { error: createError } = await supabase
     .from('price_features')
     .insert(newPriceFeatures)
 
-  if (error) {
-    Sentry.captureException(error)
+  if (createError) {
+    throw new Error(createError.message)
   }
 
   // Update
@@ -50,31 +42,61 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       value_limit: pf.value_limit,
     }))
 
-  const { error: upsertPriceFeaturesError } = await supabase
+  const { error: updateError } = await supabase
     .from('price_features')
     .upsert(updatedPriceFeatures)
 
-  if (upsertPriceFeaturesError) {
-    Sentry.captureException(upsertPriceFeaturesError)
+  if (updateError) {
+    throw new Error(updateError.message)
   }
 
   // Delete
-  const { data: all } = await supabase
+  const { data: all, error: getError } = await supabase
     .from('price_features')
     .select('*')
     .eq('stripe_account_id', account_id)
     .eq('stripe_price_id', price_id)
 
+  if (getError) {
+    throw new Error(getError.message)
+  }
+
   const featureIds = price_features.map((pf: any) => pf.feature_id)
   const deleted = all?.filter((pf) => !featureIds.includes(pf.feature_id))
   if (deleted) {
-    await supabase
+    const { error: deleteError } = await supabase
       .from('price_features')
       .delete()
       .in(
         'id',
         deleted?.map((pf) => pf.id),
       )
+
+    if (deleteError) {
+      throw new Error(deleteError.message)
+    }
+  }
+}
+
+const handler = async (req: NextApiRequest, res: NextApiResponse) => {
+  await checkCors(req, res)
+
+  const { success } = verifySignature(req)
+  if (!success) {
+    return res.status(400).send('')
+  }
+  // TODO: handle all errors
+  const { account_id, price_id, price_features, mode } = req.body
+
+  await syncStripeAccount(account_id)
+  await syncStripePrice(account_id, price_id, mode)
+  try {
+    await updatePriceFeatures(account_id, price_id, price_features)
+  } catch (error) {
+    Sentry.captureException(error)
+    return res.status(400).json({
+      error: (error as Error).message,
+    })
   }
 
   res.status(200).json({
