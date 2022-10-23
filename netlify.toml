@@ -1,9 +1,14 @@
 [build]
   command = "next build"
   functions = "src/netlify/functions"
+  edge_functions = "src/netlify/edge-functions"
   publish = ".next"
 
 [[headers]]
   for = "/*"
   [headers.values]
     Access-Control-Allow-Origin = "*"
+
+[[edge_functions]]
+  path = "/edge/customers/*/state"
+  function = "customer_state"

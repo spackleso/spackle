@@ -24,13 +24,13 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   const signature = authorization.split(' ')[1]
 
   if (signature !== account.secret_key) {
-    res.status(403).send('')
+    return res.status(403).send('')
   }
 
   const { id } = req.query
   const state = await getCustomerState(account.stripe_id, id as string)
 
-  res.status(200).json({
+  return res.status(200).json({
     data: state,
   })
 }
