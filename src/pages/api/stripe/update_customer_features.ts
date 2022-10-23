@@ -92,7 +92,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   await syncStripeCustomer(account_id, customer_id, mode)
 
   try {
-    updateCustomerFeatures(account_id, customer_id, customer_features)
+    await updateCustomerFeatures(account_id, customer_id, customer_features)
   } catch (error) {
     Sentry.captureException(error)
     return res.status(400).json({
