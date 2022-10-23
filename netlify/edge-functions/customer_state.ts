@@ -35,12 +35,14 @@ const handler = async (request: Request, context: Context) => {
       console.log('Cache hit')
     }
     console.timeEnd('request')
-    return new Response(JSON.stringify(data))
+    const response = JSON.stringify(data)
+    return new Response(response)
   } catch (error) {
     console.error(error)
     const data = await fetchState(id, parsed.origin, request.headers)
+    const response = JSON.stringify(data)
     console.timeEnd('request')
-    return new Response(JSON.stringify(data))
+    return new Response(response)
   }
 }
 
