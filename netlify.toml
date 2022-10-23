@@ -13,5 +13,5 @@
   path = "/edge/customers/*/state"
   function = "customer_state"
 
-[[functions]]
+[functions]
   external_node_modules = ["@sentry/serverless"]
