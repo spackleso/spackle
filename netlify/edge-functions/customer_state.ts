@@ -34,8 +34,8 @@ const handler = async (request: Request, context: Context) => {
     } else {
       console.log('Cache hit')
     }
-    console.timeEnd('request')
     const response = JSON.stringify(data)
+    console.timeEnd('request')
     return new Response(response)
   } catch (error) {
     console.error(error)
