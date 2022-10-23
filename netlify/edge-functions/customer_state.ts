@@ -1,5 +1,18 @@
 import type { Context } from 'https://edge.netlify.com'
 import { Redis } from 'https://deno.land/x/upstash_redis/mod.ts'
+import { verify } from 'https://deno.land/x/djwt@v2.7/mod.ts'
+
+const SIGNING_KEY = Deno.env.get('SUPABASE_JWT_SECRET')
+const KEY = await crypto.subtle.importKey(
+  'raw',
+  new TextEncoder().encode(SIGNING_KEY),
+  {
+    name: 'HMAC',
+    hash: 'SHA-256',
+  },
+  true,
+  ['verify'],
+)
 
 const fetchState = async (id: string, origin: string, headers: any) => {
   const response = await fetch(`${origin}/api/customers/${id}/state`, {
@@ -8,12 +21,30 @@ const fetchState = async (id: string, origin: string, headers: any) => {
   return await response.json()
 }
 
+const requestToken = async (headers: Headers) => {
+  if (!SIGNING_KEY) {
+    throw new Error('Signing key not set')
+  }
+
+  const authorization = headers.get('authorization') || 'Basic '
+  const token = authorization.split(' ')[1]
+  const payload = await verify(token, KEY)
+
+  if (!payload.sub) {
+    throw new Error('Invalid jwt')
+  }
+
+  return {
+    sub: payload.sub as string,
+  }
+}
+
 const handler = async (request: Request, context: Context) => {
   console.time('request')
   const parsed = new URL(request.url)
   const pathParts = parsed.pathname.split('/')
   const id = pathParts[pathParts.length - 2]
-  const accountId = request.headers.get('spackle-account-id')
+  const accountId = requestToken(request.headers)
 
   if (!accountId) {
     return new Response(JSON.stringify({ error: 'Invalid account id' }), {
@@ -23,7 +54,7 @@ const handler = async (request: Request, context: Context) => {
 
   try {
     const redis = Redis.fromEnv()
-    const key = `customer_state_${accountId}_${id}`
+    const key = `${accountId}:customer_state_${id}`
     console.time('redis')
     let data = await redis.get(key)
     console.timeEnd('redis')

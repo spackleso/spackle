@@ -7,7 +7,7 @@ import { supabase } from '../../../supabase'
 import * as Sentry from '@sentry/nextjs'
 import jwt from 'jsonwebtoken'
 
-const SIGNING_KEY = process.env.SUPABASE_JWT_SECRET
+export const SIGNING_KEY = process.env.SUPABASE_JWT_SECRET
 
 const fetchToken = async (account_id: string) => {
   const response = await supabase
@@ -23,7 +23,6 @@ const fetchToken = async (account_id: string) => {
 }
 
 const createToken = async (account_id: string) => {
-  console.log('check')
   if (!SIGNING_KEY) {
     throw new Error('Signing key not set')
   }
@@ -41,8 +40,6 @@ const createToken = async (account_id: string) => {
       ),
     })
     .select()
-
-  console.log(response)
 
   if (response.error) {
     throw new Error(response.error.message)
