@@ -9,6 +9,7 @@ const fetchState = async (id: string, origin: string, headers: any) => {
 }
 
 const handler = async (request: Request, context: Context) => {
+  console.time('request')
   const parsed = new URL(request.url)
   const pathParts = parsed.pathname.split('/')
   const id = pathParts[pathParts.length - 2]
@@ -33,10 +34,12 @@ const handler = async (request: Request, context: Context) => {
     } else {
       console.log('Cache hit')
     }
+    console.timeEnd('request')
     return new Response(JSON.stringify(data))
   } catch (error) {
     console.error(error)
     const data = await fetchState(id, parsed.origin, request.headers)
+    console.timeEnd('request')
     return new Response(JSON.stringify(data))
   }
 }
