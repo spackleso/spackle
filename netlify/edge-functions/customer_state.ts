@@ -44,7 +44,7 @@ const handler = async (request: Request, context: Context) => {
   const parsed = new URL(request.url)
   const pathParts = parsed.pathname.split('/')
   const id = pathParts[pathParts.length - 2]
-  const accountId = requestToken(request.headers)
+  const accountId = await requestToken(request.headers)
 
   if (!accountId) {
     return new Response(JSON.stringify({ error: 'Invalid account id' }), {
