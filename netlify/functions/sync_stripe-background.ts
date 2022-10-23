@@ -1,7 +1,7 @@
 import { BackgroundHandler } from '@netlify/functions'
-import { syncAllAccountData } from '../../stripe/sync'
+import { syncAllAccountData } from '../../src/stripe/sync'
 import * as Sentry from '@sentry/serverless'
-import { logger } from '../../logger'
+import { logger } from '../../src/logger'
 
 const { SENTRY_DSN } = process.env
 
