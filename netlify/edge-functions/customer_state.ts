@@ -23,7 +23,9 @@ const handler = async (request: Request, context: Context) => {
   try {
     const redis = Redis.fromEnv()
     const key = `customer_state_${accountId}_${id}`
+    console.time('redis')
     let data = await redis.get(key)
+    console.timeEnd('redis')
     if (!data) {
       console.log('Cache miss')
       data = await fetchState(id, parsed.origin, request.headers)
