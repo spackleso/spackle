@@ -59,7 +59,7 @@ const handler = async (request: Request, context: Context) => {
 
   try {
     const redis = Redis.fromEnv()
-    const key = `${accountId}:customer_state_${id}`
+    const key = `${accountId}:customer_state:${id}`
     console.time('redis')
     let data = await redis.get(key)
     console.timeEnd('redis')
