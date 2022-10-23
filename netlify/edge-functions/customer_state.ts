@@ -2,6 +2,11 @@ import type { Context } from 'https://edge.netlify.com'
 import { Redis } from 'https://deno.land/x/upstash_redis/mod.ts'
 import { verify } from 'https://deno.land/x/djwt@v2.7/mod.ts'
 
+// Deno.env.set(
+//   'SUPABASE_JWT_SECRET',
+//   'super-secret-jwt-token-with-at-least-32-characters-long',
+// )
+
 const SIGNING_KEY = Deno.env.get('SUPABASE_JWT_SECRET')
 const KEY = await crypto.subtle.importKey(
   'raw',
@@ -44,7 +49,7 @@ const handler = async (request: Request, context: Context) => {
   const parsed = new URL(request.url)
   const pathParts = parsed.pathname.split('/')
   const id = pathParts[pathParts.length - 2]
-  const accountId = await requestToken(request.headers)
+  const { sub: accountId } = await requestToken(request.headers)
 
   if (!accountId) {
     return new Response(JSON.stringify({ error: 'Invalid account id' }), {
