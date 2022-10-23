@@ -5,7 +5,7 @@
   publish = ".next"
 
 [[headers]]
-  for = "/*"
+  for = "/api/stripe/*"
   [headers.values]
     Access-Control-Allow-Origin = "*"
 
