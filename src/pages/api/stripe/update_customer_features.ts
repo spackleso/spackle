@@ -5,6 +5,7 @@ import { syncStripeAccount, syncStripeCustomer } from '../../../stripe/sync'
 import { verifySignature } from '../../../stripe/signature'
 import { withLogging } from '../../../logger'
 import * as Sentry from '@sentry/nextjs'
+import { invalidateCustomerState } from '@/cache'
 
 const updateCustomerFeatures = async (
   account_id: string,
@@ -76,6 +77,8 @@ const updateCustomerFeatures = async (
       throw new Error(deleteError.message)
     }
   }
+
+  await invalidateCustomerState(account_id, customer_id)
 }
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
