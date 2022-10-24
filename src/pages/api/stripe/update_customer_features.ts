@@ -5,7 +5,7 @@ import { syncStripeAccount, syncStripeCustomer } from '../../../stripe/sync'
 import { verifySignature } from '../../../stripe/signature'
 import { withLogging } from '../../../logger'
 import * as Sentry from '@sentry/nextjs'
-import { invalidateCustomerState } from '@/cache'
+import { invalidateCustomerState } from './cache'
 
 const updateCustomerFeatures = async (
   account_id: string,
