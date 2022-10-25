@@ -31,7 +31,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     Sentry.captureException(error)
   }
 
-  res.status(200).json(data ? data[0] : {})
+  res.status(200).json(data?.length ? data[0] : {})
 }
 
 export default withLogging(handler)
