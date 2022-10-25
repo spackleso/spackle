@@ -5,8 +5,6 @@ import * as Sentry from '@sentry/node'
 
 type Mode = 'test' | 'live'
 
-const stripeSyncEndpoint = process.env.STRIPE_SYNC_ENDPOINT
-
 export const syncStripeAccount = async (id: string) => {
   const stripeAccount = await liveStripe.accounts.retrieve(id)
 

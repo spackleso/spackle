@@ -10,6 +10,7 @@ Sentry.AWSLambda.init({
   tracesSampleRate: 1.0,
 })
 
+// TODO: secure via Stripe signature
 export const handler: BackgroundHandler = Sentry.AWSLambda.wrapHandler(
   async (event, context) => {
     if (
