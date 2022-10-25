@@ -1,6 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { checkCors } from '../../../cors'
-import { syncStripeAccount, syncStripePrice } from '../../../stripe/sync'
 import { supabase } from '../../../supabase'
 import { verifySignature } from '../../../stripe/signature'
 import { withLogging } from '../../../logger'

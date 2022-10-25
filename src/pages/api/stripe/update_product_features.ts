@@ -1,7 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { checkCors } from '../../../cors'
 import { supabase } from '../../../supabase'
-import { syncStripeAccount, syncStripeProduct } from '../../../stripe/sync'
 import { verifySignature } from '../../../stripe/signature'
 import { withLogging } from '../../../logger'
 import * as Sentry from '@sentry/nextjs'

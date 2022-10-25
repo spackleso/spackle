@@ -3,7 +3,6 @@ import { checkCors } from '../../../cors'
 import { withLogging } from '../../../logger'
 import { getProductState } from '../../../state'
 import { verifySignature } from '../../../stripe/signature'
-import { syncStripeAccount, syncStripeProduct } from '../../../stripe/sync'
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   await checkCors(req, res)
