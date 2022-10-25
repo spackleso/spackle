@@ -87,9 +87,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   }
   // TODO: handle all errors
   const { account_id, price_id, price_features, mode } = req.body
-
-  await syncStripeAccount(account_id)
-  await syncStripePrice(account_id, price_id, mode)
   try {
     await updatePriceFeatures(account_id, price_id, price_features)
   } catch (error) {

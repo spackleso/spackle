@@ -91,9 +91,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   // TODO: handle all errors
   const { account_id, customer_id, customer_features, mode } = req.body
 
-  await syncStripeAccount(account_id)
-  await syncStripeCustomer(account_id, customer_id, mode)
-
   try {
     await updateCustomerFeatures(account_id, customer_id, customer_features)
   } catch (error) {

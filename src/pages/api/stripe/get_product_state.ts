@@ -16,9 +16,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   // TODO: handle all errors
   const { account_id, product_id, mode } = req.body
 
-  await syncStripeAccount(account_id)
-  await syncStripeProduct(account_id, product_id, mode)
-
   const features = await getProductState(account_id, product_id)
 
   res.status(200).json({

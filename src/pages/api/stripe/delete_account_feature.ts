@@ -18,7 +18,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
 
   // TODO: handle all errors
   const { account_id, feature_id } = req.body
-  await syncStripeAccount(account_id)
 
   if (feature_id) {
     const { data, error } = await supabase

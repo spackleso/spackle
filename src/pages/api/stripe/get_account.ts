@@ -17,8 +17,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   // TODO: handle all errors
   const { account_id } = req.body
 
-  await syncStripeAccount(account_id)
-
   const { data, error } = await supabase
     .from('stripe_accounts')
     .select(

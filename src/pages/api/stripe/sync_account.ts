@@ -18,8 +18,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 
   const { account_id } = req.body
-
-  await syncStripeAccount(account_id)
   await fetch(
     `${protocol}://${req.headers.host}/.netlify/functions/sync_stripe-background?account_id=${account_id}`,
   )

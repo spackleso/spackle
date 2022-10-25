@@ -16,9 +16,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const { account_id, product_id, mode } = req.body
 
-  await syncStripeAccount(account_id)
-  await syncStripeProduct(account_id, product_id, mode)
-
   const { data, error } = await supabase
     .from('product_features')
     .select(

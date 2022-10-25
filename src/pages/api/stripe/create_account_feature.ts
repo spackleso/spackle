@@ -48,7 +48,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
 
   const { account_id, name, key, type, value_flag, value_limit } = req.body
 
-  await syncStripeAccount(account_id)
   try {
     await createFeature(account_id, name, key, type, value_flag, value_limit)
   } catch (error) {

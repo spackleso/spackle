@@ -56,10 +56,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     return res.status(400).send('')
   }
 
-  // TODO: handle all errors
   const { account_id } = req.body
-
-  await syncStripeAccount(account_id)
 
   let token
   try {
