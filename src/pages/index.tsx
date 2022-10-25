@@ -15,7 +15,7 @@ export default function Home() {
         />
       </Head>
       <Header />
-      <main className="grow">
+      <main className="flex grow justify-center items-center">
         <Hero />
         {/* <PrimaryFeatures />
         <SecondaryFeatures />
