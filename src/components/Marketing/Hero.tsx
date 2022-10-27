@@ -13,7 +13,7 @@ export function Hero() {
       </h1>
       <p className="mx-auto mt-6 max-w-2xl text-lg tracking-tight text-slate-700">
         Bring harmony to your sales process. Let your sales team sell and manage
-        custom plans without the engineering overhead.
+        custom plans from the Stripe dashboard
       </p>
       <div className="mt-10 flex justify-center gap-x-6">
         <Button href="/" color="blue">

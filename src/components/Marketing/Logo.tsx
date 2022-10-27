@@ -17,21 +17,21 @@ export function Logo(props: any) {
           y2="91.7968978%"
           id="linearGradient-1"
         >
-          <stop stop-color="#B382E8" offset="0%"></stop>
-          <stop stop-color="#5D65E6" offset="93.75%"></stop>
+          <stop stopColor="#B382E8" offset="0%"></stop>
+          <stop stopColor="#5D65E6" offset="93.75%"></stop>
         </linearGradient>
       </defs>
       <g
         id="Page-1"
         stroke="none"
-        stroke-width="1"
+        strokeWidth="1"
         fill="none"
-        fill-rule="evenodd"
+        fillRule="evenodd"
       >
         <g id="Original-Logo">
           <rect
             id="Rectangle"
-            fill-rule="nonzero"
+            fillRule="nonzero"
             x="0"
             y="0"
             width="206"
