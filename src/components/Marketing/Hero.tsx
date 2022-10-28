@@ -58,9 +58,10 @@ export function Hero() {
             />
             <button
               type="submit"
+              disabled={requestAccess.isLoading}
               className="bg-blue-600 rounded-r-lg text-white px-3 text-sm font-semibold focus:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 ring-slate-700 text-white hover:ring-slate-500 active:ring-slate-700 active:text-slate-400 focus-visible:outline-white"
             >
-              Request Access
+              {requestAccess.isLoading ? <>...</> : <>Request Access</>}
             </button>
           </>
         )}
