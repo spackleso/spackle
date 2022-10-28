@@ -54,12 +54,15 @@ export function Hero() {
               type="text"
               className="border rounded-l-lg px-3 py-2"
               placeholder="jane@example.com"
+              disabled={requestAccess.isLoading}
               onChange={(e) => setEmail(e.target.value)}
             />
             <button
               type="submit"
               disabled={requestAccess.isLoading}
-              className="bg-blue-600 rounded-r-lg text-white px-3 text-sm font-semibold focus:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 ring-slate-700 text-white hover:ring-slate-500 active:ring-slate-700 active:text-slate-400 focus-visible:outline-white"
+              className={`rounded-r-lg text-white px-3 text-sm font-semibold focus:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 ring-slate-700 text-white hover:ring-slate-500 active:ring-slate-700 active:text-slate-400 focus-visible:outline-white ${
+                requestAccess.isLoading ? 'bg-slate-400' : 'bg-blue-600'
+              }`}
             >
               {requestAccess.isLoading ? <>...</> : <>Request Access</>}
             </button>
