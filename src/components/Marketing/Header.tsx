@@ -85,9 +85,6 @@ export function Header() {
             <div className="hidden md:flex md:gap-x-6"></div>
           </div>
           <div className="flex items-center gap-x-5 md:gap-x-8">
-            <Button href="/register" color="blue">
-              <span>Request Access</span>
-            </Button>
             <div className="-mr-1 md:hidden">
               <MobileNavigation />
             </div>

@@ -137,6 +137,11 @@
   resolved "https://registry.yarnpkg.com/@headlessui/react/-/react-1.7.3.tgz#853c598ff47b37cdd192c5cbee890d9b610c3ec0"
   integrity sha512-LGp06SrGv7BMaIQlTs8s2G06moqkI0cb0b8stgq7KZ3xcHdH3qMP+cRyV7qe5x4XEW/IGY48BW4fLesD6NQLng==
 
+"@heroicons/react@^2.0.12":
+  version "2.0.12"
+  resolved "https://registry.yarnpkg.com/@heroicons/react/-/react-2.0.12.tgz#7e5a16c82512f89a30266dd36f8b8465b3e3e216"
+  integrity sha512-FZxKh3i9aKIDxyALTgIpSF2t6V6/eZfF5mRu41QlwkX3Oxzecdm1u6dpft6PQGxIBwO7TKYWaMAYYL8mp/EaOg==
+
 "@humanwhocodes/config-array@^0.10.5":
   version "0.10.7"
   resolved "https://registry.yarnpkg.com/@humanwhocodes/config-array/-/config-array-0.10.7.tgz#6d53769fd0c222767e6452e8ebda825c22e9f0dc"
@@ -1160,6 +1165,19 @@
   integrity sha512-y5mb86JUoiUgBjY/o6FJSFZSEttfb3Q5gllE4xoKjAAD+vBrnIhE4dViwUuow3va8mpH4s9jyUbUbrRGoRdc2Q==
   dependencies:
     mini-svg-data-uri "^1.2.3"
+
+"@tanstack/query-core@4.13.0":
+  version "4.13.0"
+  resolved "https://registry.yarnpkg.com/@tanstack/query-core/-/query-core-4.13.0.tgz#89153096d1fce42c0294fa1d1ae4b3e72aa5353b"
+  integrity sha512-PzmLQcEgC4rl2OzkiPHYPC9O79DFcMGaKsOzDEP+U4PJ+tbkcEP+Z+FQDlfvX8mCwYC7UNH7hXrQ5EdkGlJjVg==
+
+"@tanstack/react-query@^4.13.0":
+  version "4.13.0"
+  resolved "https://registry.yarnpkg.com/@tanstack/react-query/-/react-query-4.13.0.tgz#13797d590a6c0708545881e38aea5eb39b960c28"
+  integrity sha512-dI/5hJ/pGQ74P5hxBLC9h6K0/Cap2T3k0ZjjjFLBCNnohDYgl7LNmMopzrRzBHk2mMjf2hgXHIzcKNG8GOZ5hg==
+  dependencies:
+    "@tanstack/query-core" "4.13.0"
+    use-sync-external-store "^1.2.0"
 
 "@tsconfig/node10@^1.0.7":
   version "1.0.9"
@@ -8986,7 +9004,7 @@ url-to-options@^1.0.1:
   resolved "https://registry.yarnpkg.com/url-to-options/-/url-to-options-1.0.1.tgz#1505a03a289a48cbd7a434efbaeec5055f5633a9"
   integrity sha512-0kQLIzG4fdk/G5NONku64rSH/x32NOA39LVQqlK8Le6lvTF6GGRJpqaQFGgU+CLwySIqBSMdwYM0sYcW9f6P4A==
 
-use-sync-external-store@1.2.0:
+use-sync-external-store@1.2.0, use-sync-external-store@^1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/use-sync-external-store/-/use-sync-external-store-1.2.0.tgz#7dbefd6ef3fe4e767a0cf5d7287aacfb5846928a"
   integrity sha512-eEgnFxGQ1Ife9bzYs6VLi8/4X6CObHMw9Qr9tPY43iKwsPw8xE8+EFsf/2cFZ5S3esXgpWgtSCtLNS41F+sKPA==
