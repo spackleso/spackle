@@ -2,6 +2,10 @@ import { liveStripe, testStripe } from '.'
 import { logger } from '../logger'
 import { supabase } from '../supabase'
 import * as Sentry from '@sentry/node'
+import {
+  invalidateAccountCustomerStates,
+  invalidateCustomerState,
+} from '@/cache'
 
 type Mode = 'test' | 'live'
 
@@ -27,7 +31,7 @@ export const syncStripeProduct = async (
     stripeAccount: account_id,
   })
 
-  return await supabase.from('stripe_products').upsert(
+  const response = await supabase.from('stripe_products').upsert(
     {
       stripe_id: stripeProduct.id,
       stripe_account_id: account_id,
@@ -35,6 +39,12 @@ export const syncStripeProduct = async (
     },
     { onConflict: 'stripe_id' },
   )
+
+  if (!response.error) {
+    await invalidateAccountCustomerStates(account_id)
+  }
+
+  return response
 }
 
 export const syncStripePrice = async (
@@ -47,7 +57,7 @@ export const syncStripePrice = async (
     stripeAccount: account_id,
   })
 
-  return await supabase.from('stripe_prices').upsert(
+  const response = await supabase.from('stripe_prices').upsert(
     {
       stripe_id: stripePrice.id,
       stripe_account_id: account_id,
@@ -56,6 +66,12 @@ export const syncStripePrice = async (
     },
     { onConflict: 'stripe_id' },
   )
+
+  if (!response.error) {
+    await invalidateAccountCustomerStates(account_id)
+  }
+
+  return response
 }
 
 export const syncStripeCustomer = async (
@@ -68,7 +84,7 @@ export const syncStripeCustomer = async (
     stripeAccount: account_id,
   })
 
-  return await supabase.from('stripe_customers').upsert(
+  const response = await supabase.from('stripe_customers').upsert(
     {
       stripe_id: stripeCustomer.id,
       stripe_account_id: account_id,
@@ -76,6 +92,12 @@ export const syncStripeCustomer = async (
     },
     { onConflict: 'stripe_id' },
   )
+
+  if (!response.error) {
+    await invalidateCustomerState(account_id, id)
+  }
+
+  return response
 }
 
 export const syncStripeSubscriptions = async (
@@ -105,6 +127,8 @@ export const syncStripeSubscriptions = async (
 
     await syncStripeSubscriptionItems(account_id, subscription.id, mode)
   }
+
+  await invalidateCustomerState(account_id, customer_id)
 }
 
 export const syncStripeSubscriptionItems = async (

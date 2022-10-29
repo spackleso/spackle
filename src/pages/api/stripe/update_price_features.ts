@@ -4,6 +4,7 @@ import { supabase } from '../../../supabase'
 import { verifySignature } from '../../../stripe/signature'
 import { withLogging } from '../../../logger'
 import * as Sentry from '@sentry/nextjs'
+import { invalidateAccountCustomerStates } from '@/cache'
 
 const updatePriceFeatures = async (
   account_id: string,
@@ -75,6 +76,8 @@ const updatePriceFeatures = async (
       throw new Error(deleteError.message)
     }
   }
+
+  await invalidateAccountCustomerStates(account_id)
 }
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {

@@ -4,8 +4,24 @@ import { supabase } from '../../../supabase'
 import { verifySignature } from '../../../stripe/signature'
 import { withLogging } from '../../../logger'
 import * as Sentry from '@sentry/nextjs'
+import { invalidateAccountCustomerStates } from '@/cache'
 
 type Data = {}
+
+const deleteFeature = async (account_id: string, feature_id: string) => {
+  const response = await supabase
+    .from('features')
+    .delete()
+    .eq('stripe_account_id', account_id)
+    .eq('id', feature_id)
+
+  if (response.error) {
+    throw new Error(response.error.message)
+  }
+
+  await invalidateAccountCustomerStates(account_id)
+  return response
+}
 
 const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   await checkCors(req, res)
@@ -19,14 +35,13 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   const { account_id, feature_id } = req.body
 
   if (feature_id) {
-    const { data, error } = await supabase
-      .from('features')
-      .delete()
-      .eq('stripe_account_id', account_id)
-      .eq('id', feature_id)
-
-    if (error) {
+    try {
+      await deleteFeature(account_id, feature_id)
+    } catch (error) {
       Sentry.captureException(error)
+      return res.status(400).json({
+        error: (error as Error).message,
+      })
     }
   }
 
