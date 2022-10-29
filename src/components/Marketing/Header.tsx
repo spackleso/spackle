@@ -74,13 +74,11 @@ export function Header() {
       <Container>
         <nav className="relative z-50 flex justify-between">
           <div className="flex items-center md:gap-x-12">
-            <Link href="#" aria-label="Home">
-              <a className="flex items-center">
-                <Logo className="h-16 w-auto cursor-pointer" />
-                <h1 className="lowercase font-bold font-['Comfortaa']">
-                  Spackle
-                </h1>
-              </a>
+            <Link href="#" aria-label="Home" className="flex items-center">
+              <Logo className="h-16 w-auto cursor-pointer" />
+              <h1 className="lowercase font-bold font-['Comfortaa']">
+                Spackle
+              </h1>
             </Link>
             <div className="hidden md:flex md:gap-x-6"></div>
           </div>

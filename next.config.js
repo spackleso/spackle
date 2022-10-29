@@ -1,14 +1,22 @@
 const { withSentryConfig } = require('@sentry/nextjs');
+const withMarkdoc = require('@markdoc/next.js');
 
-const moduleExports = {
-  reactStrictMode: true,
-  swcMinify: true,
-  rootDir: 'src',
-};
 
-const sentryWebpackPluginOptions = {
-  silent: true,
-  hideSourceMaps: true,
-};
-
-module.exports = withSentryConfig(moduleExports, sentryWebpackPluginOptions);
+module.exports = withMarkdoc(
+)(
+  withSentryConfig(
+    {
+      reactStrictMode: true,
+      swcMinify: true,
+      rootDir: 'src',
+      experimental: {
+        appDir: true,
+      },
+      pageExtensions: ['ts', 'tsx', 'js', 'jsx', 'md']
+    },
+    {
+      silent: true,
+      hideSourceMaps: true,
+    }
+  ),
+);
