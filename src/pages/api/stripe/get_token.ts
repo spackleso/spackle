@@ -67,6 +67,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       token = tokens[0].token
     }
   } catch (error) {
+    console.log(error)
     Sentry.captureException(error)
     return res.status(400).json({})
   }
