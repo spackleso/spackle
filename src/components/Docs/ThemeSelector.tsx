@@ -45,7 +45,7 @@ function SystemIcon(props: SVGProps<SVGSVGElement>) {
 }
 
 export function ThemeSelector(props: any) {
-  let [selectedTheme, setSelectedTheme] = useState<any>('system')
+  let [selectedTheme, setSelectedTheme] = useState<any>(themes[2])
 
   useEffect(() => {
     if (selectedTheme) {
