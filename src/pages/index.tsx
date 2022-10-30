@@ -6,7 +6,7 @@ import { Hero } from '@/components/Marketing/Hero'
 
 export default function Home() {
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full min-h-screen">
       <Head>
         <title>Spackle - Feature access built on Stripe billing</title>
         <meta
@@ -15,7 +15,7 @@ export default function Home() {
         />
       </Head>
       <Header />
-      <main className="flex grow justify-center items-center">
+      <main className="flex flex-grow justify-center items-center">
         <Hero />
         {/* <PrimaryFeatures />
         <SecondaryFeatures />

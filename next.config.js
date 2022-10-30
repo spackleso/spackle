@@ -8,10 +8,6 @@ module.exports = withMarkdoc(
     {
       reactStrictMode: true,
       swcMinify: true,
-      rootDir: 'src',
-      experimental: {
-        appDir: true,
-      },
       pageExtensions: ['ts', 'tsx', 'js', 'jsx', 'md']
     },
     {

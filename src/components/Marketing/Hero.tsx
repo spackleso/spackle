@@ -27,14 +27,14 @@ export function Hero() {
 
   return (
     <Container className="pt-20 pb-16 text-center lg:pt-32">
-      <h1 className="mx-auto max-w-4xl font-display text-5xl font-medium tracking-tight text-slate-900 sm:text-7xl">
+      <h1 className="mx-auto max-w-4xl font-display text-5xl font-medium tracking-tight text-slate-900 sm:text-7xl dark:text-white">
         Custom SaaS billing{' '}
-        <span className="relative whitespace-nowrap text-blue-600">
+        <span className="relative whitespace-nowrap text-violet-600">
           without
         </span>{' '}
         the code complexity
       </h1>
-      <p className="mx-auto mt-6 max-w-2xl text-lg tracking-tight text-slate-700">
+      <p className="mx-auto mt-6 max-w-2xl text-lg tracking-tight text-slate-700 dark:text-slate-400">
         Bring harmony to your sales process. Let your sales team sell and manage
         custom plans from the Stripe dashboard
       </p>
@@ -54,7 +54,7 @@ export function Hero() {
           <>
             <input
               type="text"
-              className="border rounded-l-lg px-3 py-2"
+              className="border rounded-l-lg px-3 py-2 bg-white dark:bg-slate-900 dark:border-slate-800 dark:text-white"
               placeholder="jane@example.com"
               disabled={requestAccess.isLoading}
               onChange={(e) => setEmail(e.target.value)}
@@ -63,7 +63,7 @@ export function Hero() {
               type="submit"
               disabled={requestAccess.isLoading}
               className={`rounded-r-lg text-white px-3 text-sm font-semibold focus:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 ring-slate-700 text-white hover:ring-slate-500 active:ring-slate-700 active:text-slate-400 focus-visible:outline-white ${
-                requestAccess.isLoading ? 'bg-slate-400' : 'bg-blue-600'
+                requestAccess.isLoading ? 'bg-slate-400' : 'bg-violet-600'
               }`}
             >
               {requestAccess.isLoading ? <>...</> : <>Request Access</>}

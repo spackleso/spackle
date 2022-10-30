@@ -61,7 +61,7 @@ export default function Document(props: any) {
         ></link>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </Head>
-      <body className="flex h-full flex-col min-h-screen">
+      <body className="bg-white dark:bg-slate-900">
         <Main />
         <NextScript />
       </body>

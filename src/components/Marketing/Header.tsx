@@ -6,6 +6,9 @@ import clsx from 'clsx'
 import { Button } from '@/components/Marketing/Button'
 import { Container } from '@/components/Marketing/Container'
 import { Logo } from '@/components/Marketing/Logo'
+import { NavLink } from './NavLink'
+import { ArrowTopRightOnSquareIcon } from '@heroicons/react/20/solid'
+import { ThemeSelector } from '../Docs/ThemeSelector'
 
 function MobileNavLink({ href, children }: any) {
   return (
@@ -76,7 +79,7 @@ export function Header() {
           <div className="flex items-center md:gap-x-12">
             <Link href="#" aria-label="Home" className="flex items-center">
               <Logo className="h-16 w-auto cursor-pointer" />
-              <h1 className="lowercase font-bold font-['Comfortaa']">
+              <h1 className="lowercase font-bold font-['Comfortaa'] text-slate-900 dark:text-white">
                 Spackle
               </h1>
             </Link>
@@ -86,6 +89,13 @@ export function Header() {
             <div className="-mr-1 md:hidden">
               <MobileNavigation />
             </div>
+            <ThemeSelector className="relative z-10" />
+            <NavLink href="/docs">
+              <span className="flex flex-row items-center gap-1">
+                <span>Docs</span>
+                <ArrowTopRightOnSquareIcon className="h-4 w-4" />
+              </span>
+            </NavLink>
           </div>
         </nav>
       </Container>

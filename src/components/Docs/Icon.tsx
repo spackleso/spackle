@@ -1,12 +1,12 @@
-import { useId } from 'react'
+import { ReactNode, SVGProps, useId } from 'react'
 import clsx from 'clsx'
 
-import { InstallationIcon } from '@/components/icons/InstallationIcon'
-import { LightbulbIcon } from '@/components/icons/LightbulbIcon'
-import { PluginsIcon } from '@/components/icons/PluginsIcon'
-import { PresetsIcon } from '@/components/icons/PresetsIcon'
-import { ThemingIcon } from '@/components/icons/ThemingIcon'
-import { WarningIcon } from '@/components/icons/WarningIcon'
+import { InstallationIcon } from '@/components/Docs/icons/InstallationIcon'
+import { LightbulbIcon } from '@/components/Docs/icons/LightbulbIcon'
+import { PluginsIcon } from '@/components/Docs/icons/PluginsIcon'
+import { PresetsIcon } from '@/components/Docs/icons/PresetsIcon'
+import { ThemingIcon } from '@/components/Docs/icons/ThemingIcon'
+import { WarningIcon } from '@/components/Docs/icons/WarningIcon'
 
 const icons = {
   installation: InstallationIcon,
@@ -23,7 +23,22 @@ const iconStyles = {
     '[--icon-foreground:theme(colors.amber.900)] [--icon-background:theme(colors.amber.100)]',
 }
 
-export function Icon({ color = 'blue', icon, className, ...props }) {
+export function Icon({
+  color = 'blue',
+  icon,
+  className,
+  ...props
+}: {
+  color?: 'blue' | 'amber'
+  icon:
+    | 'installation'
+    | 'presets'
+    | 'plugins'
+    | 'theming'
+    | 'lightbulb'
+    | 'warning'
+  className: string
+}) {
   let id = useId()
   let IconComponent = icons[icon]
 
@@ -52,7 +67,14 @@ const gradients = {
   ],
 }
 
-export function Gradient({ color = 'blue', ...props }) {
+export function Gradient({
+  color = 'blue',
+  ...props
+}: {
+  id: string
+  color: 'blue' | 'amber'
+  gradientTransform: string
+}) {
   return (
     <radialGradient
       cx={0}
@@ -68,10 +90,20 @@ export function Gradient({ color = 'blue', ...props }) {
   )
 }
 
-export function LightMode({ className, ...props }) {
+export function LightMode({
+  className,
+  ...props
+}: {
+  className?: 'string'
+} & SVGProps<SVGGElement>) {
   return <g className={clsx('dark:hidden', className)} {...props} />
 }
 
-export function DarkMode({ className, ...props }) {
+export function DarkMode({
+  className,
+  ...props
+}: {
+  className?: 'string'
+} & SVGProps<SVGGElement>) {
   return <g className={clsx('hidden dark:inline', className)} {...props} />
 }

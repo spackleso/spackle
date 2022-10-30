@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { SVGProps, useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { Dialog } from '@headlessui/react'
@@ -6,7 +6,7 @@ import { Dialog } from '@headlessui/react'
 import { Logomark } from '@/components/Docs/Logo'
 import { Navigation } from '@/components/Docs/Navigation'
 
-function MenuIcon(props) {
+function MenuIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg
       aria-hidden="true"
@@ -21,7 +21,7 @@ function MenuIcon(props) {
   )
 }
 
-function CloseIcon(props) {
+function CloseIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg
       aria-hidden="true"
@@ -36,7 +36,7 @@ function CloseIcon(props) {
   )
 }
 
-export function MobileNavigation({ navigation }) {
+export function MobileNavigation({ navigation }: any) {
   let router = useRouter()
   let [isOpen, setIsOpen] = useState(false)
 

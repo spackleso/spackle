@@ -1,6 +1,6 @@
 import { useId } from 'react'
 
-export function HeroBackground(props) {
+export function HeroBackground(props: any) {
   let id = useId()
 
   return (

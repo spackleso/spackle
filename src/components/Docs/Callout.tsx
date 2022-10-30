@@ -1,6 +1,7 @@
 import clsx from 'clsx'
 
-import { Icon } from '@/components/Icon'
+import { Icon } from '@/components/Docs/Icon'
+import { ReactNode } from 'react'
 
 const styles = {
   note: {
@@ -18,11 +19,19 @@ const styles = {
 }
 
 const icons = {
-  note: (props) => <Icon icon="lightbulb" {...props} />,
-  warning: (props) => <Icon icon="warning" color="amber" {...props} />,
+  note: (props: any) => <Icon icon="lightbulb" {...props} />,
+  warning: (props: any) => <Icon icon="warning" color="amber" {...props} />,
 }
 
-export function Callout({ type = 'note', title, children }) {
+export function Callout({
+  type = 'note',
+  title,
+  children,
+}: {
+  type: 'note' | 'warning'
+  title: string
+  children: ReactNode
+}) {
   let IconComponent = icons[type]
 
   return (

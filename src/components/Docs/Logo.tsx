@@ -1,3 +1,5 @@
+import { SVGProps } from 'react'
+
 function LogomarkPaths() {
   return (
     <g fill="none" stroke="#38BDF8" strokeLinejoin="round" strokeWidth={3}>
@@ -7,7 +9,7 @@ function LogomarkPaths() {
   )
 }
 
-export function Logomark(props) {
+export function Logomark(props: SVGProps<SVGSVGElement>) {
   return (
     <svg aria-hidden="true" viewBox="0 0 36 36" fill="none" {...props}>
       <LogomarkPaths />
@@ -15,7 +17,7 @@ export function Logomark(props) {
   )
 }
 
-export function Logo(props) {
+export function Logo(props: SVGProps<SVGSVGElement>) {
   return (
     <svg aria-hidden="true" viewBox="0 0 227 36" fill="none" {...props}>
       <LogomarkPaths />

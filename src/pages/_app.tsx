@@ -8,7 +8,7 @@ import { Layout } from '@/components/Docs/Layout'
 import 'focus-visible'
 import '@/styles/tailwind.css'
 
-function getNodeText(node) {
+function getNodeText(node: any) {
   let text = ''
   for (let child of node.children ?? []) {
     if (typeof child === 'string') {
@@ -19,7 +19,7 @@ function getNodeText(node) {
   return text
 }
 
-function collectHeadings(nodes, slugify = slugifyWithCounter()) {
+function collectHeadings(nodes: any[], slugify = slugifyWithCounter()): any[] {
   let sections = []
 
   for (let node of nodes) {
@@ -51,6 +51,7 @@ function collectHeadings(nodes, slugify = slugifyWithCounter()) {
 }
 
 function App({ Component, pageProps }: AppProps) {
+  // Handles doc endpoints
   if (pageProps.markdoc) {
     let title = pageProps.markdoc.frontmatter.title
 
@@ -77,6 +78,7 @@ function App({ Component, pageProps }: AppProps) {
     )
   }
 
+  // Handles the rest
   return (
     <QueryClientProvider client={queryClient}>
       <Component {...pageProps} />
