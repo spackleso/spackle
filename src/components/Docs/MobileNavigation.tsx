@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { Dialog } from '@headlessui/react'
 
-import { Logomark } from '@/components/Docs/Logo'
+import { Logo } from '@/components/Docs/Logo'
 import { Navigation } from '@/components/Docs/Navigation'
 
 function MenuIcon(props: SVGProps<SVGSVGElement>) {
@@ -82,7 +82,7 @@ export function MobileNavigation({ navigation }: any) {
               <CloseIcon className="h-6 w-6 stroke-slate-500" />
             </button>
             <Link href="/" className="ml-6" aria-label="Home page">
-              <Logomark className="h-9 w-9" />
+              <Logo className="h-9 w-9" />
             </Link>
           </div>
           <Navigation navigation={navigation} className="mt-5 px-1" />
