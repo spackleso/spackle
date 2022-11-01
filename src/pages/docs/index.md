@@ -6,8 +6,6 @@ description: Learn how to integrate your application with Spackle
 
 Learn how to get Spackle set up in your project{% .lead %}
 
-Possimus saepe veritatis sint nobis et quam eos. Architecto consequatur odit perferendis fuga eveniet possimus rerum cumque. Ea deleniti voluptatum deserunt voluptatibus ut non iste.
-
 ---
 
 ## Quick start
