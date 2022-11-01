@@ -35,8 +35,8 @@ export function Hero() {
         the code complexity
       </h1>
       <p className="mx-auto mt-6 max-w-2xl text-lg tracking-tight text-slate-700 dark:text-slate-400">
-        Bring harmony to your sales process. Let your sales team sell and manage
-        custom plans from the Stripe dashboard
+        Bring harmony to your sales process. Seell and manage custom plans right
+        from the Stripe dashboard.
       </p>
       <form
         className="mt-10 flex justify-center"
