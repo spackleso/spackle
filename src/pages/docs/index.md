@@ -53,7 +53,7 @@ To customize feature behavior, navigate to your Stripe product and set the value
 
 ![getting-started-4](/getting-started-4.png)
 
-### Use the API
+### Integrate with your product
 
 ```
 curl https://www.spackle.so/api/customers/<customer_id>/state/ \
