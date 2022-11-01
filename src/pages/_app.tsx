@@ -20,6 +20,10 @@ function getNodeText(node: any) {
 }
 
 function collectHeadings(nodes: any[], slugify = slugifyWithCounter()): any[] {
+  if (!nodes) {
+    return []
+  }
+
   let sections = []
 
   for (let node of nodes) {
@@ -62,7 +66,7 @@ function App({ Component, pageProps }: AppProps) {
     let description = pageProps.markdoc.frontmatter.description
 
     let tableOfContents = pageProps.markdoc.content
-      ? collectHeadings(pageProps.markdoc.content.children)
+      ? collectHeadings(pageProps.markdoc.content)
       : []
 
     return (
