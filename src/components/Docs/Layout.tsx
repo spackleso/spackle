@@ -4,11 +4,10 @@ import { useRouter } from 'next/router'
 import clsx from 'clsx'
 
 import { Hero } from '@/components/Docs/Hero'
-import { Logo, Logomark } from '@/components/Docs/Logo'
+import { Logo } from '@/components/Docs/Logo'
 import { MobileNavigation } from '@/components/Docs/MobileNavigation'
 import { Navigation } from '@/components/Docs/Navigation'
 import { Prose } from '@/components/Docs/Prose'
-import { Search } from '@/components/Docs/Search'
 import { ThemeSelector } from '@/components/Docs/ThemeSelector'
 
 const navigation = [
@@ -54,8 +53,12 @@ function Header({ navigation }: { navigation: any[] }) {
       </div>
       <div className="relative flex flex-grow basis-0 items-center">
         <Link href="/" aria-label="Home page">
-          <Logomark className="h-9 w-9 lg:hidden" />
-          <Logo className="hidden h-9 w-auto fill-slate-700 dark:fill-sky-100 lg:block" />
+          <div className="flex flex-row items-center">
+            <Logo className="h-14 w-auto fill-slate-700 dark:fill-sky-100" />
+            <h1 className="lowercase font-bold font-['Comfortaa'] text-slate-900 dark:text-white hidden lg:block">
+              Spackle
+            </h1>
+          </div>
         </Link>
       </div>
       <div className="-my-5 mr-6 sm:mr-8 md:mr-0">{/* <Search /> */}</div>

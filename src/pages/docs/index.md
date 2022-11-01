@@ -62,4 +62,4 @@ curl https://www.spackle.so/api/customers/<customer_id>/state/ \
   -H Authorization: Token <access_token>
 ```
 
-Returns the state of the customer's features:
+Returns the state of the customer's features.
