@@ -6,11 +6,21 @@ import {
   invalidateAccountCustomerStates,
   invalidateCustomerState,
 } from '@/cache'
+import Stripe from 'stripe'
 
 type Mode = 'test' | 'live'
 
 export const syncStripeAccount = async (id: string) => {
-  const stripeAccount = await liveStripe.accounts.retrieve(id)
+  let stripeAccount: Stripe.Account
+  try {
+    stripeAccount = await liveStripe.accounts.retrieve(id)
+  } catch (e: any) {
+    if (e.message.includes('testmode')) {
+      stripeAccount = await testStripe.accounts.retrieve(id)
+    } else {
+      throw e
+    }
+  }
 
   return await supabase.from('stripe_accounts').upsert(
     {
