@@ -11,7 +11,6 @@ import Stripe from 'stripe'
 type Mode = 'test' | 'live'
 
 export const syncStripeAccount = async (id: string) => {
-  console.log(`Syncing account ${id}`)
   let stripeAccount: Stripe.Account
   try {
     stripeAccount = await liveStripe.accounts.retrieve(id)
@@ -22,7 +21,6 @@ export const syncStripeAccount = async (id: string) => {
       throw e
     }
   }
-  console.log(`Found account`, stripeAccount)
 
   const response = await supabase.from('stripe_accounts').upsert(
     {
@@ -33,7 +31,7 @@ export const syncStripeAccount = async (id: string) => {
   )
 
   if (response.error) {
-    console.error(response.error)
+    throw new Error(response.error.message)
   }
 
   return response
@@ -58,7 +56,9 @@ export const syncStripeProduct = async (
     { onConflict: 'stripe_id' },
   )
 
-  if (!response.error) {
+  if (response.error) {
+    throw new Error(response.error.message)
+  } else {
     await invalidateAccountCustomerStates(account_id)
   }
 
@@ -85,7 +85,9 @@ export const syncStripePrice = async (
     { onConflict: 'stripe_id' },
   )
 
-  if (!response.error) {
+  if (response.error) {
+    throw new Error(response.error.message)
+  } else {
     await invalidateAccountCustomerStates(account_id)
   }
 
@@ -110,8 +112,9 @@ export const syncStripeCustomer = async (
     },
     { onConflict: 'stripe_id' },
   )
-
-  if (!response.error) {
+  if (response.error) {
+    throw new Error(response.error.message)
+  } else {
     await invalidateCustomerState(account_id, id)
   }
 
