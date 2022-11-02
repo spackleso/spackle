@@ -24,13 +24,19 @@ export const syncStripeAccount = async (id: string) => {
   }
   console.log(`Found account`, stripeAccount)
 
-  return await supabase.from('stripe_accounts').upsert(
+  const response = await supabase.from('stripe_accounts').upsert(
     {
       stripe_id: stripeAccount.id,
       stripe_json: JSON.stringify(stripeAccount),
     },
     { onConflict: 'stripe_id' },
   )
+
+  if (response.error) {
+    console.error(response.error)
+  }
+
+  return response
 }
 
 export const syncStripeProduct = async (
