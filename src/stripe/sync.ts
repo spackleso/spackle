@@ -11,21 +11,10 @@ import Stripe from 'stripe'
 type Mode = 'test' | 'live'
 
 export const syncStripeAccount = async (id: string) => {
-  let stripeAccount: Stripe.Account
-  try {
-    stripeAccount = await liveStripe.accounts.retrieve(id)
-  } catch (e: any) {
-    if (e.message.includes('testmode')) {
-      stripeAccount = await testStripe.accounts.retrieve(id)
-    } else {
-      throw e
-    }
-  }
-
   const response = await supabase.from('stripe_accounts').upsert(
     {
-      stripe_id: stripeAccount.id,
-      stripe_json: JSON.stringify(stripeAccount),
+      stripe_id: id,
+      stripe_json: {},
     },
     { onConflict: 'stripe_id' },
   )
