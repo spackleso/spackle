@@ -11,6 +11,7 @@ import Stripe from 'stripe'
 type Mode = 'test' | 'live'
 
 export const syncStripeAccount = async (id: string) => {
+  logger.info(`Syncing account ${id}`)
   let stripeAccount: Stripe.Account
   try {
     stripeAccount = await liveStripe.accounts.retrieve(id)
@@ -21,6 +22,7 @@ export const syncStripeAccount = async (id: string) => {
       throw e
     }
   }
+  logger.info(`Found account`, stripeAccount)
 
   return await supabase.from('stripe_accounts').upsert(
     {
