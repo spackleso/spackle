@@ -176,8 +176,23 @@ export const syncAllAccountData = async (account_id: string) => {
       initial_sync_started_at: new Date(),
     })
     .eq('stripe_id', account_id)
-  await syncAllAccountModeData(account_id, 'live')
-  await syncAllAccountModeData(account_id, 'test')
+
+  try {
+    await syncAllAccountModeData(account_id, 'live')
+  } catch (error) {
+    if (!(error as Error).message.includes('testmode')) {
+      Sentry.captureException(error)
+      return
+    }
+  }
+
+  try {
+    await syncAllAccountModeData(account_id, 'test')
+  } catch (error) {
+    Sentry.captureException(error)
+    return
+  }
+
   await supabase
     .from('stripe_accounts')
     .update({
