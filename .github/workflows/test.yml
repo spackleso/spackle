@@ -4,10 +4,6 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
-    services:
-      supabase:
-        image: supabase
-
     steps:
       - uses: actions/checkout@v2
       - name: Install modules
