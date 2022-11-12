@@ -1,11 +1,17 @@
 name: CI
 on: push
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
+
+    services:
+      supabase:
+        image: supabase
+
     steps:
-    - uses: actions/checkout@v2
-    - name: Install modules
-      run: yarn
-    - name: Run tests
-      run: yarn test
+      - uses: actions/checkout@v2
+      - uses: supabase/setup-cli@v1
+      - name: Install modules
+        run: yarn
+      - name: Run tests
+        run: yarn test
