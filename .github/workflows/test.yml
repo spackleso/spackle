@@ -10,8 +10,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - uses: supabase/setup-cli@v1
       - name: Install modules
         run: yarn
+      - uses: supabase/setup-cli@v1
+      - run: supabase init
+      - run: supabase start
       - name: Run tests
         run: yarn test
