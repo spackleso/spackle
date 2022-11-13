@@ -1,9 +1,8 @@
-import { ReactNode, SVGProps, useCallback, useEffect, useState } from 'react'
+import { ReactNode, useCallback, useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import clsx from 'clsx'
 
-import { Hero } from '@/components/Docs/Hero'
 import { Logo } from '@/components/Docs/Logo'
 import { MobileNavigation } from '@/components/Docs/MobileNavigation'
 import { Navigation } from '@/components/Docs/Navigation'
@@ -13,7 +12,10 @@ import { ThemeSelector } from '@/components/Docs/ThemeSelector'
 const navigation = [
   {
     title: 'Introduction',
-    links: [{ title: 'Getting started', href: '/docs' }],
+    links: [
+      { title: 'Getting started', href: '/docs' },
+      { title: 'Python', href: '/docs/python' },
+    ],
   },
 ]
 
@@ -117,7 +119,6 @@ export function Layout({
   tableOfContents: any[]
 }) {
   let router = useRouter()
-  let isHomePage = router.pathname === '/'
   let allLinks = navigation.flatMap((section) => section.links)
   let linkIndex = allLinks.findIndex((link) => link.href === router.pathname)
   let previousPage = allLinks[linkIndex - 1]
@@ -140,9 +141,6 @@ export function Layout({
   return (
     <>
       <Header navigation={navigation} />
-
-      {isHomePage && <Hero />}
-
       <div className="relative mx-auto flex max-w-8xl justify-center sm:px-2 lg:px-8 xl:px-12">
         <div className="hidden lg:relative lg:block lg:flex-none">
           <div className="absolute inset-y-0 right-0 w-[50vw] bg-slate-50 dark:hidden" />

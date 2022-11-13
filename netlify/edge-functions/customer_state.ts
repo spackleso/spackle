@@ -1,4 +1,3 @@
-import type { Context } from 'https://edge.netlify.com'
 import { Redis } from 'https://deno.land/x/upstash_redis/mod.ts'
 import { verify } from 'https://deno.land/x/djwt@v2.7/mod.ts'
 
@@ -8,6 +7,7 @@ import { verify } from 'https://deno.land/x/djwt@v2.7/mod.ts'
 // )
 
 const SIGNING_KEY = Deno.env.get('SUPABASE_JWT_SECRET')
+
 const KEY = await crypto.subtle.importKey(
   'raw',
   new TextEncoder().encode(SIGNING_KEY),
@@ -44,7 +44,7 @@ const requestToken = async (headers: Headers) => {
   }
 }
 
-const handler = async (request: Request, context: Context) => {
+const handler = async (request: Request) => {
   console.time('request')
   const parsed = new URL(request.url)
   const pathParts = parsed.pathname.split('/')

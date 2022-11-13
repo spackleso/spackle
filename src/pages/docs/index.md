@@ -60,4 +60,8 @@ curl https://www.spackle.so/api/customers/<customer_id>/state/ \
   -H Authorization: Bearer <access_token>
 ```
 
-Returns the state of the customer's features.
+Returns the state of the customer's features. To integrate with your product, check out the language specific libraries below.
+
+#### Libraries
+
+* [Python](/docs/python)

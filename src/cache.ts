@@ -9,7 +9,8 @@ export const invalidateAccountCustomerStates = async (accountId: string) => {
   }
 
   const redis = new Redis({ url, token })
-  await redis.del(`${accountId}:customer_state:*`)
+  const keys = await redis.keys(`${accountId}:customer_state:*`)
+  await redis.del(...keys)
 }
 
 export const invalidateCustomerState = async (
