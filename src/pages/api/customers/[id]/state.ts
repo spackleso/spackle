@@ -14,7 +14,7 @@ const requestToken = (headers: IncomingHttpHeaders) => {
     throw new Error('Signing key not set')
   }
 
-  const authorization = headers['authorization'] || 'Basic '
+  const authorization = headers['authorization'] || 'Bearer '
   const token = authorization.split(' ')[1]
   const payload = jwt.verify(token, SIGNING_KEY)
 

@@ -31,7 +31,7 @@ const requestToken = async (headers: Headers) => {
     throw new Error('Signing key not set')
   }
 
-  const authorization = headers.get('authorization') || 'Basic '
+  const authorization = headers.get('authorization') || 'Bearer '
   const token = authorization.split(' ')[1]
   const payload = await verify(token, KEY)
 

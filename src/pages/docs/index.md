@@ -57,7 +57,7 @@ To customize feature behavior, navigate to your Stripe product and set the value
 
 ```
 curl https://www.spackle.so/api/customers/<customer_id>/state/ \
-  -H Authorization: Token <access_token>
+  -H Authorization: Bearer <access_token>
 ```
 
 Returns the state of the customer's features.
