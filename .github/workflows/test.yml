@@ -3,9 +3,11 @@ name: CI
 on: push
 
 env:
-  SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24ifQ.625_WdcF3KHqz5amU0x2X5WWHP-OEs_4qj0ssLNHzTs
+  SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
   SUPABASE_JWT_SECRET: super-secret-jwt-token-with-at-least-32-characters-long
   SUPABASE_URL: http://localhost:54321
+  UPSTASH_REDIS_REST_URL: ${{ secrets.UPSTASH_REDIS_REST_URL }}
+  UPSTASH_REDIS_REST_TOKEN: ${{ secrets.UPSTASH_REDIS_REST_TOKEN }}
 
 jobs:
   test:
