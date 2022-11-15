@@ -11,6 +11,9 @@ import {
 import Stripe from 'stripe'
 import { logger, withLogging } from '../../../logger'
 
+// Live webhook endpoints receive both live and test events.
+const webhookSigningSecret = process.env.STRIPE_WEBHOOK_SECRET || ''
+
 export const config = {
   api: {
     bodyParser: false,
@@ -30,16 +33,10 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     const sig = req.headers['stripe-signature'] as string
     const buf = await buffer(req)
     const rawBody = buf.toString('utf8')
-    const body = JSON.parse(rawBody)
-
-    let secret = process.env.STRIPE_TEST_WEBHOOK_SECRET as string
-    if (body.livemode) {
-      secret = process.env.STRIPE_LIVE_WEBHOOK_SECRET as string
-    }
 
     let event
     try {
-      event = stripe.webhooks.constructEvent(rawBody, sig, secret)
+      event = stripe.webhooks.constructEvent(rawBody, sig, webhookSigningSecret)
     } catch (err: any) {
       res.status(400).json({ error: `Webhook Error: ${err.message}` })
       throw err
