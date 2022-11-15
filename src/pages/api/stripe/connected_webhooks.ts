@@ -32,9 +32,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     const rawBody = buf.toString('utf8')
     const body = JSON.parse(rawBody)
 
-    let secret = process.env.STRIPE_WEBHOOK_TEST_SECRET as string
+    let secret = process.env.STRIPE_TEST_WEBHOOK_SECRET as string
     if (body.livemode) {
-      secret = process.env.STRIPE_WEBHOOK_LIVE_SECRET as string
+      secret = process.env.STRIPE_LIVE_WEBHOOK_SECRET as string
     }
 
     let event
