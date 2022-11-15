@@ -30,9 +30,10 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     const sig = req.headers['stripe-signature'] as string
     const buf = await buffer(req)
     const rawBody = buf.toString('utf8')
+    const body = JSON.parse(rawBody)
 
     let secret = process.env.STRIPE_WEBHOOK_TEST_SECRET as string
-    if (req.body.livemode) {
+    if (body.livemode) {
       secret = process.env.STRIPE_WEBHOOK_LIVE_SECRET as string
     }
 
