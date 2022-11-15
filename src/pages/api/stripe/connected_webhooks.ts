@@ -31,13 +31,14 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     const buf = await buffer(req)
     const rawBody = buf.toString('utf8')
 
+    let secret = process.env.STRIPE_WEBHOOK_TEST_SECRET as string
+    if (req.body.livemode) {
+      secret = process.env.STRIPE_WEBHOOK_LIVE_SECRET as string
+    }
+
     let event
     try {
-      event = stripe.webhooks.constructEvent(
-        rawBody,
-        sig,
-        process.env.STRIPE_WEBHOOK_SECRET as string,
-      )
+      event = stripe.webhooks.constructEvent(rawBody, sig, secret)
     } catch (err: any) {
       res.status(400).json({ error: `Webhook Error: ${err.message}` })
       throw err
