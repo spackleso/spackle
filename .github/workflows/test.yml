@@ -16,9 +16,21 @@ jobs:
       - uses: actions/checkout@v2
       - name: Install modules
         run: yarn
+
       - uses: supabase/setup-cli@v1
         with:
           version: latest
+
       - run: supabase start
+
+      - name: Verify generated types match Postgres schema
+        run: |
+          yarn types
+          if ! git diff --ignore-space-at-eol --exit-code --quiet src/schema.gen.ts; then
+            echo "Detected uncommitted changes after build. See status below:"
+            git diff
+            exit 1
+          fi
+
       - name: Run tests
         run: yarn test

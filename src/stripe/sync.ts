@@ -1,169 +1,170 @@
-import { liveStripe, testStripe } from '.'
-import { logger } from '../logger'
-import { supabase } from '../supabase'
+import { liveStripe, testStripe } from '@/stripe'
+import { logger } from '@/logger'
+import { supabase } from '@/supabase'
 import * as Sentry from '@sentry/node'
 import {
   invalidateAccountCustomerStates,
   invalidateCustomerState,
 } from '@/cache'
-import Stripe from 'stripe'
+import {
+  getStripeAccount,
+  getStripeCustomer,
+  getStripePrice,
+  getStripeProduct,
+  upsertStripeAccount,
+  upsertStripeCustomer,
+  upsertStripePrice,
+  upsertStripeProduct,
+  upsertStripeSubscription,
+  upsertStripeSubscriptionItem,
+} from './db'
+import { Mode } from '@/types'
 
-type Mode = 'test' | 'live'
+export const getOrSyncStripeAccount = async (stripe_id: string) => {
+  const account = await getStripeAccount(stripe_id)
+  if (account) return account
+  return await syncStripeAccount(stripe_id)
+}
 
-export const syncStripeAccount = async (id: string) => {
-  const response = await supabase.from('stripe_accounts').upsert(
-    {
-      stripe_id: id,
-      stripe_json: {},
-    },
-    { onConflict: 'stripe_id' },
-  )
+export const syncStripeAccount = async (stripe_id: string) => {
+  return await upsertStripeAccount(stripe_id)
+}
 
-  if (response.error) {
-    throw new Error(response.error.message)
-  }
-
-  return response
+export const getOrSyncStripeProduct = async (
+  stripe_account_id: string,
+  stripe_id: string,
+  mode: Mode,
+) => {
+  const product = await getStripeProduct(stripe_account_id, stripe_id)
+  if (product) return product
+  return await syncStripeProduct(stripe_account_id, stripe_id, mode)
 }
 
 export const syncStripeProduct = async (
-  account_id: string,
-  id: string,
+  stripe_account_id: string,
+  stripe_id: string,
   mode: Mode,
 ) => {
   const stripe = mode === 'live' ? liveStripe : testStripe
-  const stripeProduct = await stripe.products.retrieve(id, {
-    stripeAccount: account_id,
+  const stripeProduct = await stripe.products.retrieve(stripe_id, {
+    stripeAccount: stripe_account_id,
   })
-
-  const response = await supabase.from('stripe_products').upsert(
-    {
-      stripe_id: stripeProduct.id,
-      stripe_account_id: account_id,
-      stripe_json: JSON.stringify(stripeProduct),
-    },
-    { onConflict: 'stripe_id' },
+  const stripe_json = JSON.stringify(stripeProduct)
+  const product = await upsertStripeProduct(
+    stripe_account_id,
+    stripe_id,
+    stripe_json,
   )
+  await invalidateAccountCustomerStates(stripe_account_id)
+  return product
+}
 
-  if (response.error) {
-    throw new Error(response.error.message)
-  } else {
-    await invalidateAccountCustomerStates(account_id)
-  }
-
-  return response
+export const getOrSyncStripePrice = async (
+  stripe_account_id: string,
+  stripe_id: string,
+  mode: Mode,
+) => {
+  const price = await getStripePrice(stripe_account_id, stripe_id)
+  if (price) return price
+  return await syncStripePrice(stripe_account_id, stripe_id, mode)
 }
 
 export const syncStripePrice = async (
-  account_id: string,
-  id: string,
+  stripe_account_id: string,
+  stripe_id: string,
   mode: Mode,
 ) => {
   const stripe = mode === 'live' ? liveStripe : testStripe
-  const stripePrice = await stripe.prices.retrieve(id, {
-    stripeAccount: account_id,
+  const stripePrice = await stripe.prices.retrieve(stripe_id, {
+    stripeAccount: stripe_account_id,
   })
-
-  const response = await supabase.from('stripe_prices').upsert(
-    {
-      stripe_id: stripePrice.id,
-      stripe_account_id: account_id,
-      stripe_json: JSON.stringify(stripePrice),
-      stripe_product_id: stripePrice.product,
-    },
-    { onConflict: 'stripe_id' },
+  const stripe_json = JSON.stringify(stripePrice)
+  const stripe_product_id = stripePrice.product
+  const price = await upsertStripePrice(
+    stripe_account_id,
+    stripe_id,
+    stripe_product_id as string,
+    stripe_json,
   )
+  await invalidateAccountCustomerStates(stripe_account_id)
+  return price
+}
 
-  if (response.error) {
-    throw new Error(response.error.message)
-  } else {
-    await invalidateAccountCustomerStates(account_id)
-  }
-
-  return response
+export const getOrSyncStripeCustomer = async (
+  stripe_account_id: string,
+  stripe_id: string,
+  mode: Mode,
+) => {
+  const customer = await getStripeCustomer(stripe_account_id, stripe_id)
+  if (customer) return customer
+  return await syncStripeCustomer(stripe_account_id, stripe_id, mode)
 }
 
 export const syncStripeCustomer = async (
-  account_id: string,
-  id: string,
+  stripe_account_id: string,
+  stripe_id: string,
   mode: Mode,
 ) => {
   const stripe = mode === 'live' ? liveStripe : testStripe
-  const stripeCustomer = await stripe.customers.retrieve(id, {
-    stripeAccount: account_id,
+  const stripeCustomer = await stripe.customers.retrieve(stripe_id, {
+    stripeAccount: stripe_account_id,
   })
-
-  const response = await supabase.from('stripe_customers').upsert(
-    {
-      stripe_id: stripeCustomer.id,
-      stripe_account_id: account_id,
-      stripe_json: JSON.stringify(stripeCustomer),
-    },
-    { onConflict: 'stripe_id' },
+  const stripe_json = JSON.stringify(stripeCustomer)
+  const customer = await upsertStripeCustomer(
+    stripe_account_id,
+    stripe_id,
+    stripe_json,
   )
-  if (response.error) {
-    throw new Error(response.error.message)
-  } else {
-    await invalidateCustomerState(account_id, id)
-  }
-
-  return response
+  invalidateCustomerState(stripe_account_id, stripe_id)
+  return customer
 }
 
 export const syncStripeSubscriptions = async (
-  account_id: string,
-  customer_id: string,
+  stripe_account_id: string,
+  stripe_customer_id: string,
   mode: Mode,
 ) => {
   const stripe = mode === 'live' ? liveStripe : testStripe
   for await (const subscription of stripe.subscriptions.list(
     {
-      customer: customer_id,
+      customer: stripe_customer_id,
     },
     {
-      stripeAccount: account_id,
+      stripeAccount: stripe_account_id,
     },
   )) {
-    await supabase.from('stripe_subscriptions').upsert(
-      {
-        stripe_id: subscription.id,
-        stripe_account_id: account_id,
-        stripe_customer_id: subscription.customer,
-        stripe_json: JSON.stringify(subscription),
-        status: subscription.status,
-      },
-      { onConflict: 'stripe_id' },
+    await upsertStripeSubscription(
+      stripe_account_id,
+      subscription.id,
+      stripe_customer_id,
+      subscription.status,
+      JSON.stringify(subscription),
     )
-
-    await syncStripeSubscriptionItems(account_id, subscription.id, mode)
+    await syncStripeSubscriptionItems(stripe_account_id, subscription.id, mode)
   }
-
-  await invalidateCustomerState(account_id, customer_id)
+  await invalidateCustomerState(stripe_account_id, stripe_customer_id)
 }
 
 export const syncStripeSubscriptionItems = async (
-  account_id: string,
-  subscription_id: string,
+  stripe_account_id: string,
+  stripe_subscription_id: string,
   mode: Mode,
 ) => {
   const stripe = mode === 'live' ? liveStripe : testStripe
   for await (const subscriptionItem of stripe.subscriptionItems.list(
     {
-      subscription: subscription_id,
+      subscription: stripe_subscription_id,
     },
     {
-      stripeAccount: account_id,
+      stripeAccount: stripe_account_id,
     },
   )) {
-    await supabase.from('stripe_subscription_items').upsert(
-      {
-        stripe_id: subscriptionItem.id,
-        stripe_account_id: account_id,
-        stripe_json: JSON.stringify(subscriptionItem),
-        stripe_price_id: subscriptionItem.price.id,
-        stripe_subscription_id: subscriptionItem.subscription,
-      },
-      { onConflict: 'stripe_id' },
+    await upsertStripeSubscriptionItem(
+      stripe_account_id,
+      subscriptionItem.id,
+      subscriptionItem.price.id,
+      subscriptionItem.subscription,
+      JSON.stringify(subscriptionItem),
     )
   }
 }
@@ -173,7 +174,7 @@ export const syncAllAccountData = async (account_id: string) => {
   await supabase
     .from('stripe_accounts')
     .update({
-      initial_sync_started_at: new Date(),
+      initial_sync_started_at: new Date() as any,
     })
     .eq('stripe_id', account_id)
 
@@ -202,87 +203,83 @@ export const syncAllAccountData = async (account_id: string) => {
 }
 
 export const syncAllAccountModeData = async (
-  account_id: string,
+  stripe_account_id: string,
   mode: Mode,
 ) => {
   const stripe = mode === 'live' ? liveStripe : testStripe
 
   // TODO: the creation is really inefficient as it stands
-  const { data, error } = await syncStripeAccount(account_id)
+  await syncStripeAccount(stripe_account_id)
 
   // Customers
   for await (const stripeCustomer of stripe.customers.list({
-    stripeAccount: account_id,
+    stripeAccount: stripe_account_id,
   })) {
     logger.info(`Syncing customer ${stripeCustomer.id}`)
-    const { data, error } = await supabase.from('stripe_customers').upsert(
-      {
-        stripe_id: stripeCustomer.id,
-        stripe_account_id: account_id,
-        stripe_json: JSON.stringify(stripeCustomer),
-      },
-      { onConflict: 'stripe_id' },
-    )
-    if (error) {
+    try {
+      await upsertStripeCustomer(
+        stripe_account_id,
+        stripeCustomer.id,
+        JSON.stringify(stripeCustomer),
+      )
+    } catch (error) {
       Sentry.captureException(error)
     }
   }
 
   // Products
   for await (const stripeProduct of stripe.products.list({
-    stripeAccount: account_id,
+    stripeAccount: stripe_account_id,
   })) {
     logger.info(`Syncing product ${stripeProduct.id}`)
-    const { data, error } = await supabase.from('stripe_products').upsert(
-      {
-        stripe_id: stripeProduct.id,
-        stripe_account_id: account_id,
-        stripe_json: JSON.stringify(stripeProduct),
-      },
-      { onConflict: 'stripe_id' },
-    )
-    if (error) {
+    try {
+      await upsertStripeProduct(
+        stripe_account_id,
+        stripeProduct.id,
+        JSON.stringify(stripeProduct),
+      )
+    } catch (error) {
       Sentry.captureException(error)
     }
   }
 
   // Prices
   for await (const stripePrice of stripe.prices.list({
-    stripeAccount: account_id,
+    stripeAccount: stripe_account_id,
   })) {
     logger.info(`Syncing price ${stripePrice.id}`)
-    const { data, error } = await supabase.from('stripe_prices').upsert(
-      {
-        stripe_id: stripePrice.id,
-        stripe_account_id: account_id,
-        stripe_json: JSON.stringify(stripePrice),
-        stripe_product_id: stripePrice.product,
-      },
-      { onConflict: 'stripe_id' },
-    )
-    if (error) {
+    try {
+      await upsertStripePrice(
+        stripe_account_id,
+        stripePrice.id,
+        stripePrice.product as string,
+        JSON.stringify(stripePrice),
+      )
+    } catch (error) {
       Sentry.captureException(error)
     }
   }
 
   // Subscriptions & Subscription Items
   for await (const stripeSubscription of stripe.subscriptions.list({
-    stripeAccount: account_id,
+    stripeAccount: stripe_account_id,
   })) {
     logger.info(`Syncing subscription ${stripeSubscription.id}`)
-    const { data, error } = await supabase.from('stripe_subscriptions').upsert(
-      {
-        stripe_id: stripeSubscription.id,
-        stripe_account_id: account_id,
-        stripe_customer_id: stripeSubscription.customer,
-        stripe_json: JSON.stringify(stripeSubscription),
-        status: stripeSubscription.status,
-      },
-      { onConflict: 'stripe_id' },
-    )
-    if (error) {
+    try {
+      await upsertStripeSubscription(
+        stripe_account_id,
+        stripeSubscription.id,
+        stripeSubscription.customer as string,
+        stripeSubscription.status,
+        JSON.stringify(stripeSubscription),
+      )
+    } catch (error) {
       Sentry.captureException(error)
     }
-    await syncStripeSubscriptionItems(account_id, stripeSubscription.id, mode)
+    await syncStripeSubscriptionItems(
+      stripe_account_id,
+      stripeSubscription.id,
+      mode,
+    )
   }
 }

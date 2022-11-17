@@ -13,7 +13,8 @@
     "format": "yarn format-base -w",
     "format-check": "yarn format-base -c",
     "format-base": "prettier --config .prettierrc --ignore-path .gitignore src/**/*.ts src/**/*.tsx",
-    "test": "yarn jest --config jest.config.js"
+    "test": "yarn jest --config jest.config.js",
+    "types": "supabase gen types typescript --local > src/schema.gen.ts"
   },
   "dependencies": {
     "@docsearch/react": "^3.3.0",

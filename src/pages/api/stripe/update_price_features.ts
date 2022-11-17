@@ -5,6 +5,7 @@ import { verifySignature } from '../../../stripe/signature'
 import { withLogging } from '../../../logger'
 import * as Sentry from '@sentry/nextjs'
 import { invalidateAccountCustomerStates } from '@/cache'
+import { getOrSyncStripeAccount, getOrSyncStripePrice } from '@/stripe/sync'
 
 const updatePriceFeatures = async (
   account_id: string,
@@ -90,6 +91,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   // TODO: handle all errors
   const { account_id, price_id, price_features, mode } = req.body
   try {
+    await getOrSyncStripeAccount(account_id)
+    await getOrSyncStripePrice(account_id, price_id, mode)
     await updatePriceFeatures(account_id, price_id, price_features)
   } catch (error) {
     Sentry.captureException(error)
