@@ -31,7 +31,7 @@ const fetchUnacceptedInvite = async (token: string) => {
 
   if (response.error) {
     return response
-  } else if (response.data.stripe_accounts.length) {
+  } else if ((response.data?.stripe_accounts as any[]).length) {
     return { data: null, error: response.error }
   }
 

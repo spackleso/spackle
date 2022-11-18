@@ -2,12 +2,12 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import { checkCors } from '../../../cors'
 import { withLogging } from '../../../logger'
 import { verifySignature } from '../../../stripe/signature'
-import { supabase } from '../../../supabase'
+import { supabase, SupabaseError } from '../../../supabase'
 import * as Sentry from '@sentry/nextjs'
 import { syncStripeAccount } from '@/stripe/sync'
 
 const fetchAccount = async (accountId: string) => {
-  let response = await supabase
+  const { data, error } = await supabase
     .from('stripe_accounts')
     .select(
       `
@@ -23,11 +23,8 @@ const fetchAccount = async (accountId: string) => {
     .eq('stripe_id', accountId)
     .limit(1)
 
-  if (response.error) {
-    throw new Error(response.error.message)
-  }
-
-  return response
+  if (error) throw new SupabaseError(error)
+  return data
 }
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
@@ -43,7 +40,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
   let data
   try {
-    ;({ data } = await fetchAccount(account_id))
+    data = await fetchAccount(account_id)
   } catch (error) {
     console.error(error)
     Sentry.captureException(error)
@@ -52,10 +49,10 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
   // In this case, go ahead and create the account if it doesn't exist
   if (!data.length) {
-    ;({ data } = await syncStripeAccount(account_id))
+    data = await syncStripeAccount(account_id)
 
     try {
-      ;({ data } = await fetchAccount(account_id))
+      data = await fetchAccount(account_id)
     } catch (error) {
       Sentry.captureException(error)
       return res.status(400).json({ error })
