@@ -56,11 +56,15 @@ To customize feature behavior, navigate to your Stripe product and set the value
 ### Integrate with your product
 
 ```
-curl https://www.spackle.so/api/customers/<customer_id>/state/ \
-  -H Authorization: Bearer <access_token>
+curl https://www.spackle.so/edge/customers/<customer_id>/state \
+  -H "Authorization: Bearer <access_token>"
 ```
+Returns the state of the customer's features.
 
-Returns the state of the customer's features. To integrate with your product, check out the language specific libraries below.
+* `customer_id` is the Stripe id of the customer (`cus_00000000`)
+* `access_token` can be found in the Spackle app [settings page](https://dashboard.stripe.com/settings/apps/so.spackle.stripe)
+
+To integrate with your product, check out the language specific libraries below.
 
 #### Libraries
 
