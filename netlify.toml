@@ -18,5 +18,5 @@
 
 [[redirects]]
   from = "https://edge.spackle.so/*"
-  to = "https://www.spackle.so/edge/*"
+  to = "https://www.spackle.so/edge/:splat"
   status = 200
