@@ -45,11 +45,14 @@ const requestToken = async (headers: Headers) => {
 }
 
 const handler = async (request: Request) => {
+  console.log('check 1')
   console.time('request')
   const parsed = new URL(request.url)
   const pathParts = parsed.pathname.split('/')
   const id = pathParts[pathParts.length - 2]
+  console.log('check 2')
   const { sub: accountId } = await requestToken(request.headers)
+  console.log('check 3')
 
   if (!accountId) {
     return new Response(JSON.stringify({ error: 'Invalid account id' }), {
@@ -58,26 +61,39 @@ const handler = async (request: Request) => {
   }
 
   try {
+    console.log('check 4')
     const redis = Redis.fromEnv()
     const key = `${accountId}:customer_state:${id}`
+    console.log('check 5')
     console.time('redis')
     let data = await redis.get(key)
     console.timeEnd('redis')
+    console.log('check 6')
     if (!data) {
+      console.log('check 7')
       console.log('Cache miss')
       data = await fetchState(id, parsed.origin, request.headers)
+      console.log('check 8')
       await redis.set(key, JSON.stringify(data))
+      console.log('check 9')
     } else {
+      console.log('check 10')
       console.log('Cache hit')
     }
+    console.log('check 11')
     const response = JSON.stringify(data)
     console.timeEnd('request')
+    console.log('check 12')
     return new Response(response)
   } catch (error) {
+    console.log('check 13')
     console.error(error)
+    console.log('check 14')
     const data = await fetchState(id, parsed.origin, request.headers)
     const response = JSON.stringify(data)
     console.timeEnd('request')
+    console.log('check 15')
+    console.error(error)
     return new Response(response)
   }
 }
