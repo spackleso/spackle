@@ -20,7 +20,8 @@ const KEY = await crypto.subtle.importKey(
 )
 
 const fetchState = async (id: string, origin: string, headers: any) => {
-  const response = await fetch(`${origin}/api/customers/${id}/state`, {
+  const apiOrigin = origin.replace('edge', 'api')
+  const response = await fetch(`${apiOrigin}/api/customers/${id}/state`, {
     headers,
   })
   return await response.json()
