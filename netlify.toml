@@ -20,3 +20,8 @@
   from = "https://edge.spackle.so/*"
   to = "https://www.spackle.so/edge/:splat"
   status = 200
+
+[[redirects]]
+  from = "https://api.spackle.so/*"
+  to = "https://www.spackle.so/api/:splat"
+  status = 200
