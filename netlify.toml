@@ -13,6 +13,10 @@
   path = "/edge/customers/*/state"
   function = "customer_state"
 
+[[edge_functions]]
+  path = "/edge/ping"
+  function = "ping"
+
 [functions]
   external_node_modules = ["@sentry/serverless"]
 
