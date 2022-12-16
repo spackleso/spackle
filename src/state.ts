@@ -1,6 +1,6 @@
 import { supabase, SupabaseError } from './supabase'
 
-export const getAccountState = async (accountId: string) => {
+export const getAccountFeaturesState = async (accountId: string) => {
   const { data, error } = await supabase
     .from('features')
     .select('id,name,key,type,value_flag,value_limit')
@@ -14,11 +14,11 @@ export const getAccountState = async (accountId: string) => {
   return data || []
 }
 
-export const getProductState = async (
+export const getProductFeaturesState = async (
   accountId: string,
   productId: string,
 ): Promise<any[]> => {
-  const accountState = await getAccountState(accountId)
+  const accountState = await getAccountFeaturesState(accountId)
 
   const { data: productFeatures, error: productFeaturesError } = await supabase
     .from('product_features')
@@ -54,12 +54,12 @@ export const getProductState = async (
   )
 }
 
-export const getPriceState = async (
+export const getPriceFeaturesState = async (
   accountId: string,
   productId: string,
   priceId: string,
 ): Promise<any[]> => {
-  const productState = await getProductState(accountId, productId)
+  const productState = await getProductFeaturesState(accountId, productId)
 
   const { data: priceFeatures, error: productFeaturesError } = await supabase
     .from('price_features')
@@ -95,7 +95,7 @@ export const getPriceState = async (
   )
 }
 
-export const getSubscriptionState = async (
+export const getSubscriptionFeaturesState = async (
   accountId: string,
   customerId: string,
 ) => {
@@ -111,7 +111,7 @@ export const getSubscriptionState = async (
     throw new SupabaseError(error)
   }
 
-  const accountState = await getAccountState(accountId)
+  const accountState = await getAccountFeaturesState(accountId)
   const accountMap: { [key: string]: any } =
     accountState?.reduce(
       (a, v) => ({
@@ -128,7 +128,7 @@ export const getSubscriptionState = async (
         (item.stripe_subscriptions as any).status,
       )
     ) {
-      const state = await getPriceState(
+      const state = await getPriceFeaturesState(
         accountId,
         (item.stripe_prices as any).stripe_product_id,
         item.stripe_price_id,
@@ -167,11 +167,14 @@ export const getSubscriptionState = async (
   return Object.values(priceMap)
 }
 
-export const getCustomerState = async (
+export const getCustomerFeaturesState = async (
   accountId: string,
   customerId: string,
 ): Promise<any[]> => {
-  const subscriptionsState = await getSubscriptionState(accountId, customerId)
+  const subscriptionsState = await getSubscriptionFeaturesState(
+    accountId,
+    customerId,
+  )
 
   const { data: customerFeatures, error: customerFeaturesError } =
     await supabase
@@ -240,4 +243,19 @@ export const getCustomerSubscriptionsState = async (
     price: JSON.parse(item.stripe_prices.stripe_json),
     status: item.stripe_subscriptions.status,
   }))
+}
+
+export const getCustomerState = async (
+  accountId: string,
+  customerId: string,
+) => {
+  const subscriptions = await getCustomerSubscriptionsState(
+    accountId,
+    customerId,
+  )
+  const features = await getCustomerFeaturesState(accountId, customerId)
+  return {
+    features,
+    subscriptions,
+  }
 }

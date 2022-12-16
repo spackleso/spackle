@@ -1,6 +1,10 @@
 import crypto from 'crypto'
 import { execSync } from 'child_process'
-import { getAccountState, getPriceState, getProductState } from './state'
+import {
+  getAccountFeaturesState,
+  getPriceFeaturesState,
+  getProductFeaturesState,
+} from './state'
 import { supabase } from './supabase'
 
 const stripeId = (prefix: string) => {
@@ -36,7 +40,7 @@ test('Get accounts state should return all account features', async () => {
     .select()) as any
   const feature = featureData[0]
 
-  const state = await getAccountState(account.stripe_id)
+  const state = await getAccountFeaturesState(account.stripe_id)
   expect(state).toStrictEqual([
     {
       id: feature.id,
@@ -86,7 +90,10 @@ test('Get product state should return overridden account features', async () => 
     feature_id: feature.id,
   })
 
-  const state = await getProductState(account.stripe_id, product.stripe_id)
+  const state = await getProductFeaturesState(
+    account.stripe_id,
+    product.stripe_id,
+  )
   expect(state).toStrictEqual([
     {
       id: feature.id,
@@ -146,7 +153,7 @@ test('Get price state should return overridden account features', async () => {
     feature_id: feature.id,
   })
 
-  const state = await getPriceState(
+  const state = await getPriceFeaturesState(
     account.stripe_id,
     product.stripe_id,
     price.stripe_id,

@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { checkCors } from '../../../cors'
 import { withLogging } from '../../../logger'
-import { getAccountState } from '../../../state'
+import { getAccountFeaturesState } from '../../../state'
 import { verifySignature } from '../../../stripe/signature'
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
@@ -15,7 +15,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   // TODO: handle all errors
   const { account_id } = req.body
 
-  const features = await getAccountState(account_id)
+  const features = await getAccountFeaturesState(account_id)
 
   res.status(200).json({
     data: features,

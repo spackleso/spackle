@@ -4,6 +4,7 @@ import * as Sentry from '@sentry/serverless'
 import { logger } from '../../src/logger'
 import { supabase, SupabaseError } from '../../src/supabase'
 import {
+  getCustomerFeaturesState,
   getCustomerState,
   getCustomerSubscriptionsState,
 } from '../../src/state'
@@ -44,15 +45,11 @@ export const handler: BackgroundHandler = Sentry.AWSLambda.wrapHandler(
 
       const ops: any[] = []
       for (let { stripe_id } of data) {
-        const subscriptions = await getCustomerSubscriptionsState(
-          stripe_account_id,
-          stripe_id,
-        )
-        const features = await getCustomerState(stripe_account_id, stripe_id)
+        const state = await getCustomerState(stripe_account_id, stripe_id)
         ops.push([
           'SET',
           customerKey(stripe_account_id, stripe_id),
-          JSON.stringify({ features, subscriptions }),
+          JSON.stringify(state),
         ])
       }
       await fetch(`${url}/pipeline`, {

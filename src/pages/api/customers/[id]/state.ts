@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next'
-import { getCustomerState } from '../../../../state'
+import { getCustomerFeaturesState } from '../../../../state'
 import { supabase } from '../../../../supabase'
 import * as Sentry from '@sentry/nextjs'
 import { withLogging } from '../../../../logger'
@@ -76,7 +76,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
 
   let featureState, subscriptionsState
   try {
-    featureState = await getCustomerState(accountId, id as string)
+    featureState = await getCustomerFeaturesState(accountId, id as string)
     subscriptionsState = await getCustomerSubscriptions(accountId, id as string)
   } catch (error) {
     Sentry.captureException(error)
