@@ -1,5 +1,5 @@
 import { Redis } from '@upstash/redis'
-import { getCustomerState } from '../state'
+import { getCustomerState, getCustomerSubscriptionsState } from '../state'
 import { supabase, SupabaseError } from '../supabase'
 
 const url = process.env.UPSTASH_REDIS_REST_URL || ''
@@ -47,6 +47,13 @@ export const storeCustomerState = async (
   stripeAccountId: string,
   stripeCustomerId: string,
 ) => {
-  const state = await getCustomerState(stripeAccountId, stripeCustomerId)
-  await redis.set(customerKey(stripeAccountId, stripeCustomerId), state)
+  const subscriptions = await getCustomerSubscriptionsState(
+    stripeAccountId,
+    stripeCustomerId,
+  )
+  const features = await getCustomerState(stripeAccountId, stripeCustomerId)
+  await redis.set(customerKey(stripeAccountId, stripeCustomerId), {
+    features,
+    subscriptions,
+  })
 }

@@ -207,3 +207,37 @@ export const getCustomerState = async (
     }) || []
   )
 }
+
+export const getCustomerSubscriptionsState = async (
+  accountId: string,
+  customerId: string,
+) => {
+  const { data, error } = await supabase
+    .from('stripe_subscription_items')
+    .select(
+      `
+        stripe_subscriptions!inner(
+          *
+        ),
+        stripe_prices!inner(
+          stripe_json,
+          stripe_products!inner(
+            stripe_json
+          )
+        )
+      `,
+    )
+    .eq('stripe_account_id', accountId)
+    .eq('stripe_subscriptions.stripe_customer_id', customerId)
+
+  if (error) {
+    throw new SupabaseError(error)
+  }
+
+  return data.map((item: any) => ({
+    id: item.stripe_subscriptions.stripe_id,
+    product: JSON.parse(item.stripe_prices.stripe_products.stripe_json),
+    price: JSON.parse(item.stripe_prices.stripe_json),
+    status: item.stripe_subscriptions.status,
+  }))
+}
