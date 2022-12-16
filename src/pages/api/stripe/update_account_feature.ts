@@ -4,7 +4,7 @@ import { supabase } from '../../../supabase'
 import { verifySignature } from '../../../stripe/signature'
 import { withLogging } from '../../../logger'
 import * as Sentry from '@sentry/nextjs'
-import { invalidateAccountCustomerStates } from '@/cache'
+import { storeAccountStatesAsync } from '@/store/upstash'
 
 const updateFeature = async (
   account_id: string,
@@ -27,7 +27,7 @@ const updateFeature = async (
     throw new Error(response.error?.message)
   }
 
-  await invalidateAccountCustomerStates(account_id)
+  await storeAccountStatesAsync(account_id)
   return response
 }
 

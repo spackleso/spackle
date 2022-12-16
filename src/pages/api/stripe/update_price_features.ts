@@ -4,8 +4,8 @@ import { supabase } from '../../../supabase'
 import { verifySignature } from '../../../stripe/signature'
 import { withLogging } from '../../../logger'
 import * as Sentry from '@sentry/nextjs'
-import { invalidateAccountCustomerStates } from '@/cache'
 import { getOrSyncStripeAccount, getOrSyncStripePrice } from '@/stripe/sync'
+import { storeAccountStatesAsync } from '@/store/upstash'
 
 const updatePriceFeatures = async (
   account_id: string,
@@ -78,7 +78,7 @@ const updatePriceFeatures = async (
     }
   }
 
-  await invalidateAccountCustomerStates(account_id)
+  await storeAccountStatesAsync(account_id)
 }
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {

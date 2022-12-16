@@ -3,10 +3,6 @@ import { logger } from '@/logger'
 import { supabase } from '@/supabase'
 import * as Sentry from '@sentry/node'
 import {
-  invalidateAccountCustomerStates,
-  invalidateCustomerState,
-} from '@/cache'
-import {
   getStripeAccount,
   getStripeCustomer,
   getStripePrice,
@@ -19,6 +15,7 @@ import {
   upsertStripeSubscriptionItem,
 } from './db'
 import { Mode } from '@/types'
+import { storeAccountStatesAsync, storeCustomerState } from '@/store/upstash'
 
 export const getOrSyncStripeAccount = async (stripe_id: string) => {
   const account = await getStripeAccount(stripe_id)
@@ -55,7 +52,7 @@ export const syncStripeProduct = async (
     stripe_id,
     stripe_json,
   )
-  await invalidateAccountCustomerStates(stripe_account_id)
+  await storeAccountStatesAsync(stripe_account_id)
   return product
 }
 
@@ -86,7 +83,7 @@ export const syncStripePrice = async (
     stripe_product_id as string,
     stripe_json,
   )
-  await invalidateAccountCustomerStates(stripe_account_id)
+  await storeAccountStatesAsync(stripe_account_id)
   return price
 }
 
@@ -115,7 +112,7 @@ export const syncStripeCustomer = async (
     stripe_id,
     stripe_json,
   )
-  invalidateCustomerState(stripe_account_id, stripe_id)
+  await storeCustomerState(stripe_account_id, stripe_id)
   return customer
 }
 
@@ -142,7 +139,7 @@ export const syncStripeSubscriptions = async (
     )
     await syncStripeSubscriptionItems(stripe_account_id, subscription.id, mode)
   }
-  await invalidateCustomerState(stripe_account_id, stripe_customer_id)
+  await storeCustomerState(stripe_account_id, stripe_customer_id)
 }
 
 export const syncStripeSubscriptionItems = async (

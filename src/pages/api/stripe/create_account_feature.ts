@@ -5,7 +5,7 @@ import { verifySignature } from '../../../stripe/signature'
 import { withLogging } from '../../../logger'
 import { PostgrestResponse } from '@supabase/supabase-js'
 import * as Sentry from '@sentry/nextjs'
-import { invalidateAccountCustomerStates } from '@/cache'
+import { storeAccountStates, storeAccountStatesAsync } from '@/store/upstash'
 
 type Data = {
   success?: boolean
@@ -33,7 +33,7 @@ const createFeature = async (
     throw new Error(response.error.message)
   }
 
-  await invalidateAccountCustomerStates(account_id)
+  await storeAccountStatesAsync(account_id)
   return response
 }
 
