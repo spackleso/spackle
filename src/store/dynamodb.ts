@@ -3,14 +3,28 @@ import { supabase, SupabaseError } from '../supabase'
 import { DynamoDB } from '@aws-sdk/client-dynamodb'
 import { getIdentityToken } from '@/cognito'
 
-const { DYNAMODB_TABLE_NAME } = process.env
+const {
+  DYNAMODB_TABLE_NAME,
+  SPACKLE_AWS_ACCESS_KEY_ID,
+  SPACKLE_AWS_SECRET_ACCESS_KEY,
+} = process.env
 
 const getClient = () => {
+  if (!SPACKLE_AWS_ACCESS_KEY_ID || !SPACKLE_AWS_SECRET_ACCESS_KEY) {
+    throw new Error('Missing AWS credentials')
+  }
+
   if (!DYNAMODB_TABLE_NAME) {
     throw new Error('DYNAMODB_TABLE_NAME not set')
   }
 
-  return new DynamoDB({})
+  return new DynamoDB({
+    region: 'us-west-2',
+    credentials: {
+      accessKeyId: SPACKLE_AWS_ACCESS_KEY_ID,
+      secretAccessKey: SPACKLE_AWS_SECRET_ACCESS_KEY,
+    },
+  })
 }
 
 const chunkArr = (arr: any[], size: number) => {
