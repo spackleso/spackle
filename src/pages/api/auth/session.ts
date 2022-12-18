@@ -14,6 +14,7 @@ interface Data {
   token: string
   identity_id: string
   role_arn: string
+  aws_region: string
 }
 
 interface Unauthorized {
@@ -62,6 +63,7 @@ const handler = async (
     role_arn: AWS_COGNITO_ROLE_ARN,
     table_name: DYNAMODB_TABLE_NAME,
     token: Token,
+    aws_region: 'us-west-2',
   })
 }
 
