@@ -1,4 +1,4 @@
-import { storeCustomerState } from '../src/store/upstash'
+import { storeCustomerState } from '../src/store/dynamodb'
 import { program } from 'commander'
 
 program

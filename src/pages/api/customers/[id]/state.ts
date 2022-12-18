@@ -4,8 +4,9 @@ import { supabase } from '../../../../supabase'
 import * as Sentry from '@sentry/nextjs'
 import { withLogging } from '../../../../logger'
 import jwt from 'jsonwebtoken'
-import { SIGNING_KEY } from '../../stripe/get_token'
 import { IncomingHttpHeaders } from 'http'
+
+const SIGNING_KEY = process.env.SUPABASE_JWT_SECRET
 
 type Data = {}
 

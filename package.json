@@ -17,6 +17,8 @@
     "types": "supabase gen types typescript --local > src/schema.gen.ts"
   },
   "dependencies": {
+    "@aws-sdk/client-cognito-identity": "^3.231.0",
+    "@aws-sdk/client-dynamodb": "^3.231.0",
     "@docsearch/react": "^3.3.0",
     "@headlessui/react": "^1.7.3",
     "@heroicons/react": "^2.0.12",

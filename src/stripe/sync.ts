@@ -15,7 +15,7 @@ import {
   upsertStripeSubscriptionItem,
 } from './db'
 import { Mode } from '@/types'
-import { storeAccountStatesAsync, storeCustomerState } from '@/store/upstash'
+import { storeAccountStatesAsync, storeCustomerState } from '@/store/dynamodb'
 
 export const getOrSyncStripeAccount = async (stripe_id: string) => {
   const account = await getStripeAccount(stripe_id)

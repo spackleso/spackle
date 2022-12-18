@@ -5,7 +5,7 @@ import { verifySignature } from '../../../stripe/signature'
 import { withLogging } from '../../../logger'
 import { PostgrestResponse } from '@supabase/supabase-js'
 import * as Sentry from '@sentry/nextjs'
-import { storeAccountStates, storeAccountStatesAsync } from '@/store/upstash'
+import { storeAccountStatesAsync } from '@/store/dynamodb'
 
 type Data = {
   success?: boolean

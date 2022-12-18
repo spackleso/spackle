@@ -1,4 +1,4 @@
-import { storeAccountStates } from '../src/store/upstash'
+import { storeAccountStates } from '../src/store/dynamodb'
 import { program } from 'commander'
 
 program.argument('<account_id>', 'The stripe account to sync')

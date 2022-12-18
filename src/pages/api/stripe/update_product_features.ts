@@ -5,7 +5,7 @@ import { verifySignature } from '../../../stripe/signature'
 import { withLogging } from '../../../logger'
 import * as Sentry from '@sentry/nextjs'
 import { getOrSyncStripeAccount, getOrSyncStripeProduct } from '@/stripe/sync'
-import { storeAccountStatesAsync } from '@/store/upstash'
+import { storeAccountStatesAsync } from '@/store/dynamodb'
 
 const updateProductFeatures = async (
   account_id: string,

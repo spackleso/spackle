@@ -4,7 +4,7 @@ import { supabase } from '../../../supabase'
 import { verifySignature } from '../../../stripe/signature'
 import { withLogging } from '../../../logger'
 import * as Sentry from '@sentry/nextjs'
-import { storeAccountStatesAsync } from '@/store/upstash'
+import { storeAccountStatesAsync } from '@/store/dynamodb'
 
 type Data = {}
 
