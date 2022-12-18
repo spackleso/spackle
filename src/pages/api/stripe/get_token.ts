@@ -6,7 +6,7 @@ import * as Sentry from '@sentry/nextjs'
 import jwt from 'jsonwebtoken'
 import { withLogging } from '@/logger'
 
-const SIGNING_KEY = process.env.SUPABASE_JWT_SECRET
+const SUPABASE_JWT_SECRET = process.env.SUPABASE_JWT_SECRET
 
 const fetchToken = async (account_id: string) => {
   const response = await supabase
@@ -22,7 +22,7 @@ const fetchToken = async (account_id: string) => {
 }
 
 const createToken = async (account_id: string) => {
-  if (!SIGNING_KEY) {
+  if (!SUPABASE_JWT_SECRET) {
     throw new Error('Signing key not set')
   }
 
@@ -35,7 +35,7 @@ const createToken = async (account_id: string) => {
           sub: account_id,
           iat: Math.floor(Date.now() / 1000),
         },
-        SIGNING_KEY,
+        SUPABASE_JWT_SECRET,
       ),
     })
     .select()

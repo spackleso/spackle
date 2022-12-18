@@ -6,11 +6,11 @@ import { verify } from 'https://deno.land/x/djwt@v2.7/mod.ts'
 //   'super-secret-jwt-token-with-at-least-32-characters-long',
 // )
 
-const SIGNING_KEY = Deno.env.get('SUPABASE_JWT_SECRET')
+const SUPABASE_JWT_SECRET = Deno.env.get('SUPABASE_JWT_SECRET')
 
 const KEY = await crypto.subtle.importKey(
   'raw',
-  new TextEncoder().encode(SIGNING_KEY),
+  new TextEncoder().encode(SUPABASE_JWT_SECRET),
   {
     name: 'HMAC',
     hash: 'SHA-256',
@@ -28,7 +28,7 @@ const fetchState = async (id: string, origin: string, headers: any) => {
 }
 
 const requestToken = async (headers: Headers) => {
-  if (!SIGNING_KEY) {
+  if (!SUPABASE_JWT_SECRET) {
     throw new Error('Signing key not set')
   }
 

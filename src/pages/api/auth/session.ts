@@ -5,7 +5,8 @@ import jwt from 'jsonwebtoken'
 import { IncomingHttpHeaders } from 'http'
 import { getIdentityToken } from '@/cognito'
 
-const { SIGNING_KEY, DYNAMODB_TABLE_NAME, AWS_COGNITO_ROLE_ARN } = process.env
+const { SUPABASE_JWT_SECRET, DYNAMODB_TABLE_NAME, AWS_COGNITO_ROLE_ARN } =
+  process.env
 
 interface Data {
   account_id: string
@@ -20,13 +21,13 @@ interface Unauthorized {
 }
 
 const requestToken = (headers: IncomingHttpHeaders) => {
-  if (!SIGNING_KEY) {
+  if (!SUPABASE_JWT_SECRET) {
     throw new Error('Signing key not set')
   }
 
   const authorization = headers['authorization'] || 'Bearer '
   const token = authorization.split(' ')[1]
-  const payload = jwt.verify(token, SIGNING_KEY)
+  const payload = jwt.verify(token, SUPABASE_JWT_SECRET)
 
   if (!payload.sub) {
     throw new Error('Invalid jwt')

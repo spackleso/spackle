@@ -6,18 +6,18 @@ import { withLogging } from '../../../../logger'
 import jwt from 'jsonwebtoken'
 import { IncomingHttpHeaders } from 'http'
 
-const SIGNING_KEY = process.env.SUPABASE_JWT_SECRET
+const SUPABASE_JWT_SECRET = process.env.SUPABASE_JWT_SECRET
 
 type Data = {}
 
 const requestToken = (headers: IncomingHttpHeaders) => {
-  if (!SIGNING_KEY) {
+  if (!SUPABASE_JWT_SECRET) {
     throw new Error('Signing key not set')
   }
 
   const authorization = headers['authorization'] || 'Bearer '
   const token = authorization.split(' ')[1]
-  const payload = jwt.verify(token, SIGNING_KEY)
+  const payload = jwt.verify(token, SUPABASE_JWT_SECRET)
 
   if (!payload.sub) {
     throw new Error('Invalid jwt')

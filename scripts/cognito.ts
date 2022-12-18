@@ -17,6 +17,7 @@ async function main(accountId: string) {
   }
 
   const client = new CognitoIdentityClient({
+    region: 'us-west-2',
     credentials: {
       accessKeyId: SPACKLE_AWS_ACCESS_KEY_ID,
       secretAccessKey: SPACKLE_AWS_SECRET_ACCESS_KEY,
