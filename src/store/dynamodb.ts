@@ -97,7 +97,7 @@ export const storeCustomerState = async (
 ) => {
   const state = await getCustomerState(stripeAccountId, stripeCustomerId)
   const client = getClient()
-  client.putItem({
+  await client.putItem({
     TableName: DYNAMODB_TABLE_NAME!,
     Item: {
       AccountId: { S: stripeAccountId },
