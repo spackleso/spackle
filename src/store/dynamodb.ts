@@ -97,10 +97,16 @@ export const storeCustomerState = async (
 ) => {
   const state = await getCustomerState(stripeAccountId, stripeCustomerId)
   const client = getClient()
+
+  const { IdentityId } = await getIdentityToken(stripeAccountId)
+  if (!IdentityId) {
+    throw new Error('IdentityId not set')
+  }
+
   await client.putItem({
     TableName: DYNAMODB_TABLE_NAME!,
     Item: {
-      AccountId: { S: stripeAccountId },
+      AccountId: { S: IdentityId },
       CustomerId: { S: stripeCustomerId },
       State: { S: JSON.stringify(state) },
     },

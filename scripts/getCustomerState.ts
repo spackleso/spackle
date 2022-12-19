@@ -1,5 +1,6 @@
 import { storeCustomerState } from '../src/store/dynamodb'
 import { program } from 'commander'
+import { getCustomerState } from '@/state'
 import { supabase } from '@/supabase'
 
 program.argument('<customer_id>', 'The stripe customer to sync')
@@ -13,7 +14,8 @@ async function main(customerId: string) {
     .select('stripe_account_id')
     .eq('stripe_id', customerId)
     .maybeSingle()
-  await storeCustomerState(data!.stripe_account_id, customerId)
+  const state = await getCustomerState(data!.stripe_account_id, customerId)
+  console.log(state)
 }
 
 main(customerId)
