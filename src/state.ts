@@ -255,6 +255,7 @@ export const getCustomerState = async (
   )
   const features = await getCustomerFeaturesState(accountId, customerId)
   return {
+    version: 1,
     features,
     subscriptions,
   }
