@@ -55,16 +55,6 @@ To customize feature behavior, navigate to your Stripe product and set the value
 
 ### Integrate with your product
 
-You can customize the values for features at the Product, Price, and Customer level. When you are ready to integrate Spackle into your product, you can fetch the collated values of features for one of your customers via endpoint below:
-
-```
-curl https://edge.spackle.so/customers/<customer_id>/state \
-  -H "Authorization: Bearer <access_token>"
-```
-
-* `customer_id` is the Stripe id of the customer (`cus_00000000`)
-* `access_token` can be found in the Spackle app [settings page](https://dashboard.stripe.com/settings/apps/so.spackle.stripe)
-
 To integrate with your codebase, check out the language specific libraries below.
 
 #### Libraries
