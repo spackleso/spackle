@@ -1,6 +1,7 @@
 [build]
+  base = "apps/web"
   command = "yarn build"
-  functions = "apps/web/netlify/functions"
+  functions = "netlify/functions"
   publish = ".next"
 
 [[headers]]
