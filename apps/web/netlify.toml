@@ -10,3 +10,9 @@
 
 [functions]
   external_node_modules = ["@sentry/serverless"]
+
+[[redirects]]
+  from = "/docs"
+  to = "https://docs.spackle.so"
+  status = 301
+  force = true
