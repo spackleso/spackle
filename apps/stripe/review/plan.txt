@@ -1,0 +1,9 @@
+Invite code: edec1dc0
+
+1. Install the Spackle plugin
+2. Visit a customer or product page
+3. Enter the invite code and begin the initial sync
+4. Follow the quickstart instructions here: https://www.spackle.so/docs#quick-start
+5. Use the curl command listed here: https://www.spackle.so/docs#integrate-with-your-product to test your api key
+
+The curl command above is the *only* api endpoint required to integrate the product. All of the product, price, and customer data is collated into a single API call.
