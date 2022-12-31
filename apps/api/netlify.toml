@@ -1,0 +1,12 @@
+[build]
+  command = "yarn build"
+  functions = "netlify/functions"
+  publish = ".next"
+
+[[headers]]
+  for = "/api/stripe/*"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
+
+[functions]
+  external_node_modules = ["@sentry/serverless"]
