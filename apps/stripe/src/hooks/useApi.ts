@@ -2,11 +2,11 @@ import { ExtensionContextValue } from '@stripe/ui-extension-sdk/context'
 import fetchStripeSignature from '@stripe/ui-extension-sdk/signature'
 import { useContext, createContext } from 'react'
 
-const isDev = true
+const isDev = false
 
 let HOST = 'https://www.spackle.so'
 if (isDev) {
-  HOST = 'http://localhost:3001'
+  HOST = 'http://localhost:3000'
 }
 
 interface Api {

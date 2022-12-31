@@ -46,7 +46,9 @@
     "actions": [],
     "content_security_policy": {
       "connect-src": [
-        "https://www.spackle.so/api/stripe/"
+        "https://www.spackle.so/api/stripe/",
+        "https://api.spackle.so/",
+        "https://spackle-api.netlify.app/"
       ],
       "image-src": null,
       "purpose": ""

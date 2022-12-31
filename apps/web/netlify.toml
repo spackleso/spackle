@@ -12,8 +12,8 @@
   external_node_modules = ["@sentry/serverless"]
 
 [[redirects]]
-  from = "https://api.spackle.so/*"
-  to = "https://www.spackle.so/api/:splat"
+  from = "/api/*"
+  to = "https://api.spackle.so/:splat"
   status = 200
 
 [[redirects]]
