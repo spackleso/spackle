@@ -1,8 +1,7 @@
 [build]
-  base = "apps/web"
   command = "yarn build"
   functions = "netlify/functions"
-  publish = "apps/web/.next"
+  publish = ".next"
 
 [[headers]]
   for = "/api/stripe/*"
