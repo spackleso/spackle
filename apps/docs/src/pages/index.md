@@ -59,4 +59,4 @@ To integrate with your codebase, check out the language specific libraries below
 
 #### Libraries
 
-* [Python](/docs/python)
+* [Python](/python)
