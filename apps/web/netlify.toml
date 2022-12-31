@@ -1,7 +1,6 @@
 [build]
   command = "next build"
-  functions = "netlify/functions"
-  edge_functions = "netlify/edge-functions"
+  functions = "apps/web/netlify/functions"
   publish = ".next"
 
 [[headers]]
