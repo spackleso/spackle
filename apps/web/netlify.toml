@@ -2,7 +2,7 @@
   base = "apps/web"
   command = "yarn build"
   functions = "netlify/functions"
-  publish = ".next"
+  publish = "apps/web/.next"
 
 [[headers]]
   for = "/api/stripe/*"
