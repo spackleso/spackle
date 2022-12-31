@@ -7,3 +7,5 @@ build/**
 dist/**
 node_modules
 **/*.terraform
+# Local Netlify folder
+.netlify
