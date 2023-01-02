@@ -1,14 +1,14 @@
-import { Container } from '@/components/Marketing/Container'
-import { Logo } from '@/components/Marketing/Logo'
+import { Container } from '@/components/Container'
+import { Logo } from '@/components/Logo'
 
 export function Footer() {
   return (
-    <footer className="bg-slate-50 flex-none dark:bg-slate-900">
+    <footer className="flex-none bg-slate-50 dark:bg-slate-900">
       <Container>
         <div className="py-16">
-          <div className="flex items-center justify-center mx-auto">
+          <div className="mx-auto flex items-center justify-center">
             <Logo className="h-10 w-auto" />
-            <h1 className="lowercase font-bold font-['Comfortaa'] dark:text-white">
+            <h1 className="font-['Comfortaa'] font-bold lowercase dark:text-white">
               Spackle
             </h1>
           </div>

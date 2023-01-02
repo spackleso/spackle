@@ -3,12 +3,12 @@ import Link from 'next/link'
 import { Popover, Transition } from '@headlessui/react'
 import clsx from 'clsx'
 
-import { Button } from '@/components/Marketing/Button'
-import { Container } from '@/components/Marketing/Container'
-import { Logo } from '@/components/Marketing/Logo'
+import { Button } from '@/components/Button'
+import { Container } from '@/components/Container'
+import { Logo } from '@/components/Logo'
 import { NavLink } from './NavLink'
 import { ArrowTopRightOnSquareIcon } from '@heroicons/react/20/solid'
-import { ThemeSelector } from '../Docs/ThemeSelector'
+import { ThemeSelector } from '@/components/ThemeSelector'
 
 function MobileNavLink({ href, children }: any) {
   return (
@@ -73,13 +73,13 @@ function MobileNavigation() {
 
 export function Header() {
   return (
-    <header className="py-10 flex-none">
+    <header className="flex-none py-10">
       <Container>
         <nav className="relative z-50 flex justify-between">
           <div className="flex items-center md:gap-x-12">
             <Link href="#" aria-label="Home" className="flex items-center">
               <Logo className="h-16 w-auto cursor-pointer" />
-              <h1 className="lowercase font-bold font-['Comfortaa'] text-slate-900 dark:text-white">
+              <h1 className="font-['Comfortaa'] font-bold lowercase text-slate-900 dark:text-white">
                 Spackle
               </h1>
             </Link>
