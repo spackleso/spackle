@@ -6,7 +6,8 @@
     "dev": "netlify dev --port 3001",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "types": "supabase gen types typescript --local > src/schema.gen.ts"
   },
   "dependencies": {
     "@aws-sdk/client-cognito-identity": "^3.231.0",
