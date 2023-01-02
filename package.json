@@ -1,10 +1,17 @@
 {
   "name": "spackle",
   "private": true,
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ],
+  "workspaces": {
+    "packages": [
+      "apps/*",
+      "packages/*"
+    ],
+    "nohoist": [
+      "**/react",
+      "**/react-dom",
+      "**/@types/react"
+    ]
+  },
   "scripts": {
     "build": "turbo run build",
     "test": "turbo run test",
