@@ -5,11 +5,6 @@
     "packages": [
       "apps/*",
       "packages/*"
-    ],
-    "nohoist": [
-      "**/react",
-      "**/react-dom",
-      "**/@types/react"
     ]
   },
   "scripts": {
