@@ -11,7 +11,7 @@
 [[headers]]
   for = "/marketing/*"
   [headers.values]
-    Access-Control-Allow-Origin = "https://www.spackle.so"
+    Access-Control-Allow-Origin = "*"
 
 [functions]
   external_node_modules = ["@sentry/serverless"]
