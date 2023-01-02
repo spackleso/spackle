@@ -29,7 +29,7 @@ jobs:
           yarn types
           if ! git diff --ignore-space-at-eol --exit-code --quiet src/schema.gen.ts; then
             echo "Detected uncommitted changes after build. See status below:"
-            git diff
+            git diff src/schema.gen.ts
             exit 1
           fi
 

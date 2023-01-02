@@ -11,268 +11,268 @@ export interface Database {
     Tables: {
       customer_features: {
         Row: {
-          id: number
           created_at: string | null
-          value_limit: number | null
-          value_flag: boolean | null
+          feature_id: number
+          id: number
           stripe_account_id: string
           stripe_customer_id: string
-          feature_id: number
+          value_flag: boolean | null
+          value_limit: number | null
         }
         Insert: {
-          id?: number
           created_at?: string | null
-          value_limit?: number | null
-          value_flag?: boolean | null
+          feature_id: number
+          id?: number
           stripe_account_id: string
           stripe_customer_id: string
-          feature_id: number
+          value_flag?: boolean | null
+          value_limit?: number | null
         }
         Update: {
-          id?: number
           created_at?: string | null
-          value_limit?: number | null
-          value_flag?: boolean | null
+          feature_id?: number
+          id?: number
           stripe_account_id?: string
           stripe_customer_id?: string
-          feature_id?: number
+          value_flag?: boolean | null
+          value_limit?: number | null
         }
       }
       features: {
         Row: {
-          id: number
           created_at: string | null
-          name: string
+          id: number
           key: string
-          type: number
-          value_limit: number | null
-          value_flag: boolean | null
+          name: string
           stripe_account_id: string
+          type: number
+          value_flag: boolean | null
+          value_limit: number | null
         }
         Insert: {
-          id?: number
           created_at?: string | null
-          name: string
+          id?: number
           key: string
-          type?: number
-          value_limit?: number | null
-          value_flag?: boolean | null
+          name: string
           stripe_account_id: string
+          type?: number
+          value_flag?: boolean | null
+          value_limit?: number | null
         }
         Update: {
-          id?: number
           created_at?: string | null
-          name?: string
+          id?: number
           key?: string
-          type?: number
-          value_limit?: number | null
-          value_flag?: boolean | null
+          name?: string
           stripe_account_id?: string
+          type?: number
+          value_flag?: boolean | null
+          value_limit?: number | null
         }
       }
       invites: {
         Row: {
-          id: number
           created_at: string | null
+          id: number
           token: string
         }
         Insert: {
-          id?: number
           created_at?: string | null
+          id?: number
           token?: string
         }
         Update: {
-          id?: number
           created_at?: string | null
+          id?: number
           token?: string
         }
       }
       price_features: {
         Row: {
-          id: number
           created_at: string | null
-          value_limit: number | null
-          value_flag: boolean | null
+          feature_id: number
+          id: number
           stripe_account_id: string
           stripe_price_id: string
-          feature_id: number
+          value_flag: boolean | null
+          value_limit: number | null
         }
         Insert: {
-          id?: number
           created_at?: string | null
-          value_limit?: number | null
-          value_flag?: boolean | null
+          feature_id: number
+          id?: number
           stripe_account_id: string
           stripe_price_id: string
-          feature_id: number
+          value_flag?: boolean | null
+          value_limit?: number | null
         }
         Update: {
-          id?: number
           created_at?: string | null
-          value_limit?: number | null
-          value_flag?: boolean | null
+          feature_id?: number
+          id?: number
           stripe_account_id?: string
           stripe_price_id?: string
-          feature_id?: number
+          value_flag?: boolean | null
+          value_limit?: number | null
         }
       }
       product_features: {
         Row: {
-          id: number
           created_at: string | null
-          value_limit: number | null
-          value_flag: boolean | null
+          feature_id: number
+          id: number
           stripe_account_id: string
           stripe_product_id: string
-          feature_id: number
+          value_flag: boolean | null
+          value_limit: number | null
         }
         Insert: {
-          id?: number
           created_at?: string | null
-          value_limit?: number | null
-          value_flag?: boolean | null
+          feature_id: number
+          id?: number
           stripe_account_id: string
           stripe_product_id: string
-          feature_id: number
+          value_flag?: boolean | null
+          value_limit?: number | null
         }
         Update: {
-          id?: number
           created_at?: string | null
-          value_limit?: number | null
-          value_flag?: boolean | null
+          feature_id?: number
+          id?: number
           stripe_account_id?: string
           stripe_product_id?: string
-          feature_id?: number
+          value_flag?: boolean | null
+          value_limit?: number | null
         }
       }
       stripe_accounts: {
         Row: {
-          id: number
           created_at: string | null
-          stripe_id: string
-          stripe_json: Json | null
+          has_acknowledged_setup: boolean
+          id: number
           initial_sync_complete: boolean
           initial_sync_started_at: string | null
           invite_id: number | null
-          has_acknowledged_setup: boolean
+          stripe_id: string
+          stripe_json: Json | null
         }
         Insert: {
-          id?: number
           created_at?: string | null
+          has_acknowledged_setup?: boolean
+          id?: number
+          initial_sync_complete?: boolean
+          initial_sync_started_at?: string | null
+          invite_id?: number | null
           stripe_id: string
           stripe_json?: Json | null
-          initial_sync_complete?: boolean
-          initial_sync_started_at?: string | null
-          invite_id?: number | null
-          has_acknowledged_setup?: boolean
         }
         Update: {
-          id?: number
           created_at?: string | null
-          stripe_id?: string
-          stripe_json?: Json | null
+          has_acknowledged_setup?: boolean
+          id?: number
           initial_sync_complete?: boolean
           initial_sync_started_at?: string | null
           invite_id?: number | null
-          has_acknowledged_setup?: boolean
+          stripe_id?: string
+          stripe_json?: Json | null
         }
       }
       stripe_customers: {
         Row: {
-          id: number
           created_at: string | null
-          stripe_id: string
+          id: number
           stripe_account_id: string
+          stripe_id: string
           stripe_json: Json | null
         }
         Insert: {
-          id?: number
           created_at?: string | null
-          stripe_id: string
+          id?: number
           stripe_account_id: string
+          stripe_id: string
           stripe_json?: Json | null
         }
         Update: {
-          id?: number
           created_at?: string | null
-          stripe_id?: string
+          id?: number
           stripe_account_id?: string
+          stripe_id?: string
           stripe_json?: Json | null
         }
       }
       stripe_prices: {
         Row: {
-          id: number
           created_at: string | null
-          stripe_id: string
+          id: number
           stripe_account_id: string
-          stripe_product_id: string
+          stripe_id: string
           stripe_json: Json | null
+          stripe_product_id: string
         }
         Insert: {
-          id?: number
           created_at?: string | null
-          stripe_id: string
+          id?: number
           stripe_account_id: string
-          stripe_product_id: string
+          stripe_id: string
           stripe_json?: Json | null
+          stripe_product_id: string
         }
         Update: {
-          id?: number
           created_at?: string | null
-          stripe_id?: string
+          id?: number
           stripe_account_id?: string
-          stripe_product_id?: string
+          stripe_id?: string
           stripe_json?: Json | null
+          stripe_product_id?: string
         }
       }
       stripe_products: {
         Row: {
-          id: number
           created_at: string | null
-          stripe_id: string
+          id: number
           stripe_account_id: string
+          stripe_id: string
           stripe_json: Json | null
         }
         Insert: {
-          id?: number
           created_at?: string | null
-          stripe_id: string
+          id?: number
           stripe_account_id: string
+          stripe_id: string
           stripe_json?: Json | null
         }
         Update: {
-          id?: number
           created_at?: string | null
-          stripe_id?: string
+          id?: number
           stripe_account_id?: string
+          stripe_id?: string
           stripe_json?: Json | null
         }
       }
       stripe_subscription_items: {
         Row: {
-          id: number
           created_at: string | null
-          stripe_id: string
+          id: number
           stripe_account_id: string
+          stripe_id: string
           stripe_json: Json | null
           stripe_price_id: string
           stripe_subscription_id: string
         }
         Insert: {
-          id?: number
           created_at?: string | null
-          stripe_id: string
+          id?: number
           stripe_account_id: string
+          stripe_id: string
           stripe_json?: Json | null
           stripe_price_id: string
           stripe_subscription_id: string
         }
         Update: {
-          id?: number
           created_at?: string | null
-          stripe_id?: string
+          id?: number
           stripe_account_id?: string
+          stripe_id?: string
           stripe_json?: Json | null
           stripe_price_id?: string
           stripe_subscription_id?: string
@@ -280,69 +280,69 @@ export interface Database {
       }
       stripe_subscriptions: {
         Row: {
-          id: number
           created_at: string | null
-          stripe_id: string
-          stripe_account_id: string
-          stripe_json: Json | null
+          id: number
           status: string
+          stripe_account_id: string
           stripe_customer_id: string
+          stripe_id: string
+          stripe_json: Json | null
         }
         Insert: {
-          id?: number
           created_at?: string | null
-          stripe_id: string
-          stripe_account_id: string
-          stripe_json?: Json | null
+          id?: number
           status: string
+          stripe_account_id: string
           stripe_customer_id: string
+          stripe_id: string
+          stripe_json?: Json | null
         }
         Update: {
-          id?: number
           created_at?: string | null
-          stripe_id?: string
-          stripe_account_id?: string
-          stripe_json?: Json | null
+          id?: number
           status?: string
+          stripe_account_id?: string
           stripe_customer_id?: string
+          stripe_id?: string
+          stripe_json?: Json | null
         }
       }
       tokens: {
         Row: {
           created_at: string | null
-          token: string
           stripe_account_id: string | null
+          token: string
         }
         Insert: {
           created_at?: string | null
-          token: string
           stripe_account_id?: string | null
+          token: string
         }
         Update: {
           created_at?: string | null
-          token?: string
           stripe_account_id?: string | null
+          token?: string
         }
       }
       wait_list_entries: {
         Row: {
-          id: number
           created_at: string | null
           email: string
+          id: number
           invite_id: number | null
           stripe_account_id: string | null
         }
         Insert: {
-          id?: number
           created_at?: string | null
           email: string
+          id?: number
           invite_id?: number | null
           stripe_account_id?: string | null
         }
         Update: {
-          id?: number
           created_at?: string | null
           email?: string
+          id?: number
           invite_id?: number | null
           stripe_account_id?: string | null
         }
