@@ -8,13 +8,16 @@ export function Hero() {
 
   const requestAccess = useMutation(
     async ({ user_email }: { user_email: string }) => {
-      const response = await fetch('api/add_to_waitlist', {
-        method: 'POST',
-        body: JSON.stringify({ user_email }),
-        headers: {
-          'Content-Type': 'application/json',
+      const response = await fetch(
+        'https://api.spackle.com/marketing/add_to_waitlist',
+        {
+          method: 'POST',
+          body: JSON.stringify({ user_email }),
+          headers: {
+            'Content-Type': 'application/json',
+          },
         },
-      })
+      )
 
       if (response.status !== 200) {
         const error = (await response.json()).error
