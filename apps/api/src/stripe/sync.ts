@@ -1,6 +1,6 @@
 import { liveStripe, testStripe } from '@/stripe'
 import { logger } from '@/logger'
-import { supabase } from '@/supabase'
+import supabase from 'spackle-supabase'
 import * as Sentry from '@sentry/node'
 import {
   getStripeAccount,

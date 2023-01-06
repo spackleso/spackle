@@ -2,7 +2,6 @@ import { BackgroundHandler } from '@netlify/functions'
 import { storeAccountStates } from '../../src/store/dynamodb'
 import * as Sentry from '@sentry/serverless'
 import { logger } from '../../src/logger'
-import { supabase, SupabaseError } from '../../src/supabase'
 
 const { SENTRY_DSN, BACKGROUND_API_TOKEN } = process.env
 

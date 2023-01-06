@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import { checkCors } from '@/cors'
 import { withLogging } from '@/logger'
 import { verifySignature } from '@/stripe/signature'
-import { supabase, SupabaseError } from '@/supabase'
+import supabase, { SupabaseError } from 'spackle-supabase'
 import * as Sentry from '@sentry/nextjs'
 import { syncStripeAccount } from '@/stripe/sync'
 

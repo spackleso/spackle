@@ -1,6 +1,6 @@
 import { storeCustomerState } from '../src/store/dynamodb'
 import { program } from 'commander'
-import { supabase } from '@/supabase'
+import supabase from 'spackle-supabase'
 
 program.argument('<customer_id>', 'The stripe customer to sync')
 program.parse()

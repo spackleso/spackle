@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import { getCustomerFeaturesState } from '@/state'
-import { supabase } from '@/supabase'
+import supabase from 'spackle-supabase'
 import * as Sentry from '@sentry/nextjs'
 import { withLogging } from '@/logger'
 import jwt from 'jsonwebtoken'
