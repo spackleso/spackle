@@ -54,7 +54,7 @@ function Header({ navigation }: any) {
         <MobileNavigation navigation={navigation} />
       </div>
       <div className="relative flex flex-grow basis-0 items-center">
-        <Link href="/" aria-label="Home page">
+        <Link href="https://www.spackle.so" aria-label="Home page">
           <div className="flex flex-row items-center">
             <Logo className="h-14 w-auto fill-slate-700 dark:fill-sky-100" />
             <h1 className="lowercase font-bold font-['Comfortaa'] text-slate-900 dark:text-white hidden lg:block">
