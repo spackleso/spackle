@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { checkCors } from '@/cors'
 import { verifySignature } from '@/stripe/signature'
-import { supabase } from '@/supabase'
+import supabase from 'spackle-supabase'
 import * as Sentry from '@sentry/nextjs'
 import jwt from 'jsonwebtoken'
 import { withLogging } from '@/logger'

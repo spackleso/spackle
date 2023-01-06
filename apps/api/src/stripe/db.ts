@@ -1,4 +1,4 @@
-import { supabase, SupabaseError } from '@/supabase'
+import supabase, { SupabaseError } from 'spackle-supabase'
 
 export const getStripeAccount = async (stripe_id: string) => {
   const { data, error } = await supabase

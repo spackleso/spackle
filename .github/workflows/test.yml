@@ -23,7 +23,7 @@ jobs:
 
       - name: Verify generated types match Postgres schema
         run: |
-          cd apps/api
+          cd packages/supabase
           yarn types
           if ! git diff --ignore-space-at-eol --exit-code --quiet src/schema.gen.ts; then
             echo "Detected uncommitted changes after build. See status below:"

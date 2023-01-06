@@ -1,5 +1,5 @@
 import { getCustomerState } from '@/state'
-import { supabase, SupabaseError } from '@/supabase'
+import supabase, { SupabaseError } from 'spackle-supabase'
 import { DynamoDB } from '@aws-sdk/client-dynamodb'
 import { getIdentityToken } from '@/cognito'
 

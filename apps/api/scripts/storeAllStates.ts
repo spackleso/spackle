@@ -1,4 +1,4 @@
-import { supabase } from '@/supabase'
+import supabase from 'spackle-supabase'
 import { storeAccountStates } from '../src/store/dynamodb'
 
 async function main() {

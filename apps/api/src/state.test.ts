@@ -6,7 +6,7 @@ import {
   getPriceFeaturesState,
   getProductFeaturesState,
 } from './state'
-import { supabase, SupabaseError } from './supabase'
+import supabase from 'spackle-supabase'
 
 const stripeId = (prefix: string) => {
   return `${prefix}_${crypto.randomBytes(16).toString('hex')}`
