@@ -26,7 +26,7 @@ spackle.api_key = "<api key>"
 
 ## Usage
 
-### Get a Stripe customer
+### Fetch a customer
 
 Spackle uses stripe ids as references to customer features.
 
@@ -40,7 +40,7 @@ customer = spackle.Customer.retrive("cus_00000000")
 customer.enabled('feature_key')
 ```
 
-### Fetch feature limit
+### Fetch a feature limit
 
 ```
 customer.limit('feature_key')
