@@ -10,7 +10,7 @@ Learn how to get Spackle set up in your project{% .lead %}
 
 ## Quick start
 
-Spackle is currently in invite-only beta. If you don't have an invite code yet, request an invite [here](/).
+Spackle is currently in invite-only beta. If you don't have an invite code yet, request an invite [here](https://www.spackle.so).
 
 ### Install the Stripe app
 
