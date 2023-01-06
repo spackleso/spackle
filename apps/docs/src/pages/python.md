@@ -39,7 +39,7 @@ spackle.bootstrap()
 Spackle uses stripe ids as references to customer features.
 
 ```python
-customer = spackle.Customer.retrive("cus_00000000")
+customer = spackle.Customer.retrieve("cus_00000000")
 ```
 
 ### Verify feature access
