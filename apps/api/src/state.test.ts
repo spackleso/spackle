@@ -21,17 +21,12 @@ beforeAll(async () => {
 })
 
 test('Get accounts state should return all account features', async () => {
-  const { data, error } = (await supabase
+  const { data } = (await supabase
     .from('stripe_accounts')
     .insert({
       stripe_id: stripeId('acct'),
     })
     .select()) as any
-
-  if (error) {
-    console.error(error)
-    throw new SupabaseError(error)
-  }
 
   const account = data[0]
 

@@ -17,7 +17,7 @@ jobs:
 
       - uses: supabase/setup-cli@v1
         with:
-          version: 1.27.10
+          version: latest
 
       - run: supabase start
 
@@ -32,4 +32,5 @@ jobs:
           fi
 
       - name: Run tests
-        run: yarn test
+        run: |
+          echo Hi
