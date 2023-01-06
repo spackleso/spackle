@@ -37,6 +37,8 @@
     "zod": "^3.19.1"
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^5.16.5",
+    "@testing-library/react": "^13.4.0",
     "@types/cors": "^2.8.13",
     "@types/jsonwebtoken": "^9.0.0",
     "dotenv": "^16.0.3",
