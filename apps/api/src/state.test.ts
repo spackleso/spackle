@@ -3,11 +3,10 @@ import { execSync } from 'child_process'
 import {
   getAccountFeaturesState,
   getCustomerFeaturesState,
-  getCustomerState,
   getPriceFeaturesState,
   getProductFeaturesState,
 } from './state'
-import { supabase } from './supabase'
+import { supabase, SupabaseError } from './supabase'
 
 const stripeId = (prefix: string) => {
   return `${prefix}_${crypto.randomBytes(16).toString('hex')}`
@@ -28,6 +27,7 @@ test('Get accounts state should return all account features', async () => {
       stripe_id: stripeId('acct'),
     })
     .select()) as any
+
   const account = data[0]
 
   const { data: featureData } = (await supabase
