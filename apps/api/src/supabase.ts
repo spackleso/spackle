@@ -6,7 +6,7 @@ const supabaseAnonKey = process.env.SUPABASE_ANON_KEY || ''
 
 let test = supabaseAnonKey
 console.log('supabaseUrl', supabaseUrl)
-console.log('supabaseAnonKey', test)
+console.log('definitely not serious', test)
 export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey)
 
 export class SupabaseError extends Error {
