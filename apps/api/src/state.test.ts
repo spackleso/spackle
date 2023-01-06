@@ -21,7 +21,6 @@ beforeAll(async () => {
 })
 
 test('Get accounts state should return all account features', async () => {
-  console.log(supabase)
   const { data, error } = (await supabase
     .from('stripe_accounts')
     .insert({
