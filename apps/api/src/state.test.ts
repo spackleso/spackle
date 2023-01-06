@@ -29,6 +29,7 @@ test('Get accounts state should return all account features', async () => {
     .select()) as any
 
   if (error) {
+    console.error(error)
     throw new SupabaseError(error)
   }
 
