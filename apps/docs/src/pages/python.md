@@ -13,7 +13,7 @@ Learn how to get Spackle set up in your Python project{% .lead %}
 ### Install the Spackle library
 
 ```sh
-pip install spackle-python
+pip install -U spackle-python
 ```
 
 ### Configure your environment
