@@ -4,8 +4,9 @@ import { Database } from './schema.gen'
 const supabaseUrl = process.env.SUPABASE_URL || ''
 const supabaseAnonKey = process.env.SUPABASE_ANON_KEY || ''
 
+let test = supabaseAnonKey
 console.log('supabaseUrl', supabaseUrl)
-console.log('supabaseAnonKey', supabaseAnonKey)
+console.log('supabaseAnonKey', test)
 export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey)
 
 export class SupabaseError extends Error {
