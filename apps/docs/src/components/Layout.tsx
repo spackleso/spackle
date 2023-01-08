@@ -14,7 +14,8 @@ const navigation = [
     title: 'Introduction',
     links: [
       { title: 'Getting started', href: '/' },
-      { title: 'Python', href: 'python' },
+      { title: 'Python', href: '/python' },
+      { title: 'Ruby', href: '/ruby' },
     ],
   },
 ]
@@ -57,7 +58,7 @@ function Header({ navigation }: any) {
         <Link href="https://www.spackle.so" aria-label="Home page">
           <div className="flex flex-row items-center">
             <Logo className="h-14 w-auto fill-slate-700 dark:fill-sky-100" />
-            <h1 className="lowercase font-bold font-['Comfortaa'] text-slate-900 dark:text-white hidden lg:block">
+            <h1 className="hidden font-['Comfortaa'] font-bold lowercase text-slate-900 dark:text-white lg:block">
               Spackle
             </h1>
           </div>
