@@ -11,4 +11,5 @@ module "spackle" {
   source      = "../../modules/spackle"
   aws_region  = "us-west-2"
   environment = "prod"
+  storage_replica_regions = ["us-east-1"]
 }

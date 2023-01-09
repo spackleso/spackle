@@ -30,6 +30,13 @@ resource "aws_dynamodb_table" "main" {
     name = "CustomerId"
     type = "S"
   }
+
+  dynamic "replica" {
+    for_each = var.storage_replica_regions
+    content {
+      region_name = replica.value
+    }
+  }
 }
 
 resource "aws_cognito_identity_pool" "main" {
