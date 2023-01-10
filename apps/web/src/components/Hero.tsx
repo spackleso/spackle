@@ -35,7 +35,7 @@ export function Hero() {
         <span className="relative whitespace-nowrap text-violet-600">
           without
         </span>{' '}
-        the code complexity
+        the headache
       </h1>
       <p className="mx-auto mt-6 max-w-2xl text-lg tracking-tight text-slate-700 dark:text-slate-400">
         Bring harmony to your sales process. Sell and manage custom product
