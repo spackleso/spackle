@@ -1,6 +1,15 @@
 import supabase, { SupabaseError } from 'spackle-supabase'
 import { logger } from '@/logger'
 import { syncAllAccountData } from '@/stripe/sync'
+import * as Sentry from '@sentry/node'
+
+const SENTRY_DSN = process.env.SENTRY_DSN || process.env.NEXT_PUBLIC_SENTRY_DSN
+
+Sentry.init({
+  dsn: SENTRY_DSN || '',
+  tracesSampleRate: 0,
+  enabled: process.env.NODE_ENV === 'production',
+})
 
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms))
@@ -31,10 +40,15 @@ async function getAccountIdToBeSynced(): Promise<string | null> {
 export async function start() {
   logger.info('Starting worker...')
   while (true) {
-    const stripeAccountId = await getAccountIdToBeSynced()
-    if (stripeAccountId) {
-      logger.info(`Syncing account: ${stripeAccountId}`)
-      await syncAllAccountData(stripeAccountId)
+    try {
+      const stripeAccountId = await getAccountIdToBeSynced()
+      if (stripeAccountId) {
+        logger.info(`Syncing account: ${stripeAccountId}`)
+        await syncAllAccountData(stripeAccountId)
+      }
+    } catch (error) {
+      Sentry.captureException(error)
+      process.exit(1)
     }
     await sleep(1000)
   }
