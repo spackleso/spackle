@@ -42,16 +42,16 @@ export async function start() {
   while (true) {
     try {
       throw new Error('test')
-      const stripeAccountId = await getAccountIdToBeSynced()
-      if (stripeAccountId) {
-        logger.info(`Syncing account: ${stripeAccountId}`)
-        await syncAllAccountData(stripeAccountId)
-      }
+      // const stripeAccountId = await getAccountIdToBeSynced()
+      // if (stripeAccountId) {
+      //   logger.info(`Syncing account: ${stripeAccountId}`)
+      //   await syncAllAccountData(stripeAccountId)
+      // }
     } catch (error) {
       logger.error('Error in worker', error)
       Sentry.captureException(error)
       process.exit(1)
     }
-    await sleep(1000)
+    await sleep(5000)
   }
 }
