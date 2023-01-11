@@ -31,7 +31,6 @@ async function getAccountIdToBeSynced(): Promise<string | null> {
 export async function start() {
   logger.info('Starting worker...')
   while (true) {
-    logger.info('Checking for accounts to sync...')
     const stripeAccountId = await getAccountIdToBeSynced()
     if (stripeAccountId) {
       logger.info(`Syncing account: ${stripeAccountId}`)
