@@ -38,7 +38,7 @@ async function getAccountIdToBeSynced(): Promise<string | null> {
 }
 
 export async function start() {
-  logger.info('Starting worker...')
+  logger.info('[Worker] Starting worker...')
   while (true) {
     try {
       throw new Error('test')
@@ -48,8 +48,10 @@ export async function start() {
       //   await syncAllAccountData(stripeAccountId)
       // }
     } catch (error) {
-      logger.error('Error in worker', error)
+      logger.error('[Worker] Error in worker', error)
       Sentry.captureException(error)
+      logger.info('[Worker] Shutting down...', error)
+      await sleep(1000)
       process.exit(1)
     }
     await sleep(5000)
