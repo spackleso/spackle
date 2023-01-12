@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "netlify dev --port 3001",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -14,7 +14,6 @@
     "@aws-sdk/client-cognito-identity": "^3.231.0",
     "@aws-sdk/client-dynamodb": "^3.231.0",
     "@logtail/node": "^0.1.12",
-    "@netlify/functions": "^1.3.0",
     "@next/font": "13.1.1",
     "@sentry/nextjs": "^7.16.0",
     "@sentry/node": "^7.30.0",
