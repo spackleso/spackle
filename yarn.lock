@@ -2411,6 +2411,11 @@
   dependencies:
     isomorphic-fetch "^3.0.0"
 
+"@vercel/analytics@^0.1.7-beta.1":
+  version "0.1.7-beta.1"
+  resolved "https://registry.yarnpkg.com/@vercel/analytics/-/analytics-0.1.7-beta.1.tgz#601b7f803a85c76d20eb937e7665c65af574078f"
+  integrity sha512-7QRVBLhXboj8LK3qJ8rJRI20E6NyV4P31zW4yrWvyZLOP08Wzqb7n2CLPhq421HqZG9ztPi9rpEq5VfrrkQArQ==
+
 abab@^2.0.6:
   version "2.0.6"
   resolved "https://registry.yarnpkg.com/abab/-/abab-2.0.6.tgz#41b80f2c871d19686216b82309231cfd3cb3d291"

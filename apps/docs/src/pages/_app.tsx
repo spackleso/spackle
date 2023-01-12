@@ -1,7 +1,7 @@
 import Head from 'next/head'
 import { slugifyWithCounter } from '@sindresorhus/slugify'
-
 import { Layout } from '@/components/Layout'
+import { Analytics } from '@vercel/analytics/react'
 
 import 'focus-visible'
 import '@/styles/tailwind.css'
@@ -70,6 +70,7 @@ export default function App({ Component, pageProps }: any) {
       <Layout title={title} tableOfContents={tableOfContents}>
         <Component {...pageProps} />
       </Layout>
+      <Analytics />
     </>
   )
 }
