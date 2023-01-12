@@ -21,11 +21,11 @@ You can find Spackle in the [Stripe App Marketplace](https://marketplace.stripe.
 
 After you set up the Stripe app, click "Manage Features" at the bottom of the Spackle viewport.
 
-![getting-started-1](/getting-started-1.png)
+{% image src="/getting-started-1.png" alt="Getting Started: Step 1" width=3048 height=1990 /%}
 
 Then click "Create New" to create a new feature.
 
-![getting-started-3](/getting-started-3.png)
+{% image src="/getting-started-3.png" alt="Getting Started: Step 3" width=3052 height=1994 /%}
 
 There are two types of features in Spackle:
 
@@ -51,7 +51,7 @@ Spackle allows you to customize feature access at the Product, Price, and Custom
 
 To customize feature behavior, navigate to your Stripe product and set the values for that specific product.
 
-![getting-started-4](/getting-started-4.png)
+{% image src="/getting-started-4.png" alt="Getting Started: Step 4" width=3338 height=2123 /%}
 
 ### Integrate with your product
 

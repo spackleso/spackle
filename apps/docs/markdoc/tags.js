@@ -1,5 +1,6 @@
 import { Callout } from '@/components/Callout'
 import { QuickLink, QuickLinks } from '@/components/QuickLinks'
+import Image from 'next/image'
 
 const tags = {
   callout: {
@@ -41,6 +42,17 @@ const tags = {
       icon: { type: String },
       href: { type: String },
     },
+  },
+  image: {
+    render: ({ src, alt = '', width, height }) => (
+      <Image src={src} alt={alt} width={width} height={height} quality={100} />
+    ),
+    attributes: {
+      src: { type: String },
+      alt: { type: String },
+      width: { type: Number },
+      height: { type: Number },
+    }
   },
 }
 
