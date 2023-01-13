@@ -15,7 +15,7 @@ export const start = () => {
   const worker = getWorker()
 
   worker.on('completed', (job) => {
-    logger.info(`Job ${job.id} has completed:`, {
+    logger.info(`Job ${job.id} (${job.name}) has completed:`, {
       job: {
         id: job.id,
         name: job.name,
@@ -25,7 +25,7 @@ export const start = () => {
   })
 
   worker.on('failed', (job, err) => {
-    logger.error(`Job ${job?.id} has failed: ${err.message}`, {
+    logger.error(`Job ${job?.id} (${job?.name}) has failed ${err.message}`, {
       job: {
         id: job?.id,
         name: job?.name,
