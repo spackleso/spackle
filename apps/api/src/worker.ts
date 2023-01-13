@@ -15,7 +15,7 @@ export const start = () => {
   const worker = getWorker()
 
   worker.on('completed', (job) => {
-    logger.info(`Job ${job.id} (${job.name}) has completed:`, {
+    logger.info(`Job ${job.id} (${job.name}) has completed`, {
       job: {
         id: job.id,
         name: job.name,
