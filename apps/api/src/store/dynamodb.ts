@@ -2,6 +2,7 @@ import { getCustomerState } from '@/state'
 import supabase, { SupabaseError } from 'spackle-supabase'
 import { DynamoDB } from '@aws-sdk/client-dynamodb'
 import { getIdentityToken } from '@/cognito'
+import { getQueue } from '@/queue'
 
 const {
   DYNAMODB_TABLE_NAME,
@@ -80,15 +81,8 @@ export const storeAccountStates = async (stripeAccountId: string) => {
 }
 
 export const storeAccountStatesAsync = async (stripeAccountId: string) => {
-  const { BACKGROUND_API_TOKEN, HOST } = process.env
-  await fetch(
-    `${HOST}/.netlify/functions/store_account_states-background?stripe_account_id=${stripeAccountId}`,
-    {
-      headers: {
-        authorization: `Token ${BACKGROUND_API_TOKEN}`,
-      },
-    },
-  )
+  const q = getQueue()
+  return await q.add('storeAccountStates', { account_id: stripeAccountId })
 }
 
 export const storeCustomerState = async (

@@ -1,12 +1,20 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { checkCors } from '@/cors'
-import { logger, withLogging } from '@/logger'
+import { withLogging } from '@/logger'
 import { verifySignature } from '@/stripe/signature'
-
-const { BACKGROUND_API_TOKEN, HOST } = process.env
+import { syncAllAccountDataAsync } from '@/stripe/sync'
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  logger.warn('Calling deprecated endpont /api/stripe/sync_account')
+  await checkCors(req, res)
+
+  const { success } = verifySignature(req)
+  if (!success) {
+    return res.status(400).send('')
+  }
+
+  const { account_id } = req.body
+  await syncAllAccountDataAsync(account_id)
+
   res.status(200).json({})
 }
 

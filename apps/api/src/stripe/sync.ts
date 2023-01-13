@@ -16,6 +16,7 @@ import {
 } from './db'
 import { Mode } from '@/types'
 import { storeAccountStatesAsync, storeCustomerState } from '@/store/dynamodb'
+import { getQueue } from '@/queue'
 
 export const getOrSyncStripeAccount = async (stripe_id: string) => {
   const account = await getStripeAccount(stripe_id)
@@ -164,6 +165,11 @@ export const syncStripeSubscriptionItems = async (
       JSON.stringify(subscriptionItem),
     )
   }
+}
+
+export const syncAllAccountDataAsync = async (account_id: string) => {
+  const q = getQueue()
+  return await q.add('syncAllAccountData', { account_id })
 }
 
 export const syncAllAccountData = async (account_id: string) => {
