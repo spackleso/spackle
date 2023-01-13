@@ -15,11 +15,25 @@ export const start = () => {
   const worker = getWorker()
 
   worker.on('completed', (job) => {
-    logger.info(`Job ${job.id} has completed:`, job.data)
+    logger.info(`Job ${job.id} has completed:`, {
+      job: {
+        id: job.id,
+        name: job.name,
+        data: job.data,
+      },
+    })
   })
 
   worker.on('failed', (job, err) => {
-    logger.error(`Job ${job?.id} has failed: ${err.message}`, err)
+    logger.error(`Job ${job?.id} has failed: ${err.message}`, {
+      job: {
+        id: job?.id,
+        name: job?.name,
+        data: job?.data,
+      },
+      error: err,
+    })
+
     Sentry.captureException(err, {
       extra: {
         job: {
