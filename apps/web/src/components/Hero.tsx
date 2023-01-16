@@ -31,16 +31,16 @@ export function Hero() {
   return (
     <Container className="pt-20 pb-16 text-center lg:pt-32">
       <h1 className="font-display mx-auto max-w-4xl text-5xl font-medium tracking-tight text-slate-900 dark:text-white sm:text-7xl">
-        Enterprise billing{' '}
+        Flexible SaaS billing{' '}
         <span className="relative whitespace-nowrap text-violet-600">
           without
         </span>{' '}
         the headache
       </h1>
-      <p className="mx-auto mt-6 max-w-2xl text-lg tracking-tight text-slate-700 dark:text-slate-400">
-        Bring harmony to your sales process. Sell and manage custom product
-        experiences right from the Stripe dashboard.
-      </p>
+      <h2 className="mx-auto mt-6 max-w-2xl text-lg tracking-tight text-slate-700 dark:text-slate-400">
+        Spackle brings easy entitlement management to your Stripe dashboard.
+        Give your customers a custom experience without the homegrown solution.
+      </h2>
       <form
         className="mt-10 flex justify-center"
         onSubmit={(e) => {
