@@ -44,7 +44,7 @@ export default function Home() {
         </Container>
 
         <Container className="flex w-full flex-col pt-20 pb-16 lg:flex-row lg:items-center lg:justify-center lg:space-x-12 lg:pt-32">
-          <div className="lg:order-0 bg order-1 mt-6 w-full justify-center overflow-scroll rounded-lg bg-slate-900 p-8 shadow-xl dark:bg-black/30 lg:mt-0 lg:w-1/2">
+          <div className="lg:order-0 bg order-1 mt-6 w-full justify-center overflow-auto rounded-lg bg-slate-900 p-8 shadow-xl dark:bg-black/30 lg:mt-0 lg:w-1/2">
             <Fence language="python">
               {
                 'import spackle\nspackle.api_key = "..."\ncustomer = spackle.Customer.retrive("cus_000000000")\ncustomer.enabled("landing_pages")'
