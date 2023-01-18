@@ -61,23 +61,19 @@ export default function Document(props: any) {
           rel="stylesheet"
         ></link>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
-        {process.env.NODE_ENV === 'production' && (
-          <>
-            <Script
-              src="https://www.googletagmanager.com/gtag/js?id=G-LXGRKPLKKY"
-              strategy="afterInteractive"
-            />
-            <Script id="google-analytics" strategy="afterInteractive">
-              {`
-                window.dataLayer = window.dataLayer || [];
-                function gtag(){window.dataLayer.push(arguments);}
-                gtag('js', new Date());
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-LXGRKPLKKY"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){window.dataLayer.push(arguments);}
+            gtag('js', new Date());
 
-                gtag('config', 'G-LXGRKPLKKY');
-              `}
-            </Script>
-          </>
-        )}
+            gtag('config', 'G-LXGRKPLKKY');
+          `}
+        </Script>
       </Head>
       <body className="bg-white dark:bg-slate-900">
         <Main />
