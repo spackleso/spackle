@@ -1,4 +1,3 @@
-/* TODO: Deprecated endpoint, remove after migration */
 import { NextApiRequest, NextApiResponse } from 'next'
 import * as Sentry from '@sentry/nextjs'
 import { withLogging } from '@/logger'
@@ -9,13 +8,18 @@ import { getIdentityToken } from '@/cognito'
 const { SUPABASE_JWT_SECRET, DYNAMODB_TABLE_NAME, AWS_COGNITO_ROLE_ARN } =
   process.env
 
-interface Data {
-  account_id: string
-  table_name: string
-  token: string
+interface DynamoDBAdapter {
+  name: string
   identity_id: string
   role_arn: string
+  table_name: string
+  token: string
   aws_region: string
+}
+
+interface Data {
+  account_id: string
+  adapter: DynamoDBAdapter
 }
 
 interface Unauthorized {
@@ -60,11 +64,14 @@ const handler = async (
 
   return res.status(200).json({
     account_id: accountId,
-    identity_id: IdentityId,
-    role_arn: AWS_COGNITO_ROLE_ARN,
-    table_name: DYNAMODB_TABLE_NAME,
-    token: Token,
-    aws_region: 'us-west-2',
+    adapter: {
+      name: 'dynamodb',
+      identity_id: IdentityId,
+      role_arn: AWS_COGNITO_ROLE_ARN,
+      table_name: DYNAMODB_TABLE_NAME,
+      token: Token,
+      aws_region: 'us-west-2',
+    },
   })
 }
 
