@@ -14,7 +14,7 @@ interface DynamoDBAdapter {
   role_arn: string
   table_name: string
   token: string
-  aws_region: string
+  region: string
 }
 
 interface Data {
@@ -70,7 +70,7 @@ const handler = async (
       role_arn: AWS_COGNITO_ROLE_ARN,
       table_name: DYNAMODB_TABLE_NAME,
       token: Token,
-      aws_region: 'us-west-2',
+      region: 'us-west-2',
     },
   })
 }
