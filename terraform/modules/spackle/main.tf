@@ -16,10 +16,11 @@ provider "aws" {
 }
 
 resource "aws_dynamodb_table" "main" {
-  name         = "spackle-${var.environment}"
-  hash_key     = "AccountId"
-  range_key    = "CustomerId"
-  billing_mode = "PAY_PER_REQUEST"
+  name           = "spackle-${var.environment}"
+  hash_key       = "AccountId"
+  range_key      = "CustomerId"
+  billing_mode   = "PAY_PER_REQUEST"
+  stream_enabled = true
 
   attribute {
     name = "AccountId"
