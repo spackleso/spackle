@@ -67,6 +67,7 @@ export const storeAccountStates = async (stripeAccountId: string) => {
             AccountId: { S: IdentityId },
             CustomerId: { S: stripe_id },
             State: { S: JSON.stringify(state) },
+            Version: { N: state.version.toString() },
           },
         },
       })
@@ -103,6 +104,7 @@ export const storeCustomerState = async (
       AccountId: { S: IdentityId },
       CustomerId: { S: stripeCustomerId },
       State: { S: JSON.stringify(state) },
+      Version: { N: state.version.toString() },
     },
   })
 }
