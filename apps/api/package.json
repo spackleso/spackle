@@ -15,7 +15,7 @@
     "@aws-sdk/client-dynamodb": "^3.231.0",
     "@logtail/node": "^0.1.12",
     "@next/font": "13.1.1",
-    "@sentry/nextjs": "^7.16.0",
+    "@sentry/nextjs": "^7.32.1",
     "@sentry/node": "^7.30.0",
     "@sentry/serverless": "^7.16.0",
     "@types/node": "18.11.18",
