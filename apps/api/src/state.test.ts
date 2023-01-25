@@ -173,12 +173,13 @@ test('Get price state should return overridden account features', async () => {
 })
 
 test('Get customer state should return overridden subscription features', async () => {
-  const { data: accountData } = (await supabase
+  const { data: accountData, error } = (await supabase
     .from('stripe_accounts')
     .insert({
       stripe_id: stripeId('acct'),
     })
     .select()) as any
+  console.log(error)
   const account = accountData[0]
 
   const { data: customerData } = (await supabase
@@ -214,6 +215,18 @@ test('Get customer state should return overridden subscription features', async 
     .select()
   const falseFeature = falseFeatureData![0]
 
+  const { data: limitFeatureData } = await supabase
+    .from('features')
+    .insert({
+      name: 'Default 20',
+      key: 'default_20',
+      type: 1,
+      value_limit: 20,
+      stripe_account_id: account.stripe_id,
+    })
+    .select()
+  const limitFeature = limitFeatureData![0]
+
   await supabase.from('customer_features').insert({
     value_flag: true,
     stripe_account_id: account.stripe_id,
@@ -226,6 +239,13 @@ test('Get customer state should return overridden subscription features', async 
     stripe_account_id: account.stripe_id,
     stripe_customer_id: customer.stripe_id,
     feature_id: trueFeature.id,
+  })
+
+  await supabase.from('customer_features').insert({
+    value_limit: null,
+    stripe_account_id: account.stripe_id,
+    stripe_customer_id: customer.stripe_id,
+    feature_id: limitFeature.id,
   })
 
   const state = await getCustomerFeaturesState(
@@ -248,6 +268,14 @@ test('Get customer state should return overridden subscription features', async 
       name: 'Default False',
       type: 0,
       value_flag: true,
+      value_limit: null,
+    },
+    {
+      id: limitFeature.id,
+      key: 'default_20',
+      name: 'Default 20',
+      type: 1,
+      value_flag: null,
       value_limit: null,
     },
   ])

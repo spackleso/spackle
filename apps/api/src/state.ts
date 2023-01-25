@@ -153,7 +153,8 @@ export const getSubscriptionFeaturesState = async (
         }
       } else if (
         feature.type === 1 &&
-        feature.value_limit >= stale.value_limit
+        (feature.value_limit >= stale.value_limit ||
+          feature.value_limit === null) // null means an unlimited feature
       ) {
         a = {
           ...a,
