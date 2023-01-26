@@ -12,4 +12,7 @@ if feature['type'] == 0:
     print(f'\nFeature {feature_key} is {"enabled" if enabled else "disabled"} for customer {customer_id}')
 else:
     limit = customer.limit(feature_key)
-    print(f'\nFeature {feature_key} has a limit of {limit} for customer {customer_id}')
+    if limit == float('inf'):
+        print(f'\nFeature {feature_key} has no limit for customer {customer_id}')
+    else:
+        print(f'\nFeature {feature_key} has a limit of {limit} for customer {customer_id}')
