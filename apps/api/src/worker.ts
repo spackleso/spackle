@@ -1,4 +1,3 @@
-import { logger } from '@/logger'
 import * as Sentry from '@sentry/node'
 import { getWorker } from '@/queue'
 
@@ -11,11 +10,11 @@ Sentry.init({
 })
 
 export const start = () => {
-  logger.info('Starting worker...')
+  console.info('Starting worker...')
   const worker = getWorker()
 
   worker.on('completed', (job) => {
-    logger.info(`Job ${job.id} (${job.name}) has completed`, {
+    console.info(`Job ${job.id} (${job.name}) has completed`, {
       job: {
         id: job.id,
         name: job.name,
@@ -25,7 +24,7 @@ export const start = () => {
   })
 
   worker.on('failed', (job, err) => {
-    logger.error(`Job ${job?.id} (${job?.name}) has failed ${err.message}`, {
+    console.error(`Job ${job?.id} (${job?.name}) has failed ${err.message}`, {
       job: {
         id: job?.id,
         name: job?.name,

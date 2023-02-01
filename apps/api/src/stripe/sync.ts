@@ -1,5 +1,4 @@
 import { liveStripe, testStripe } from '@/stripe'
-import { logger } from '@/logger'
 import supabase from 'spackle-supabase'
 import * as Sentry from '@sentry/node'
 import {
@@ -173,7 +172,7 @@ export const syncAllAccountDataAsync = async (account_id: string) => {
 }
 
 export const syncAllAccountData = async (account_id: string) => {
-  logger.info(`Syncing account ${account_id}`)
+  console.info(`Syncing account ${account_id}`)
   await supabase
     .from('stripe_accounts')
     .update({
@@ -218,7 +217,7 @@ export const syncAllAccountModeData = async (
   for await (const stripeCustomer of stripe.customers.list({
     stripeAccount: stripe_account_id,
   })) {
-    logger.info(`Syncing customer ${stripeCustomer.id}`)
+    console.info(`Syncing customer ${stripeCustomer.id}`)
     try {
       await upsertStripeCustomer(
         stripe_account_id,
@@ -234,7 +233,7 @@ export const syncAllAccountModeData = async (
   for await (const stripeProduct of stripe.products.list({
     stripeAccount: stripe_account_id,
   })) {
-    logger.info(`Syncing product ${stripeProduct.id}`)
+    console.info(`Syncing product ${stripeProduct.id}`)
     try {
       await upsertStripeProduct(
         stripe_account_id,
@@ -250,7 +249,7 @@ export const syncAllAccountModeData = async (
   for await (const stripePrice of stripe.prices.list({
     stripeAccount: stripe_account_id,
   })) {
-    logger.info(`Syncing price ${stripePrice.id}`)
+    console.info(`Syncing price ${stripePrice.id}`)
     try {
       await upsertStripePrice(
         stripe_account_id,
@@ -267,7 +266,7 @@ export const syncAllAccountModeData = async (
   for await (const stripeSubscription of stripe.subscriptions.list({
     stripeAccount: stripe_account_id,
   })) {
-    logger.info(`Syncing subscription ${stripeSubscription.id}`)
+    console.info(`Syncing subscription ${stripeSubscription.id}`)
     try {
       await upsertStripeSubscription(
         stripe_account_id,
