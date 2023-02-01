@@ -1,5 +1,4 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { checkCors } from '@/cors'
 import supabase from 'spackle-supabase'
 import { verifySignature } from '@/stripe/signature'
 import * as Sentry from '@sentry/nextjs'
@@ -81,8 +80,6 @@ const updateCustomerFeatures = async (
 }
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  await checkCors(req, res)
-
   const { success } = verifySignature(req)
   if (!success) {
     return res.status(400).send('')

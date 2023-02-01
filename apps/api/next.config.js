@@ -12,10 +12,28 @@ const moduleExports = {
       },
     ]
   },
+  async headers() {
+    return [
+      {
+        source: '/stripe/:path*',
+        headers: [
+          {
+            key: 'Access-Control-Allow-Origin',
+            value: '*'
+          },
+          {
+            key: 'Access-Control-Allow-Headers',
+            value: 'Content-Type,Stripe-Signature'
+          },
+        ]
+      }
+    ]
+  }
 };
 
 const sentryWebpackPluginOptions = {
   silent: true, // Suppresses all logs
+  hideSourceMaps: true,
 };
 
 module.exports = withSentryConfig(moduleExports, sentryWebpackPluginOptions);

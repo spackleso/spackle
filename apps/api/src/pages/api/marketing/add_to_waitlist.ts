@@ -2,7 +2,6 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import supabase from 'spackle-supabase'
 import * as Sentry from '@sentry/nextjs'
 import { z } from 'zod'
-import { checkCors } from '@/cors'
 
 const upsertWaitList = async (email: string) => {
   let response = await supabase.from('wait_list_entries').upsert(
@@ -20,8 +19,6 @@ const upsertWaitList = async (email: string) => {
 }
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  await checkCors(req, res)
-
   // Validate inputs
   const { user_email } = req.body
   const schema = z.object({

@@ -1,5 +1,4 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { checkCors } from '@/cors'
 import supabase from 'spackle-supabase'
 import { verifySignature } from '@/stripe/signature'
 import { PostgrestResponse } from '@supabase/supabase-js'
@@ -37,8 +36,6 @@ const createFeature = async (
 }
 
 const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
-  await checkCors(req, res)
-
   const { success } = verifySignature(req)
   if (!success) {
     return res.status(400).json({

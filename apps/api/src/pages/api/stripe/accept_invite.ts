@@ -1,5 +1,4 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { checkCors } from '@/cors'
 import { verifySignature } from '@/stripe/signature'
 import supabase from 'spackle-supabase'
 import * as Sentry from '@sentry/nextjs'
@@ -38,8 +37,6 @@ const fetchUnacceptedInvite = async (token: string) => {
 }
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  await checkCors(req, res)
-
   const { success } = verifySignature(req)
   if (!success) {
     return res.status(400).send('')

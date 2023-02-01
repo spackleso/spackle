@@ -1,5 +1,4 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { checkCors } from '@/cors'
 import supabase from 'spackle-supabase'
 import { verifySignature } from '@/stripe/signature'
 import * as Sentry from '@sentry/nextjs'
@@ -23,8 +22,6 @@ const deleteFeature = async (account_id: string, feature_id: string) => {
 }
 
 const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
-  await checkCors(req, res)
-
   const { success } = verifySignature(req)
   if (!success) {
     return res.status(400).send('')
