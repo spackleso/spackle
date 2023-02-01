@@ -2,7 +2,6 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import { checkCors } from '@/cors'
 import supabase from 'spackle-supabase'
 import { verifySignature } from '@/stripe/signature'
-import { withLogging } from '@/logger'
 import { PostgrestResponse } from '@supabase/supabase-js'
 import * as Sentry from '@sentry/nextjs'
 import { storeAccountStatesAsync } from '@/store/dynamodb'
@@ -63,4 +62,4 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   })
 }
 
-export default withLogging(handler)
+export default handler

@@ -9,7 +9,7 @@ import {
   syncStripeSubscriptions,
 } from '@/stripe/sync'
 import Stripe from 'stripe'
-import { logger, withLogging } from '@/logger'
+import { logger } from '@/logger'
 
 // Live webhook endpoints receive both live and test events.
 const webhookSigningSecret = process.env.STRIPE_WEBHOOK_SECRET || ''
@@ -117,4 +117,4 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 }
 
-export default withLogging(handler)
+export default handler

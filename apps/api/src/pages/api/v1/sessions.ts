@@ -1,6 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import * as Sentry from '@sentry/nextjs'
-import { withLogging } from '@/logger'
 import jwt from 'jsonwebtoken'
 import { IncomingHttpHeaders } from 'http'
 import { getIdentityToken } from '@/cognito'
@@ -75,4 +74,4 @@ const handler = async (
   })
 }
 
-export default withLogging(handler)
+export default handler

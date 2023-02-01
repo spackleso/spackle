@@ -1,5 +1,4 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { withLogging } from '@/logger'
 import supabase from 'spackle-supabase'
 import * as Sentry from '@sentry/nextjs'
 import { z } from 'zod'
@@ -48,4 +47,4 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   })
 }
 
-export default withLogging(handler)
+export default handler

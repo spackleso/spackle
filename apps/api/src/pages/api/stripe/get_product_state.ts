@@ -1,6 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { checkCors } from '@/cors'
-import { withLogging } from '@/logger'
 import { getProductFeaturesState } from '@/state'
 import { verifySignature } from '@/stripe/signature'
 
@@ -22,4 +21,4 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   })
 }
 
-export default withLogging(handler)
+export default handler

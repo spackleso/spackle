@@ -2,7 +2,6 @@ import { NextApiRequest, NextApiResponse } from 'next'
 import { getCustomerFeaturesState } from '@/state'
 import supabase from 'spackle-supabase'
 import * as Sentry from '@sentry/nextjs'
-import { withLogging } from '@/logger'
 import jwt from 'jsonwebtoken'
 import { IncomingHttpHeaders } from 'http'
 
@@ -91,4 +90,4 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   })
 }
 
-export default withLogging(handler)
+export default handler

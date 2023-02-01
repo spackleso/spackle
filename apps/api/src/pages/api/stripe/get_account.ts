@@ -1,6 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { checkCors } from '@/cors'
-import { withLogging } from '@/logger'
 import { verifySignature } from '@/stripe/signature'
 import supabase, { SupabaseError } from 'spackle-supabase'
 import * as Sentry from '@sentry/nextjs'
@@ -62,4 +61,4 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   res.status(200).json(data.length ? data[0] : {})
 }
 
-export default withLogging(handler)
+export default handler

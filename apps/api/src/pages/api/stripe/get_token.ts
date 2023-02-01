@@ -4,7 +4,6 @@ import { verifySignature } from '@/stripe/signature'
 import supabase from 'spackle-supabase'
 import * as Sentry from '@sentry/nextjs'
 import jwt from 'jsonwebtoken'
-import { withLogging } from '@/logger'
 
 const SUPABASE_JWT_SECRET = process.env.SUPABASE_JWT_SECRET
 
@@ -75,4 +74,4 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   res.status(200).json({ token })
 }
 
-export default withLogging(handler)
+export default handler

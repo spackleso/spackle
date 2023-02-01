@@ -1,6 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { checkCors } from '@/cors'
-import { withLogging } from '@/logger'
 import { verifySignature } from '@/stripe/signature'
 import { syncAllAccountDataAsync } from '@/stripe/sync'
 
@@ -18,4 +17,4 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   res.status(200).json({})
 }
 
-export default withLogging(handler)
+export default handler
