@@ -1,31 +1,10 @@
-import { NextApiRequest, NextApiResponse } from 'next'
+import { NextApiResponse } from 'next'
 import { getCustomerFeaturesState } from '@/state'
 import supabase from 'spackle-supabase'
 import * as Sentry from '@sentry/nextjs'
-import jwt from 'jsonwebtoken'
-import { IncomingHttpHeaders } from 'http'
-
-const SUPABASE_JWT_SECRET = process.env.SUPABASE_JWT_SECRET
+import { AuthenticatedNextApiRequest, withTokenAuth } from '@/api'
 
 type Data = {}
-
-const requestToken = (headers: IncomingHttpHeaders) => {
-  if (!SUPABASE_JWT_SECRET) {
-    throw new Error('Signing key not set')
-  }
-
-  const authorization = headers['authorization'] || 'Bearer '
-  const token = authorization.split(' ')[1]
-  const payload = jwt.verify(token, SUPABASE_JWT_SECRET)
-
-  if (!payload.sub) {
-    throw new Error('Invalid jwt')
-  }
-
-  return {
-    sub: payload.sub as string,
-  }
-}
 
 const getCustomerSubscriptions = async (
   accountId: string,
@@ -61,23 +40,19 @@ const getCustomerSubscriptions = async (
   }))
 }
 
-const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
-  let accountId: string
-  try {
-    const payload = requestToken(req.headers)
-    accountId = payload.sub
-  } catch (error) {
-    Sentry.captureException(error)
-    res.status(403).send('')
-    return
-  }
-
+const handler = async (
+  req: AuthenticatedNextApiRequest,
+  res: NextApiResponse<Data>,
+) => {
   const { id } = req.query
 
   let featureState, subscriptionsState
   try {
-    featureState = await getCustomerFeaturesState(accountId, id as string)
-    subscriptionsState = await getCustomerSubscriptions(accountId, id as string)
+    featureState = await getCustomerFeaturesState(req.accountId, id as string)
+    subscriptionsState = await getCustomerSubscriptions(
+      req.accountId,
+      id as string,
+    )
   } catch (error) {
     Sentry.captureException(error)
     res.status(400).send('')
@@ -90,4 +65,4 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   })
 }
 
-export default handler
+export default withTokenAuth(handler)
