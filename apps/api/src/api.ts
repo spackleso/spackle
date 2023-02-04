@@ -9,7 +9,7 @@ const { SUPABASE_JWT_SECRET } = process.env
 type RequestMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
 
 export type AuthenticatedNextApiRequest = NextApiRequest & {
-  accountId: string
+  stripeAccountId: string
 }
 
 export type AuthenticatedNextApiHandler = {
@@ -75,10 +75,10 @@ export const requestToken = (headers: IncomingHttpHeaders) => {
 
 export const withTokenAuth = (handler: AuthenticatedNextApiHandler) => {
   return async (req: NextApiRequest, res: NextApiResponse) => {
-    let accountId: string
+    let stripeAccountId: string
     try {
       const payload = requestToken(req.headers)
-      accountId = payload.sub
+      stripeAccountId = payload.sub
     } catch (error) {
       Sentry.captureException(error)
       res.status(403).json({ error: 'Unauthorized' })
@@ -86,7 +86,7 @@ export const withTokenAuth = (handler: AuthenticatedNextApiHandler) => {
     }
 
     const authenticatedReq = req as AuthenticatedNextApiRequest
-    authenticatedReq.accountId = accountId
+    authenticatedReq.stripeAccountId = stripeAccountId
     return handler(authenticatedReq, res)
   }
 }

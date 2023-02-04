@@ -26,13 +26,13 @@ const handler = async (
   req: AuthenticatedNextApiRequest,
   res: NextApiResponse<Data | Error>,
 ) => {
-  const { Token, IdentityId } = await getIdentityToken(req.accountId)
+  const { Token, IdentityId } = await getIdentityToken(req.stripeAccountId)
   if (!Token || !IdentityId || !DYNAMODB_TABLE_NAME || !AWS_COGNITO_ROLE_ARN) {
     return res.status(400).json({ error: 'Configuration error' })
   }
 
   return res.status(200).json({
-    account_id: req.accountId,
+    account_id: req.stripeAccountId,
     adapter: {
       name: 'dynamodb',
       identity_id: IdentityId,

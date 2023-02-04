@@ -48,9 +48,12 @@ const handler = async (
 
   let featureState, subscriptionsState
   try {
-    featureState = await getCustomerFeaturesState(req.accountId, id as string)
+    featureState = await getCustomerFeaturesState(
+      req.stripeAccountId,
+      id as string,
+    )
     subscriptionsState = await getCustomerSubscriptions(
-      req.accountId,
+      req.stripeAccountId,
       id as string,
     )
   } catch (error) {
