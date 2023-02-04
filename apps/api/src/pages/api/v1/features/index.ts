@@ -2,7 +2,7 @@ import { AuthenticatedNextApiRequest, getPagination, middleware } from '@/api'
 import { storeAccountStatesAsync } from '@/store/dynamodb'
 import { NextApiResponse } from 'next'
 import supabase from 'spackle-supabase'
-import { z, ZodError } from 'zod'
+import { z } from 'zod'
 
 enum FeatureType {
   Flag = 0,
