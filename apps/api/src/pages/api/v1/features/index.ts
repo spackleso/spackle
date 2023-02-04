@@ -1,6 +1,7 @@
 import {
   AuthenticatedNextApiRequest,
   getPagination,
+  middleware,
   withTokenAuth,
 } from '@/api'
 import { NextApiResponse } from 'next'
@@ -18,6 +19,7 @@ interface Feature {
 
 interface Data {
   data: Feature[]
+  has_more: boolean
 }
 
 interface Error {
@@ -28,11 +30,7 @@ const handler = async (
   req: AuthenticatedNextApiRequest,
   res: NextApiResponse<Data | Error>,
 ) => {
-  if (req.method !== 'GET') {
-    return res.status(405).json({ error: 'Method Not Allowed' })
-  }
-
-  const { from, to } = getPagination(parseInt(req.query.page || 1), 10)
+  const { from, to } = getPagination(req, 10)
   const { data, error } = await supabase
     .from('features')
     .select('created_at, id, key, name, type, value_flag, value_limit')
@@ -44,7 +42,8 @@ const handler = async (
     return res.status(400).json({ error: error.message })
   }
 
-  return res.status(200).json({ data })
+  const hasMore = data.length > 10
+  return res.status(200).json({ data: data.slice(0, 10), has_more: hasMore })
 }
 
-export default withTokenAuth(handler)
+export default middleware(handler, ['GET'])

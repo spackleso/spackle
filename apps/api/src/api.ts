@@ -6,6 +6,8 @@ import supabase from 'spackle-supabase'
 
 const { SUPABASE_JWT_SECRET } = process.env
 
+type RequestMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
+
 export type AuthenticatedNextApiRequest = NextApiRequest & {
   accountId: string
 }
@@ -89,10 +91,30 @@ export const withTokenAuth = (handler: AuthenticatedNextApiHandler) => {
   }
 }
 
-export const getPagination = (page: number, size: number) => {
-  const limit = size ? +size : 3
+export const withAllowedMethods = (
+  handler: AuthenticatedNextApiHandler,
+  methods: RequestMethod[],
+) => {
+  return async (req: NextApiRequest, res: NextApiResponse) => {
+    if (!methods.length || methods.includes(req.method as RequestMethod)) {
+      return handler(req as AuthenticatedNextApiRequest, res)
+    }
+    return res.status(405).json({ error: 'Method not allowed' })
+  }
+}
+
+export const getPagination = (req: NextApiRequest, size: number = 10) => {
+  const page = parseInt((req.query.page as string) || '1') - 1
+  const limit = size ? +size : 10
   const from = page ? page * limit : 0
   const to = page ? from + size : size
 
   return { from, to }
+}
+
+export const middleware = (
+  handler: AuthenticatedNextApiHandler,
+  methods: RequestMethod[] = [],
+) => {
+  return withTokenAuth(withAllowedMethods(handler, methods))
 }

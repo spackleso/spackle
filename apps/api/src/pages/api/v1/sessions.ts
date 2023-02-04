@@ -1,6 +1,6 @@
 import { NextApiResponse } from 'next'
 import { getIdentityToken } from '@/cognito'
-import { AuthenticatedNextApiRequest, withTokenAuth } from '@/api'
+import { AuthenticatedNextApiRequest, middleware } from '@/api'
 
 const { DYNAMODB_TABLE_NAME, AWS_COGNITO_ROLE_ARN } = process.env
 
@@ -44,4 +44,4 @@ const handler = async (
   })
 }
 
-export default withTokenAuth(handler)
+export default middleware(handler, ['POST'])

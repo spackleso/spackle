@@ -63,42 +63,86 @@ test('Returns a list of features', async () => {
         value_flag: feature.value_flag,
         value_limit: feature.value_limit,
       })),
+      has_more: false,
     }),
   )
 })
 
-test('Returns a paginated list of features', async () => {
-  const { account, token } = await createAccountWithToken()
-  const { req, res } = createMocks({
-    method: 'GET',
-    headers: {
-      Authorization: `Bearer ${token.token}`,
-    },
+describe('Pagination', () => {
+  test('Returns a paginated list of features', async () => {
+    const { account, token } = await createAccountWithToken()
+    const { req, res } = createMocks({
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token.token}`,
+      },
+    })
+
+    const features = []
+    for (let i = 0; i < 11; i++) {
+      const feature = await createFlagFeature(
+        account.stripe_id,
+        `Feature ${i}`,
+        `feature_${i}`,
+        false,
+      )
+      features.push(feature)
+    }
+
+    await handler(req, res)
+    expect(res._getData()).toBe(
+      JSON.stringify({
+        data: features.slice(0, 10).map((feature) => ({
+          created_at: feature.created_at,
+          id: feature.id,
+          key: feature.key,
+          name: feature.name,
+          type: feature.type,
+          value_flag: feature.value_flag,
+          value_limit: feature.value_limit,
+        })),
+        has_more: true,
+      }),
+    )
   })
 
-  const features = []
-  for (let i = 0; i < 11; i++) {
-    const feature = await createFlagFeature(
-      account.stripe_id,
-      `Feature ${i}`,
-      `feature_${i}`,
-      false,
-    )
-    features.push(feature)
-  }
+  test('Page parameters', async () => {
+    const { account, token } = await createAccountWithToken()
+    const { req, res } = createMocks({
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token.token}`,
+      },
+      query: {
+        page: 2,
+      },
+    })
 
-  await handler(req, res)
-  expect(res._getData()).toBe(
-    JSON.stringify({
-      data: features.slice(0, 10).map((feature) => ({
-        created_at: feature.created_at,
-        id: feature.id,
-        key: feature.key,
-        name: feature.name,
-        type: feature.type,
-        value_flag: feature.value_flag,
-        value_limit: feature.value_limit,
-      })),
-    }),
-  )
+    const features = []
+    for (let i = 0; i < 11; i++) {
+      const feature = await createFlagFeature(
+        account.stripe_id,
+        `Feature ${i}`,
+        `feature_${i}`,
+        false,
+      )
+      features.push(feature)
+    }
+
+    await handler(req, res)
+    expect(res._getData()).toBe(
+      JSON.stringify({
+        data: features.slice(10, 11).map((feature) => ({
+          created_at: feature.created_at,
+          id: feature.id,
+          key: feature.key,
+          name: feature.name,
+          type: feature.type,
+          value_flag: feature.value_flag,
+          value_limit: feature.value_limit,
+        })),
+        has_more: false,
+      }),
+    )
+  })
 })

@@ -2,7 +2,7 @@ import { NextApiResponse } from 'next'
 import { getCustomerFeaturesState } from '@/state'
 import supabase from 'spackle-supabase'
 import * as Sentry from '@sentry/nextjs'
-import { AuthenticatedNextApiRequest, withTokenAuth } from '@/api'
+import { AuthenticatedNextApiRequest, middleware } from '@/api'
 
 type Data = {}
 
@@ -65,4 +65,4 @@ const handler = async (
   })
 }
 
-export default withTokenAuth(handler)
+export default middleware(handler)
