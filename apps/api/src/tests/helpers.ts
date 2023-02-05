@@ -45,6 +45,22 @@ export const createStripeProduct = async (stripe_account_id: string) => {
   return data[0]
 }
 
+export const createStripePrice = async (
+  stripe_account_id: string,
+  stripe_product_id: string,
+) => {
+  const { data } = (await supabase
+    .from('stripe_prices')
+    .insert({
+      stripe_account_id,
+      stripe_product_id,
+      stripe_id: stripeId('prod'),
+    })
+    .select()) as any
+
+  return data[0]
+}
+
 export const createAccountWithToken = async () => {
   const account = await createAccount()
 
@@ -118,4 +134,30 @@ export const createProductFeature = async (
     })
     .select()) as any
   return productFeatureData[0]
+}
+
+export const createPriceFeature = async (
+  stripe_account_id: string,
+  name: string,
+  key: string,
+  value_flag: boolean,
+) => {
+  const feature = await createFlagFeature(
+    stripe_account_id,
+    name,
+    key,
+    value_flag,
+  )
+  const product = await createStripeProduct(stripe_account_id)
+  const price = await createStripePrice(stripe_account_id, product.stripe_id)
+  const { data: priceFeatureData, error } = (await supabase
+    .from('price_features')
+    .insert({
+      stripe_account_id,
+      feature_id: feature.id,
+      stripe_price_id: price.stripe_id,
+      value_flag,
+    })
+    .select()) as any
+  return priceFeatureData[0]
 }
