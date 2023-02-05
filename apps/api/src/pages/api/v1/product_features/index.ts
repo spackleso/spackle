@@ -1,43 +1,43 @@
 import { AuthenticatedNextApiRequest, getPagination, middleware } from '@/api'
 import { storeAccountStatesAsync } from '@/store/dynamodb'
-import { FeatureType } from '@/types'
 import { NextApiResponse } from 'next'
 import supabase from 'spackle-supabase'
 import { z } from 'zod'
 
-const createFeatureSchema = z.discriminatedUnion('type', [
-  z.object({
-    name: z.string(),
-    key: z.string(),
-    type: z.literal(FeatureType.Flag),
-    value_flag: z.boolean(),
-  }),
-  z.object({
-    name: z.string(),
-    key: z.string(),
-    type: z.literal(FeatureType.Limit),
-    value_limit: z.number(),
-  }),
+const createFlagProductFeatureSchema = z.object({
+  feature_id: z.number(),
+  stripe_product_id: z.string(),
+  value_flag: z.boolean(),
+})
+
+const createLimitProductFeatureSchema = z.object({
+  feature_id: z.number(),
+  stripe_product_id: z.string(),
+  value_limit: z.number(),
+})
+
+const createProductFeatureSchema = z.union([
+  createFlagProductFeatureSchema,
+  createLimitProductFeatureSchema,
 ])
 
-const featureSchema = z.object({
+const productFeatureSchema = z.object({
   created_at: z.string().nullable(),
+  feature_id: z.number(),
   id: z.number(),
-  key: z.string(),
-  name: z.string(),
-  type: z.nativeEnum(FeatureType),
+  stripe_product_id: z.string(),
   value_flag: z.boolean().nullable(),
   value_limit: z.number().nullable(),
 })
 
-type Feature = z.infer<typeof featureSchema>
+type ProductFeature = z.infer<typeof productFeatureSchema>
 
 type List = {
-  data: Feature[]
+  data: ProductFeature[]
   has_more: boolean
 }
 
-type FlattenedErrors = z.inferFlattenedErrors<typeof createFeatureSchema>
+type FlattenedErrors = z.inferFlattenedErrors<typeof createProductFeatureSchema>
 
 type Error = {
   error: string | FlattenedErrors
@@ -45,37 +45,36 @@ type Error = {
 
 const handlePost = async (
   req: AuthenticatedNextApiRequest,
-  res: NextApiResponse<Feature | Error>,
+  res: NextApiResponse<ProductFeature | Error>,
 ) => {
-  const validation = createFeatureSchema.safeParse(req.body)
+  const validation = createProductFeatureSchema.safeParse(req.body)
   if (!validation.success) {
     return res.status(400).json({
       error: validation.error.flatten(),
     })
   }
 
-  const { data: features, error } = await supabase
-    .from('features')
+  const { data: productFeatures, error } = await supabase
+    .from('product_features')
     .insert({
       stripe_account_id: req.stripeAccountId,
       ...validation.data,
     })
     .select()
 
-  if (error || !features) {
+  if (error || !productFeatures) {
     return res.status(400).json({ error: error.message })
   }
 
   await storeAccountStatesAsync(req.stripeAccountId)
-  const feature = features[0]
+  const productFeature = productFeatures[0]
   return res.status(201).json({
-    created_at: feature.created_at,
-    id: feature.id,
-    key: feature.key,
-    name: feature.name,
-    type: feature.type,
-    value_flag: feature.value_flag,
-    value_limit: feature.value_limit,
+    created_at: productFeature.created_at,
+    feature_id: productFeature.feature_id,
+    id: productFeature.id,
+    stripe_product_id: productFeature.stripe_product_id,
+    value_flag: productFeature.value_flag,
+    value_limit: productFeature.value_limit,
   })
 }
 
@@ -85,8 +84,10 @@ const handleGet = async (
 ) => {
   const { from, to } = getPagination(req, 10)
   const { data, error } = await supabase
-    .from('features')
-    .select('created_at, id, key, name, type, value_flag, value_limit')
+    .from('product_features')
+    .select(
+      'created_at, feature_id, id, stripe_product_id, value_flag, value_limit',
+    )
     .eq('stripe_account_id', req.stripeAccountId)
     .order('id', { ascending: true })
     .range(from, to)
@@ -101,7 +102,7 @@ const handleGet = async (
 
 const handler = async (
   req: AuthenticatedNextApiRequest,
-  res: NextApiResponse<List | Feature | Error>,
+  res: NextApiResponse<List | ProductFeature | Error>,
 ) => {
   if (req.method === 'POST') {
     return await handlePost(req, res)
