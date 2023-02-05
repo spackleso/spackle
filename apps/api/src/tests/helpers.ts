@@ -150,7 +150,7 @@ export const createPriceFeature = async (
   )
   const product = await createStripeProduct(stripe_account_id)
   const price = await createStripePrice(stripe_account_id, product.stripe_id)
-  const { data: priceFeatureData, error } = (await supabase
+  const { data: priceFeatureData } = (await supabase
     .from('price_features')
     .insert({
       stripe_account_id,
@@ -160,4 +160,29 @@ export const createPriceFeature = async (
     })
     .select()) as any
   return priceFeatureData[0]
+}
+
+export const createCustomerFeature = async (
+  stripe_account_id: string,
+  name: string,
+  key: string,
+  value_flag: boolean,
+) => {
+  const feature = await createFlagFeature(
+    stripe_account_id,
+    name,
+    key,
+    value_flag,
+  )
+  const customer = await createStripeCustomer(stripe_account_id)
+  const { data: customerFeatureData } = (await supabase
+    .from('customer_features')
+    .insert({
+      stripe_account_id,
+      feature_id: feature.id,
+      stripe_customer_id: customer.stripe_id,
+      value_flag,
+    })
+    .select()) as any
+  return customerFeatureData[0]
 }
