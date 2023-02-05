@@ -9,6 +9,5 @@ export function middleware(request: NextRequest) {
     return new NextResponse('', { status: 200 })
   }
 
-  const response = NextResponse.next()
-  return response
+  return NextResponse.next()
 }

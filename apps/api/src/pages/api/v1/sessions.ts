@@ -1,11 +1,8 @@
-import { NextApiRequest, NextApiResponse } from 'next'
-import * as Sentry from '@sentry/nextjs'
-import jwt from 'jsonwebtoken'
-import { IncomingHttpHeaders } from 'http'
+import { NextApiResponse } from 'next'
 import { getIdentityToken } from '@/cognito'
+import { AuthenticatedNextApiRequest, middleware } from '@/api'
 
-const { SUPABASE_JWT_SECRET, DYNAMODB_TABLE_NAME, AWS_COGNITO_ROLE_ARN } =
-  process.env
+const { DYNAMODB_TABLE_NAME, AWS_COGNITO_ROLE_ARN } = process.env
 
 interface DynamoDBAdapter {
   name: string
@@ -21,48 +18,21 @@ interface Data {
   adapter: DynamoDBAdapter
 }
 
-interface Unauthorized {
+interface Error {
   error: string
 }
 
-const requestToken = (headers: IncomingHttpHeaders) => {
-  if (!SUPABASE_JWT_SECRET) {
-    throw new Error('Signing key not set')
-  }
-
-  const authorization = headers['authorization'] || 'Bearer '
-  const token = authorization.split(' ')[1]
-  const payload = jwt.verify(token, SUPABASE_JWT_SECRET)
-
-  if (!payload.sub) {
-    throw new Error('Invalid jwt')
-  }
-
-  return {
-    sub: payload.sub as string,
-  }
-}
-
 const handler = async (
-  req: NextApiRequest,
-  res: NextApiResponse<Data | Unauthorized>,
+  req: AuthenticatedNextApiRequest,
+  res: NextApiResponse<Data | Error>,
 ) => {
-  let accountId: string
-  try {
-    const payload = requestToken(req.headers)
-    accountId = payload.sub
-  } catch (error) {
-    Sentry.captureException(error)
-    return res.status(403).json({ error: 'Unauthorized' })
-  }
-
-  const { Token, IdentityId } = await getIdentityToken(accountId)
+  const { Token, IdentityId } = await getIdentityToken(req.stripeAccountId)
   if (!Token || !IdentityId || !DYNAMODB_TABLE_NAME || !AWS_COGNITO_ROLE_ARN) {
     return res.status(400).json({ error: 'Configuration error' })
   }
 
   return res.status(200).json({
-    account_id: accountId,
+    account_id: req.stripeAccountId,
     adapter: {
       name: 'dynamodb',
       identity_id: IdentityId,
@@ -74,4 +44,4 @@ const handler = async (
   })
 }
 
-export default handler
+export default middleware(handler, ['POST'])

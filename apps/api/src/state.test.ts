@@ -1,5 +1,3 @@
-import crypto from 'crypto'
-import { execSync } from 'child_process'
 import {
   getAccountFeaturesState,
   getCustomerFeaturesState,
@@ -7,41 +5,22 @@ import {
   getProductFeaturesState,
 } from './state'
 import supabase from 'spackle-supabase'
-
-const stripeId = (prefix: string) => {
-  return `${prefix}_${crypto.randomBytes(16).toString('hex')}`
-}
-
-const initializeTestDatabase = async () => {
-  execSync('supabase db reset')
-}
-
-beforeAll(async () => {
-  await initializeTestDatabase()
-})
+import {
+  createAccount,
+  createStripeCustomer,
+  createFlagFeature,
+  createLimitFeature,
+  stripeId,
+} from '@/tests/helpers'
 
 test('Get accounts state should return all account features', async () => {
-  const { data } = (await supabase
-    .from('stripe_accounts')
-    .insert({
-      stripe_id: stripeId('acct'),
-    })
-    .select()) as any
-
-  const account = data[0]
-
-  const { data: featureData } = (await supabase
-    .from('features')
-    .insert({
-      name: 'Feature',
-      key: 'feature',
-      type: 0,
-      value_flag: false,
-      stripe_account_id: account.stripe_id,
-    })
-    .select()) as any
-  const feature = featureData[0]
-
+  const account = await createAccount()
+  const feature = await createFlagFeature(
+    account.stripe_id,
+    'Feature',
+    'feature',
+    false,
+  )
   const state = await getAccountFeaturesState(account.stripe_id)
   expect(state).toStrictEqual([
     {
@@ -56,25 +35,13 @@ test('Get accounts state should return all account features', async () => {
 })
 
 test('Get product state should return overridden account features', async () => {
-  const { data: accountData } = (await supabase
-    .from('stripe_accounts')
-    .insert({
-      stripe_id: stripeId('acct'),
-    })
-    .select()) as any
-  const account = accountData[0]
-
-  const { data: featureData } = (await supabase
-    .from('features')
-    .insert({
-      name: 'Feature',
-      key: 'feature',
-      type: 0,
-      value_flag: false,
-      stripe_account_id: account.stripe_id,
-    })
-    .select()) as any
-  const feature = featureData[0]
+  const account = await createAccount()
+  const feature = await createFlagFeature(
+    account.stripe_id,
+    'Feature',
+    'feature',
+    false,
+  )
 
   const { data: productData } = (await supabase
     .from('stripe_products')
@@ -109,25 +76,13 @@ test('Get product state should return overridden account features', async () => 
 })
 
 test('Get price state should return overridden account features', async () => {
-  const { data: accountData } = (await supabase
-    .from('stripe_accounts')
-    .insert({
-      stripe_id: stripeId('acct'),
-    })
-    .select()) as any
-  const account = accountData[0]
-
-  const { data: featureData } = (await supabase
-    .from('features')
-    .insert({
-      name: 'Feature',
-      key: 'feature',
-      type: 0,
-      value_flag: false,
-      stripe_account_id: account.stripe_id,
-    })
-    .select()) as any
-  const feature = featureData[0]
+  const account = await createAccount()
+  const feature = await createFlagFeature(
+    account.stripe_id,
+    'Feature',
+    'feature',
+    false,
+  )
 
   const { data: productData } = (await supabase
     .from('stripe_products')
@@ -173,59 +128,26 @@ test('Get price state should return overridden account features', async () => {
 })
 
 test('Get customer state should return overridden subscription features', async () => {
-  const { data: accountData, error } = (await supabase
-    .from('stripe_accounts')
-    .insert({
-      stripe_id: stripeId('acct'),
-    })
-    .select()) as any
-  console.log(error)
-  const account = accountData[0]
-
-  const { data: customerData } = (await supabase
-    .from('stripe_customers')
-    .insert({
-      stripe_id: stripeId('acct'),
-      stripe_account_id: account.stripe_id,
-    })
-    .select()) as any
-  const customer = customerData[0]
-
-  const { data: trueFeatureData } = await supabase
-    .from('features')
-    .insert({
-      name: 'Default True',
-      key: 'default_true',
-      type: 0,
-      value_flag: true,
-      stripe_account_id: account.stripe_id,
-    })
-    .select()
-  const trueFeature = trueFeatureData![0]
-
-  const { data: falseFeatureData } = await supabase
-    .from('features')
-    .insert({
-      name: 'Default False',
-      key: 'default_false',
-      type: 0,
-      value_flag: false,
-      stripe_account_id: account.stripe_id,
-    })
-    .select()
-  const falseFeature = falseFeatureData![0]
-
-  const { data: limitFeatureData } = await supabase
-    .from('features')
-    .insert({
-      name: 'Default 20',
-      key: 'default_20',
-      type: 1,
-      value_limit: 20,
-      stripe_account_id: account.stripe_id,
-    })
-    .select()
-  const limitFeature = limitFeatureData![0]
+  const account = await createAccount()
+  const customer = await createStripeCustomer(account.stripe_id)
+  const trueFeature = await createFlagFeature(
+    account.stripe_id,
+    'Default True',
+    'default_true',
+    true,
+  )
+  const falseFeature = await createFlagFeature(
+    account.stripe_id,
+    'Default False',
+    'default_false',
+    false,
+  )
+  const limitFeature = await createLimitFeature(
+    account.stripe_id,
+    'Default 20',
+    'default_20',
+    20,
+  )
 
   await supabase.from('customer_features').insert({
     value_flag: true,
@@ -233,14 +155,12 @@ test('Get customer state should return overridden subscription features', async 
     stripe_customer_id: customer.stripe_id,
     feature_id: falseFeature.id,
   })
-
   await supabase.from('customer_features').insert({
     value_flag: false,
     stripe_account_id: account.stripe_id,
     stripe_customer_id: customer.stripe_id,
     feature_id: trueFeature.id,
   })
-
   await supabase.from('customer_features').insert({
     value_limit: null,
     stripe_account_id: account.stripe_id,

@@ -58,9 +58,6 @@ export const storeAccountStates = async (stripeAccountId: string) => {
     const ops = []
     for (let { stripe_id } of chunk) {
       const state = await getCustomerState(stripeAccountId, stripe_id)
-      if (!stripeAccountId || !stripe_id || !state) {
-        console.log('WUT')
-      }
       ops.push({
         PutRequest: {
           Item: {

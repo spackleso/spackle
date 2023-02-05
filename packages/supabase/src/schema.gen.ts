@@ -74,16 +74,19 @@ export interface Database {
         Row: {
           created_at: string | null
           id: number
+          notes: string | null
           token: string
         }
         Insert: {
           created_at?: string | null
           id?: number
+          notes?: string | null
           token?: string
         }
         Update: {
           created_at?: string | null
           id?: number
+          notes?: string | null
           token?: string
         }
       }
