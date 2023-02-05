@@ -6,7 +6,6 @@ import {
   createLimitFeature,
   createCustomerFeature,
   createStripeCustomer,
-  createStripeProduct,
 } from '@/tests/helpers'
 import { storeAccountStatesAsync } from '@/store/dynamodb'
 
