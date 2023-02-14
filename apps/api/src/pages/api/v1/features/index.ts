@@ -16,7 +16,7 @@ const createFeatureSchema = z.discriminatedUnion('type', [
     name: z.string(),
     key: z.string(),
     type: z.literal(FeatureType.Limit),
-    value_limit: z.number(),
+    value_limit: z.number().nullable(),
   }),
 ])
 

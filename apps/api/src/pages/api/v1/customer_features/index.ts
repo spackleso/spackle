@@ -13,7 +13,7 @@ const createFlagCustomerFeatureSchema = z.object({
 const createLimitCustomerFeatureSchema = z.object({
   feature_id: z.number(),
   stripe_customer_id: z.string(),
-  value_limit: z.number(),
+  value_limit: z.number().nullable(),
 })
 
 const createCustomerFeatureSchema = z.union([

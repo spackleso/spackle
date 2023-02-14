@@ -13,7 +13,7 @@ const createFlagProductFeatureSchema = z.object({
 const createLimitProductFeatureSchema = z.object({
   feature_id: z.number(),
   stripe_product_id: z.string(),
-  value_limit: z.number(),
+  value_limit: z.number().nullable(),
 })
 
 const createProductFeatureSchema = z.union([
