@@ -36,7 +36,7 @@ test('Invalid methods return a 405 error', async () => {
 })
 
 test('Returns a 404 if the customer does not exist', async () => {
-  const { account, token } = await createAccountWithToken()
+  const { token } = await createAccountWithToken()
   const { req, res } = createMocks({
     method: 'GET',
     headers: {
@@ -52,7 +52,7 @@ test('Returns a 404 if the customer does not exist', async () => {
 })
 
 test('Returns a 404 if the customer does not belong to the account', async () => {
-  const { account, token } = await createAccountWithToken()
+  const { token } = await createAccountWithToken()
   const { account: otherAccount } = await createAccountWithToken()
   const customer = await createStripeCustomer(otherAccount.stripe_id)
 
