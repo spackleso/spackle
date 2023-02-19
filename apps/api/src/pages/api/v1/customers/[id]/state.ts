@@ -28,6 +28,7 @@ const handler = async (
         'live',
       )
     } catch (error) {
+      console.error(error)
       try {
         customer = await syncStripeCustomer(
           req.stripeAccountId,
@@ -35,6 +36,7 @@ const handler = async (
           'test',
         )
       } catch (error) {
+        console.error(error)
         return res.status(404).json({ error: 'Not found' })
       }
     }
