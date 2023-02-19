@@ -216,34 +216,51 @@ export const getCustomerSubscriptionsState = async (
   accountId: string,
   customerId: string,
 ) => {
-  const { data, error } = await supabase
-    .from('stripe_subscription_items')
-    .select(
-      `
-        stripe_subscriptions!inner(
-          *
-        ),
-        stripe_prices!inner(
-          stripe_json,
-          stripe_products!inner(
-            stripe_json
-          )
-        )
-      `,
-    )
+  const { data: subscriptionsData, error: subscriptionsError } = await supabase
+    .from('stripe_subscriptions')
+    .select('stripe_json')
     .eq('stripe_account_id', accountId)
-    .eq('stripe_subscriptions.stripe_customer_id', customerId)
+    .eq('stripe_customer_id', customerId)
 
-  if (error) {
-    throw new SupabaseError(error)
+  if (subscriptionsError) {
+    throw new SupabaseError(subscriptionsError)
   }
 
-  return data.map((item: any) => ({
-    id: item.stripe_subscriptions.stripe_id,
-    product: JSON.parse(item.stripe_prices.stripe_products.stripe_json),
-    price: JSON.parse(item.stripe_prices.stripe_json),
-    status: item.stripe_subscriptions.status,
-  }))
+  const subscriptions = subscriptionsData.map((item: any) =>
+    JSON.parse(item.stripe_json),
+  )
+
+  const productIds = []
+  for (const subscription of subscriptions) {
+    for (const item of subscription.items.data) {
+      productIds.push(item.price.product)
+    }
+  }
+
+  const { data: productsData, error: productsError } = await supabase
+    .from('stripe_products')
+    .select('stripe_json')
+    .eq('stripe_account_id', accountId)
+    .in('stripe_id', productIds)
+
+  if (productsError) {
+    throw new SupabaseError(productsError)
+  }
+
+  const products = productsData.map((item: any) => JSON.parse(item.stripe_json))
+  const productsMap = products.reduce((a, v) => {
+    a[v.id] = v
+    return a
+  }, {})
+
+  for (const subscription of subscriptions) {
+    for (const item of subscription.items.data) {
+      const product = productsMap[item.price.product]
+      item.price.product = product
+    }
+  }
+
+  return subscriptions
 }
 
 export const getCustomerState = async (

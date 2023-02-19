@@ -23,22 +23,30 @@ export const createAccount = async () => {
 }
 
 export const createStripeCustomer = async (stripe_account_id: string) => {
+  const stripe_id = stripeId('cust')
   const { data: customerData } = (await supabase
     .from('stripe_customers')
     .insert({
-      stripe_id: stripeId('cust'),
+      stripe_id,
       stripe_account_id,
+      stripe_json: JSON.stringify({
+        id: stripe_id,
+      }),
     })
     .select()) as any
   return customerData[0]
 }
 
 export const createStripeProduct = async (stripe_account_id: string) => {
+  const stripe_id = stripeId('prod')
   const { data } = (await supabase
     .from('stripe_products')
     .insert({
       stripe_account_id,
-      stripe_id: stripeId('prod'),
+      stripe_id,
+      stripe_json: JSON.stringify({
+        id: stripe_id,
+      }),
     })
     .select()) as any
 
@@ -49,12 +57,16 @@ export const createStripePrice = async (
   stripe_account_id: string,
   stripe_product_id: string,
 ) => {
+  const stripe_id = stripeId('price')
   const { data } = (await supabase
     .from('stripe_prices')
     .insert({
       stripe_account_id,
       stripe_product_id,
-      stripe_id: stripeId('prod'),
+      stripe_id,
+      stripe_json: JSON.stringify({
+        id: stripe_id,
+      }),
     })
     .select()) as any
 
@@ -71,6 +83,36 @@ export const createAccountWithToken = async () => {
     account,
     token,
   }
+}
+
+export const createStripeSubscription = async (
+  stripe_account_id: string,
+  stripe_customer_id: string,
+  stripe_price_id: string,
+  stripe_json: string,
+  stripe_id: string = stripeId('sub'),
+  si_id: string = stripeId('si'),
+) => {
+  const { data, error } = (await supabase
+    .from('stripe_subscriptions')
+    .insert({
+      status: 'active',
+      stripe_account_id,
+      stripe_customer_id,
+      stripe_id,
+      stripe_json: stripe_json,
+    })
+    .select()) as any
+
+  console.log(error)
+  await supabase.from('stripe_subscription_items').insert({
+    stripe_account_id,
+    stripe_id: si_id,
+    stripe_price_id,
+    stripe_subscription_id: data[0].stripe_id,
+  })
+
+  return data[0]
 }
 
 export const createFlagFeature = async (
