@@ -3,9 +3,43 @@ import { AuthenticatedNextApiRequest, middleware } from '@/api'
 import { getCustomerState } from '@/state'
 import supabase from 'spackle-supabase'
 import { storeCustomerStateAsync } from '@/store/dynamodb'
-import { syncStripeCustomer } from '@/stripe/sync'
+import { syncStripeCustomer, syncStripeSubscriptions } from '@/stripe/sync'
 
 type Data = {}
+
+const fetchAndSyncNewCustomer = async (
+  stripeAccountId: string,
+  stripeCustomerId: string,
+) => {
+  let customer
+  try {
+    customer = await syncStripeCustomer(
+      stripeAccountId,
+      stripeCustomerId,
+      'live',
+    )
+  } catch (error) {
+    try {
+      customer = await syncStripeCustomer(
+        stripeAccountId,
+        stripeCustomerId,
+        'test',
+      )
+    } catch (error) {}
+  }
+
+  if (!customer) {
+    return null
+  }
+
+  try {
+    await syncStripeSubscriptions(stripeAccountId, customer.stripe_id, 'live')
+  } catch (error) {
+    await syncStripeSubscriptions(stripeAccountId, customer.stripe_id, 'test')
+  }
+
+  return customer
+}
 
 const handler = async (
   req: AuthenticatedNextApiRequest,
@@ -21,25 +55,11 @@ const handler = async (
     .maybeSingle()
 
   if (!customer) {
-    try {
-      customer = await syncStripeCustomer(
-        req.stripeAccountId,
-        id as string,
-        'live',
-      )
-    } catch (error) {
-      console.error(error)
-      try {
-        customer = await syncStripeCustomer(
-          req.stripeAccountId,
-          id as string,
-          'test',
-        )
-      } catch (error) {
-        console.error(error)
-        return res.status(404).json({ error: 'Not found' })
-      }
-    }
+    customer = await fetchAndSyncNewCustomer(req.stripeAccountId, id as string)
+  }
+
+  if (!customer) {
+    return res.status(404).json({ error: 'Not found' })
   }
 
   try {

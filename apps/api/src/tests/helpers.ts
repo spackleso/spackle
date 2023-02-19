@@ -93,7 +93,7 @@ export const createStripeSubscription = async (
   stripe_id: string = stripeId('sub'),
   si_id: string = stripeId('si'),
 ) => {
-  const { data, error } = (await supabase
+  const { data } = (await supabase
     .from('stripe_subscriptions')
     .insert({
       status: 'active',
@@ -104,7 +104,6 @@ export const createStripeSubscription = async (
     })
     .select()) as any
 
-  console.log(error)
   await supabase.from('stripe_subscription_items').insert({
     stripe_account_id,
     stripe_id: si_id,
