@@ -9,6 +9,7 @@ import {
   syncStripeSubscriptions,
 } from '@/stripe/sync'
 import Stripe from 'stripe'
+import { deleteStripeCustomer, deleteStripeSubscription } from '@/stripe/db'
 
 // Live webhook endpoints receive both live and test events.
 const webhookSigningSecret = process.env.STRIPE_WEBHOOK_SECRET || ''
@@ -56,7 +57,10 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         event.livemode ? 'live' : 'test',
       )
     } else if (event.type === 'customer.deleted') {
-      console.error(`${event.type} not handled`)
+      await deleteStripeCustomer(
+        event.account!,
+        (event.data.object as Stripe.Customer).id,
+      )
     } else if (event.type === 'customer.updated') {
       await syncStripeCustomer(
         event.account!,
@@ -70,7 +74,10 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         event.livemode ? 'live' : 'test',
       )
     } else if (event.type === 'customer.subscription.deleted') {
-      console.error(`${event.type} not handled`)
+      await deleteStripeSubscription(
+        event.account!,
+        (event.data.object as any).id,
+      )
     } else if (event.type === 'customer.subscription.updated') {
       await syncStripeSubscriptions(
         event.account!,

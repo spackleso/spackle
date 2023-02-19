@@ -140,6 +140,20 @@ export const upsertStripeCustomer = async (
   return data
 }
 
+export const deleteStripeCustomer = async (
+  stripe_account_id: string,
+  stripe_id: string,
+) => {
+  const { data, error } = await supabase
+    .from('stripe_customers')
+    .delete()
+    .eq('stripe_account_id', stripe_account_id)
+    .eq('stripe_id', stripe_id)
+
+  if (error) throw new SupabaseError(error)
+  return data
+}
+
 export const upsertStripeSubscription = async (
   stripe_account_id: string,
   stripe_id: string,
@@ -161,6 +175,20 @@ export const upsertStripeSubscription = async (
     )
     .select()
     .maybeSingle()
+
+  if (error) throw new SupabaseError(error)
+  return data
+}
+
+export const deleteStripeSubscription = async (
+  stripe_account_id: string,
+  stripe_id: string,
+) => {
+  const { data, error } = await supabase
+    .from('stripe_subscriptions')
+    .delete()
+    .eq('stripe_account_id', stripe_account_id)
+    .eq('stripe_id', stripe_id)
 
   if (error) throw new SupabaseError(error)
   return data
