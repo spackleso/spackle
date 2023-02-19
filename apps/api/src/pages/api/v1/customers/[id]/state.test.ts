@@ -5,6 +5,14 @@ import {
 } from '@/tests/helpers'
 import { createMocks } from 'node-mocks-http'
 import handler from '@/pages/api/v1/customers/[id]/state'
+import { storeCustomerStateAsync } from '@/store/dynamodb'
+
+jest.mock('@/store/dynamodb', () => {
+  return {
+    __esModule: true,
+    storeCustomerStateAsync: jest.fn(() => Promise.resolve()),
+  }
+})
 
 test('Requires an API token', async () => {
   const { req, res } = createMocks({
@@ -107,5 +115,9 @@ test('Returns a customer state', async () => {
       ],
       subscriptions: [],
     }),
+  )
+  expect(storeCustomerStateAsync).toHaveBeenCalledWith(
+    account.stripe_id,
+    customer.stripe_id,
   )
 })

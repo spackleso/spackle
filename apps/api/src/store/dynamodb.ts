@@ -105,3 +105,14 @@ export const storeCustomerState = async (
     },
   })
 }
+
+export const storeCustomerStateAsync = async (
+  stripeAccountId: string,
+  stripeCustomerId: string,
+) => {
+  const q = getQueue()
+  return await q.add('storeCustomerState', {
+    account_id: stripeAccountId,
+    customer_id: stripeCustomerId,
+  })
+}

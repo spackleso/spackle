@@ -1,6 +1,6 @@
 import { Queue, Worker } from 'bullmq'
 import Redis from 'ioredis'
-import { storeAccountStates } from '@/store/dynamodb'
+import { storeAccountStates, storeCustomerState } from '@/store/dynamodb'
 import { syncAllAccountData } from '@/stripe/sync'
 
 const getConnection = () => {
@@ -21,8 +21,10 @@ export const getWorker = (name = 'default') => {
     async (job) => {
       if (job.name === 'syncAllAccountData') {
         await syncAllAccountData(job.data.account_id)
-      } else if ((job.name = 'storeAccountStates')) {
+      } else if (job.name === 'storeAccountStates') {
         await storeAccountStates(job.data.account_id)
+      } else if (job.name === 'storeCustomerState') {
+        await storeCustomerState(job.data.account_id, job.data.customer_id)
       }
     },
     { connection },
