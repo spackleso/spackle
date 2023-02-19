@@ -10,6 +10,7 @@ import {
 } from '@/stripe/sync'
 import Stripe from 'stripe'
 import { deleteStripeCustomer, deleteStripeSubscription } from '@/stripe/db'
+import { storeCustomerStateAsync } from '@/store/dynamodb'
 
 // Live webhook endpoints receive both live and test events.
 const webhookSigningSecret = process.env.STRIPE_WEBHOOK_SECRET || ''
@@ -57,10 +58,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         event.livemode ? 'live' : 'test',
       )
     } else if (event.type === 'customer.deleted') {
-      await deleteStripeCustomer(
-        event.account!,
-        (event.data.object as Stripe.Customer).id,
-      )
+      console.error(`${event.type} not handled`)
     } else if (event.type === 'customer.updated') {
       await syncStripeCustomer(
         event.account!,
@@ -77,6 +75,10 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       await deleteStripeSubscription(
         event.account!,
         (event.data.object as any).id,
+      )
+      await storeCustomerStateAsync(
+        event.account!,
+        (event.data.object as any).customer,
       )
     } else if (event.type === 'customer.subscription.updated') {
       await syncStripeSubscriptions(
