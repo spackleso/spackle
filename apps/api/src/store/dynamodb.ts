@@ -39,6 +39,7 @@ const chunkArr = (arr: any[], size: number) => {
 }
 
 export const storeAccountStates = async (stripeAccountId: string) => {
+  console.log('Storing account states for', stripeAccountId)
   const { data, error } = await supabase
     .from('stripe_customers')
     .select('stripe_id')
@@ -87,6 +88,7 @@ export const storeCustomerState = async (
   stripeAccountId: string,
   stripeCustomerId: string,
 ) => {
+  console.log('Storing customer state for', stripeAccountId, stripeCustomerId)
   const state = await getCustomerState(stripeAccountId, stripeCustomerId)
   const client = getClient()
 

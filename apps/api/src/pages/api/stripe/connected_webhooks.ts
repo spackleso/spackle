@@ -45,6 +45,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
     syncStripeAccount(event.account!)
 
+    console.log(`Received event: ${event.id}`)
     if (event.type === 'account.updated') {
       await syncStripeAccount((event.data.object as Stripe.Account).id)
     } else if (event.type === 'account.application.authorized') {
