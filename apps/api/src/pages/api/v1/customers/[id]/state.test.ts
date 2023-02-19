@@ -14,6 +14,12 @@ jest.mock('@/store/dynamodb', () => {
   }
 })
 
+jest.mock('@/queue', () => {
+  return {
+    __esModule: true,
+  }
+})
+
 test('Requires an API token', async () => {
   const { req, res } = createMocks({
     method: 'GET',

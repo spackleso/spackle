@@ -3,6 +3,7 @@ import { AuthenticatedNextApiRequest, middleware } from '@/api'
 import { getCustomerState } from '@/state'
 import supabase from 'spackle-supabase'
 import { storeCustomerStateAsync } from '@/store/dynamodb'
+import { syncStripeCustomer } from '@/stripe/sync'
 
 type Data = {}
 
@@ -12,7 +13,7 @@ const handler = async (
 ) => {
   const { id } = req.query
 
-  const { data: customer } = await supabase
+  let { data: customer } = await supabase
     .from('stripe_customers')
     .select()
     .eq('stripe_id', id as string)
@@ -20,7 +21,23 @@ const handler = async (
     .maybeSingle()
 
   if (!customer) {
-    return res.status(404).json({ error: 'Not found' })
+    try {
+      customer = await syncStripeCustomer(
+        req.stripeAccountId,
+        id as string,
+        'live',
+      )
+    } catch (error) {
+      try {
+        customer = await syncStripeCustomer(
+          req.stripeAccountId,
+          id as string,
+          'test',
+        )
+      } catch (error) {
+        return res.status(404).json({ error: 'Not found' })
+      }
+    }
   }
 
   try {

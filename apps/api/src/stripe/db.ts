@@ -22,6 +22,7 @@ export const upsertStripeAccount = async (stripe_id: string) => {
       { onConflict: 'stripe_id' },
     )
     .select()
+    .maybeSingle()
 
   if (error) throw new SupabaseError(error)
   return data
@@ -96,6 +97,7 @@ export const upsertStripePrice = async (
       { onConflict: 'stripe_id' },
     )
     .select()
+    .maybeSingle()
 
   if (error) throw new SupabaseError(error)
   return data
@@ -132,6 +134,7 @@ export const upsertStripeCustomer = async (
       { onConflict: 'stripe_id' },
     )
     .select()
+    .maybeSingle()
 
   if (error) throw new SupabaseError(error)
   return data
@@ -144,16 +147,20 @@ export const upsertStripeSubscription = async (
   status: string,
   stripe_json: string,
 ) => {
-  const { data, error } = await supabase.from('stripe_subscriptions').upsert(
-    {
-      stripe_id,
-      stripe_account_id,
-      stripe_customer_id,
-      stripe_json,
-      status,
-    },
-    { onConflict: 'stripe_id' },
-  )
+  const { data, error } = await supabase
+    .from('stripe_subscriptions')
+    .upsert(
+      {
+        stripe_id,
+        stripe_account_id,
+        stripe_customer_id,
+        stripe_json,
+        status,
+      },
+      { onConflict: 'stripe_id' },
+    )
+    .select()
+    .maybeSingle()
 
   if (error) throw new SupabaseError(error)
   return data
@@ -178,6 +185,8 @@ export const upsertStripeSubscriptionItem = async (
       },
       { onConflict: 'stripe_id' },
     )
+    .select()
+    .maybeSingle()
 
   if (error) throw new SupabaseError(error)
   return data

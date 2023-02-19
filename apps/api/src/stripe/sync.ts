@@ -12,7 +12,7 @@ import {
   upsertStripeProduct,
   upsertStripeSubscription,
   upsertStripeSubscriptionItem,
-} from './db'
+} from '@/stripe/db'
 import { Mode } from '@/types'
 import { storeAccountStatesAsync, storeCustomerState } from '@/store/dynamodb'
 import { getQueue } from '@/queue'
