@@ -20,7 +20,11 @@ const moduleExports = {
           {
             key: 'Access-Control-Allow-Origin',
             value: 'https://www.spackle.so'
-          }
+          },
+          {
+            key: 'Access-Control-Allow-Headers',
+            value: 'Content-Type'
+          },
         ]
       },
       {
