@@ -1,11 +1,11 @@
 import Head from 'next/head'
 
-import { Footer } from '@/components/Footer'
-import { Header } from '@/components/Header'
-import { Hero } from '@/components/Hero'
-import { Container } from '@/components/Container'
-import FeaturePreview from '@/components/FeaturePreview'
-import { Fence } from '@/components/Fence'
+import { Footer } from '@/app/Footer'
+import { Header } from '@/app/Header'
+import { Hero } from '@/app/Hero'
+import { Container } from '@/app/Container'
+import FeaturePreview from '@/app/FeaturePreview'
+import { Fence } from '@/app/Fence'
 import Link from 'next/link'
 
 export default function Home() {

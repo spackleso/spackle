@@ -1,4 +1,6 @@
-import { Container } from '@/components/Container'
+'use client'
+
+import { Container } from '@/app/Container'
 import { useMutation } from '@tanstack/react-query'
 import { useState } from 'react'
 import { CheckIcon } from '@heroicons/react/20/solid'

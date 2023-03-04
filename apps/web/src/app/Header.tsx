@@ -1,14 +1,15 @@
+'use client'
+
 import { Fragment } from 'react'
 import Link from 'next/link'
 import { Popover, Transition } from '@headlessui/react'
 import clsx from 'clsx'
 
-import { Button } from '@/components/Button'
-import { Container } from '@/components/Container'
-import { Logo } from '@/components/Logo'
-import { NavLink } from './NavLink'
+import { Container } from '@/app/Container'
+import { Logo } from '@/app/Logo'
+import { NavLink } from '@/app/NavLink'
 import { ArrowTopRightOnSquareIcon } from '@heroicons/react/20/solid'
-import { ThemeSelector } from '@/components/ThemeSelector'
+import { ThemeSelector } from '@/app/ThemeSelector'
 
 function MobileNavLink({ href, children }: any) {
   return (

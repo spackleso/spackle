@@ -1,5 +1,24 @@
-import { Head, Html, Main, NextScript } from 'next/document'
+import '@/app/globals.css'
 import Script from 'next/script'
+import { Comfortaa, Inter, Lexend } from '@next/font/google'
+
+const inter = Inter({
+  variable: '--font-inter',
+  weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900'],
+  display: 'swap',
+})
+
+const lexend = Lexend({
+  variable: '--font-lexend',
+  weight: ['400', '500'],
+  display: 'swap',
+})
+
+const comfortaa = Comfortaa({
+  variable: '--font-comfortaa',
+  weight: ['300', '400', '500', '600', '700'],
+  display: 'swap',
+})
 
 const themeScript = `
   let isDarkMode = window.matchMedia('(prefers-color-scheme: dark)')
@@ -39,28 +58,14 @@ const themeScript = `
   isDarkMode.addEventListener('change', () => updateThemeWithoutTransitions())
 `
 
-export default function Document(props: any) {
+export default function Layout({ children }: any) {
   return (
-    <Html
-      className="h-full scroll-smooth bg-white antialiased [font-feature-settings:'ss01']"
+    <html
+      className={`h-full scroll-smooth bg-white antialiased [font-feature-settings:'ss01'] ${inter.variable} ${lexend.variable} ${comfortaa.variable}`}
       lang="en"
     >
-      <Head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossOrigin="anonymous"
-        />
-        <link
-          rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Lexend:wght@400;500&display=swap"
-        />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;400;500;600;700&display=swap"
-          rel="stylesheet"
-        ></link>
-        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      <head>
+        <Script id="theme" dangerouslySetInnerHTML={{ __html: themeScript }} />
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-LXGRKPLKKY"
           strategy="afterInteractive"
@@ -74,11 +79,8 @@ export default function Document(props: any) {
             gtag('config', 'G-LXGRKPLKKY');
           `}
         </Script>
-      </Head>
-      <body className="bg-white dark:bg-slate-900">
-        <Main />
-        <NextScript />
-      </body>
-    </Html>
+      </head>
+      <body className="bg-white dark:bg-slate-900">{children}</body>
+    </html>
   )
 }

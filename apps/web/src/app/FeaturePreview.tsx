@@ -1,4 +1,6 @@
-import Toggle from '@/components/Toggle'
+'use client'
+
+import Toggle from '@/app/Toggle'
 import dynamic from 'next/dynamic'
 import { useEffect, useState } from 'react'
 

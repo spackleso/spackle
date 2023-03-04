@@ -1,3 +1,5 @@
+'use client'
+
 import { SVGProps, useEffect, useState } from 'react'
 import { Listbox } from '@headlessui/react'
 import clsx from 'clsx'

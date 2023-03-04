@@ -1,3 +1,5 @@
+'use client'
+
 import { Fragment } from 'react'
 import Highlight, { defaultProps } from 'prism-react-renderer'
 
@@ -16,9 +18,10 @@ export function Fence({ children, language }: any) {
               <Fragment key={lineIndex}>
                 {line
                   .filter((token) => !token.empty)
-                  .map((token, tokenIndex) => (
-                    <span key={tokenIndex} {...getTokenProps({ token })} />
-                  ))}
+                  .map((token, tokenIndex) => {
+                    const { key, ...tokenProps } = getTokenProps({ token })
+                    return <span key={tokenIndex} {...tokenProps} />
+                  })}
                 {'\n'}
               </Fragment>
             ))}

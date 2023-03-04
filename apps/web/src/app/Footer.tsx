@@ -1,5 +1,5 @@
-import { Container } from '@/components/Container'
-import { Logo } from '@/components/Logo'
+import { Container } from '@/app/Container'
+import { Logo } from '@/app/Logo'
 
 export function Footer() {
   return (

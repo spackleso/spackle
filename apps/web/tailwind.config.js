@@ -3,8 +3,7 @@ const defaultTheme = require('tailwindcss/defaultTheme')
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
-    "src/pages/**/*.{js,ts,jsx,tsx}",
-    "src/components/**/*.{js,ts,jsx,tsx}",
+    "src/**/*.{js,ts,jsx,tsx}",
   ],
   darkMode: 'class',
   theme: {
@@ -25,8 +24,8 @@ module.exports = {
     },
     extend: {
       fontFamily: {
-        sans: ['Inter', ...defaultTheme.fontFamily.sans],
-        display: ['Lexend', ...defaultTheme.fontFamily.sans],
+        sans: ['var(--font-inter)', ...defaultTheme.fontFamily.sans],
+        display: ['var(--font-lexend)', ...defaultTheme.fontFamily.sans],
       },
       maxWidth: {
         '8xl': '88rem',
