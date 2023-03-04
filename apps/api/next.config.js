@@ -19,7 +19,7 @@ const moduleExports = {
         headers: [
           {
             key: 'Access-Control-Allow-Origin',
-            value: 'www.spackle.so'
+            value: 'https://www.spackle.so'
           }
         ]
       },
