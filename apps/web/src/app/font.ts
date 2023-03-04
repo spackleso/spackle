@@ -1,4 +1,4 @@
-import { Comfortaa, Inter, Lexend } from '@next/font/google'
+import { Comfortaa, Inter, Lexend } from 'next/font/google'
 
 export const inter = Inter({
   variable: '--font-inter',

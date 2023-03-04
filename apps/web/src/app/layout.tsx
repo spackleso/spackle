@@ -40,6 +40,12 @@ const themeScript = `
   isDarkMode.addEventListener('change', () => updateThemeWithoutTransitions())
 `
 
+export const metadata = {
+  title: 'Spackle - Feature access built on Stripe billing',
+  description:
+    'Spackle allows you to sell what you want without the engineering headache',
+}
+
 export default function Layout({ children }: any) {
   return (
     <html
