@@ -1,6 +1,7 @@
 import '@/app/globals.css'
 import Script from 'next/script'
 import { inter, lexend } from '@/app/font'
+import { Header } from '@/app/Header'
 
 const themeScript = `
   let isDarkMode = window.matchMedia('(prefers-color-scheme: dark)')
@@ -68,7 +69,12 @@ export default function Layout({ children }: any) {
           `}
         </Script>
       </head>
-      <body className="bg-white dark:bg-slate-900">{children}</body>
+      <body className="bg-white dark:bg-slate-900">
+        <div className="flex h-full min-h-screen flex-col">
+          <Header />
+          {children}
+        </div>
+      </body>
     </html>
   )
 }

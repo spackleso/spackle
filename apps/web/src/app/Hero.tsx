@@ -2,10 +2,11 @@
 
 import { Container } from '@/app/Container'
 import { useMutation } from '@tanstack/react-query'
+import { useRouter } from 'next/navigation'
 import { useState } from 'react'
-import { CheckIcon } from '@heroicons/react/20/solid'
 
 export function Hero() {
+  const router = useRouter()
   const [email, setEmail] = useState('')
 
   const requestAccess = useMutation(
@@ -27,6 +28,11 @@ export function Hero() {
       }
 
       return response
+    },
+    {
+      onSuccess: () => {
+        router.push('/registered')
+      },
     },
   )
 
@@ -50,31 +56,24 @@ export function Hero() {
           requestAccess.mutate({ user_email: email })
         }}
       >
-        {requestAccess.isSuccess ? (
-          <div className="flex flex-row justify-center">
-            <CheckIcon className="mr-2 h-6 w-6 text-green-600" />
-            <p className="text-green-600">You&apos;re on the list</p>
-          </div>
-        ) : (
-          <>
-            <input
-              type="text"
-              className="rounded-l-lg border bg-white px-3 py-2 dark:border-slate-800 dark:bg-slate-900 dark:text-white"
-              placeholder="jane@example.com"
-              disabled={requestAccess.isLoading}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-            <button
-              type="submit"
-              disabled={requestAccess.isLoading}
-              className={`rounded-r-lg px-3 text-sm font-semibold text-white text-white ring-slate-700 hover:ring-slate-500 focus:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white active:text-slate-400 active:ring-slate-700 ${
-                requestAccess.isLoading ? 'bg-slate-400' : 'bg-violet-600'
-              }`}
-            >
-              {requestAccess.isLoading ? <>...</> : <>Request Access</>}
-            </button>
-          </>
-        )}
+        <>
+          <input
+            type="text"
+            className="rounded-l-lg border bg-white px-3 py-2 dark:border-slate-800 dark:bg-slate-900 dark:text-white"
+            placeholder="jane@example.com"
+            disabled={requestAccess.isLoading}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <button
+            type="submit"
+            disabled={requestAccess.isLoading}
+            className={`rounded-r-lg px-3 text-sm font-semibold text-white text-white ring-slate-700 hover:ring-slate-500 focus:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white active:text-slate-400 active:ring-slate-700 ${
+              requestAccess.isLoading ? 'bg-slate-400' : 'bg-violet-600'
+            }`}
+          >
+            {requestAccess.isLoading ? <>...</> : <>Request Access</>}
+          </button>
+        </>
       </form>
       {requestAccess.error && (
         <p className="justify-left mt-1 text-red-500">

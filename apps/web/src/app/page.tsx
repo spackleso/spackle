@@ -1,7 +1,4 @@
-import Head from 'next/head'
-
 import { Footer } from '@/app/Footer'
-import { Header } from '@/app/Header'
 import { Hero } from '@/app/Hero'
 import { Container } from '@/app/Container'
 import FeaturePreview from '@/app/FeaturePreview'
@@ -10,8 +7,7 @@ import Link from 'next/link'
 
 export default function Home() {
   return (
-    <div className="flex h-full min-h-screen flex-col">
-      <Header />
+    <>
       <main className="flex flex-grow flex-col items-center justify-center pb-16">
         <Hero />
 
@@ -97,6 +93,6 @@ export default function Home() {
         </Container>
       </main>
       <Footer />
-    </div>
+    </>
   )
 }
