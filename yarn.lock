@@ -1558,15 +1558,17 @@
     "@jridgewell/resolve-uri" "3.1.0"
     "@jridgewell/sourcemap-codec" "1.4.14"
 
-"@markdoc/markdoc@0.1.7":
-  version "0.1.7"
-  resolved "https://registry.yarnpkg.com/@markdoc/markdoc/-/markdoc-0.1.7.tgz#c4a4876ddb4886a45a9d16462277f57fde576f54"
-  integrity sha512-Dz7+VP5I3m/DFpLnzjwvXv64XmneYNzy4adm5uJSkcAJxFlJujIn+hCmMh11k70w+y5Qu18sjngetpuP+3570g==
+"@markdoc/markdoc@0.2.2", "@markdoc/markdoc@^0.2.2":
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/@markdoc/markdoc/-/markdoc-0.2.2.tgz#cea8b7f0935408dc7180865077c0fb61ba70e51e"
+  integrity sha512-0TiD9jmA5h5znN4lxo7HECAu3WieU5g5vUsfByeucrdR/x88hEilpt16EydFyJwJddQ/3w5HQgW7Ovy62r4cyw==
+  optionalDependencies:
+    "@types/markdown-it" "12.2.3"
 
-"@markdoc/next.js@0.1.6":
-  version "0.1.6"
-  resolved "https://registry.yarnpkg.com/@markdoc/next.js/-/next.js-0.1.6.tgz#dee33b28f2f05c0c22a7aeebca7a4ec5685dc7bf"
-  integrity sha512-AkILWoOg3zMrTPDubQgq5lRZ22UuFQsRn/J8oaYUYx/w8RtZ3ZACDNwX9hWVVDT3AcGokNSXaFRsQeWbmpPoFQ==
+"@markdoc/next.js@0.2.2":
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/@markdoc/next.js/-/next.js-0.2.2.tgz#7128bd468c3909cae7bb2c3c503fb211cc043be0"
+  integrity sha512-qHCwcTwyHOHrvxmUcueL+RREhHJxef9p6MS45CxHIChV9JHBcWOJt9v++T8HCf4iCbCdnIVCcR9OYzOj3Kq7XQ==
   dependencies:
     js-yaml "^4.1.0"
 
@@ -2128,6 +2130,11 @@
     expect "^29.0.0"
     pretty-format "^29.0.0"
 
+"@types/js-yaml@^4.0.5":
+  version "4.0.5"
+  resolved "https://registry.yarnpkg.com/@types/js-yaml/-/js-yaml-4.0.5.tgz#738dd390a6ecc5442f35e7f03fa1431353f7e138"
+  integrity sha512-FhpRzf927MNQdRZP0J5DLIdTXhjLYzeUTmLAu69mnVksLH9CJY3IuSeEgbKUki7GQZm0WqDkGzyxju2EZGD2wA==
+
 "@types/jsdom@^20.0.0":
   version "20.0.1"
   resolved "https://registry.yarnpkg.com/@types/jsdom/-/jsdom-20.0.1.tgz#07c14bc19bd2f918c1929541cdaacae894744808"
@@ -2148,6 +2155,24 @@
   integrity sha512-mM4TkDpA9oixqg1Fv2vVpOFyIVLJjm5x4k0V+K/rEsizfjD7Tk7LKk3GTtbB7KCfP0FEHQtsZqFxYA0+sijNVg==
   dependencies:
     "@types/node" "*"
+
+"@types/linkify-it@*":
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/@types/linkify-it/-/linkify-it-3.0.2.tgz#fd2cd2edbaa7eaac7e7f3c1748b52a19143846c9"
+  integrity sha512-HZQYqbiFVWufzCwexrvh694SOim8z2d+xJl5UNamcvQFejLY/2YUtzXHYi3cHdI7PMlS8ejH2slRAOJQ32aNbA==
+
+"@types/markdown-it@12.2.3":
+  version "12.2.3"
+  resolved "https://registry.yarnpkg.com/@types/markdown-it/-/markdown-it-12.2.3.tgz#0d6f6e5e413f8daaa26522904597be3d6cd93b51"
+  integrity sha512-GKMHFfv3458yYy+v/N8gjufHO6MSZKCOXpZc5GXIWWy8uldwfmPn98vp81gZ5f9SVw8YYBctgfJ22a2d7AOMeQ==
+  dependencies:
+    "@types/linkify-it" "*"
+    "@types/mdurl" "*"
+
+"@types/mdurl@*":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@types/mdurl/-/mdurl-1.0.2.tgz#e2ce9d83a613bacf284c7be7d491945e39e1f8e9"
+  integrity sha512-eC4U9MlIcu2q0KQmXszyn5Akca/0jrQmwDRgpAMJai7qBWq4amIQhZyNau4VYGtCeALvW1/NtjzJJ567aZxfKA==
 
 "@types/node@*", "@types/node@18.11.18", "@types/node@>=8.1.0":
   version "18.11.18"
