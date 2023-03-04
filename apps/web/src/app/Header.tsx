@@ -10,6 +10,7 @@ import { Logo } from '@/app/Logo'
 import { NavLink } from '@/app/NavLink'
 import { ArrowTopRightOnSquareIcon } from '@heroicons/react/20/solid'
 import { ThemeSelector } from '@/app/ThemeSelector'
+import { comfortaa } from '@/app/font'
 
 function MobileNavLink({ href, children }: any) {
   return (
@@ -80,7 +81,9 @@ export function Header() {
           <div className="flex items-center md:gap-x-12">
             <Link href="#" aria-label="Home" className="flex items-center">
               <Logo className="h-16 w-auto cursor-pointer" />
-              <h1 className="font-['Comfortaa'] font-bold lowercase text-slate-900 dark:text-white">
+              <h1
+                className={`${comfortaa.className} font-bold lowercase text-slate-900 dark:text-white`}
+              >
                 Spackle
               </h1>
             </Link>

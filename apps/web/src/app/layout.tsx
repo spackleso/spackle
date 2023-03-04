@@ -1,24 +1,6 @@
 import '@/app/globals.css'
 import Script from 'next/script'
-import { Comfortaa, Inter, Lexend } from '@next/font/google'
-
-const inter = Inter({
-  variable: '--font-inter',
-  weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900'],
-  display: 'swap',
-})
-
-const lexend = Lexend({
-  variable: '--font-lexend',
-  weight: ['400', '500'],
-  display: 'swap',
-})
-
-const comfortaa = Comfortaa({
-  variable: '--font-comfortaa',
-  weight: ['300', '400', '500', '600', '700'],
-  display: 'swap',
-})
+import { inter, lexend } from '@/app/font'
 
 const themeScript = `
   let isDarkMode = window.matchMedia('(prefers-color-scheme: dark)')
@@ -61,7 +43,7 @@ const themeScript = `
 export default function Layout({ children }: any) {
   return (
     <html
-      className={`h-full scroll-smooth bg-white antialiased [font-feature-settings:'ss01'] ${inter.variable} ${lexend.variable} ${comfortaa.variable}`}
+      className={`h-full scroll-smooth bg-white antialiased [font-feature-settings:'ss01'] ${inter.variable} ${lexend.variable}`}
       lang="en"
     >
       <head>
