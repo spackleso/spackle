@@ -15,6 +15,15 @@ const moduleExports = {
   async headers() {
     return [
       {
+        source: '/marketing/:path*',
+        headers: [
+          {
+            key: 'Access-Control-Allow-Origin',
+            value: 'www.spackle.so'
+          }
+        ]
+      },
+      {
         source: '/stripe/:path*',
         headers: [
           {
