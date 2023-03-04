@@ -2,6 +2,7 @@ import '@/app/globals.css'
 import Script from 'next/script'
 import { inter, lexend } from '@/app/font'
 import { Header } from '@/app/Header'
+import { Footer } from '@/app/Footer'
 
 const themeScript = `
   let isDarkMode = window.matchMedia('(prefers-color-scheme: dark)')
@@ -73,6 +74,7 @@ export default function Layout({ children }: any) {
         <div className="flex h-full min-h-screen flex-col">
           <Header />
           {children}
+          <Footer />
         </div>
       </body>
     </html>

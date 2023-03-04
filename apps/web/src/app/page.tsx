@@ -1,4 +1,3 @@
-import { Footer } from '@/app/Footer'
 import { Hero } from '@/app/Hero'
 import { Container } from '@/app/Container'
 import FeaturePreview from '@/app/FeaturePreview'
@@ -92,7 +91,6 @@ export default function Home() {
           </div>
         </Container>
       </main>
-      <Footer />
     </>
   )
 }
