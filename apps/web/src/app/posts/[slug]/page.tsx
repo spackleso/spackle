@@ -4,6 +4,7 @@ import Markdoc from '@markdoc/markdoc'
 import yaml from 'js-yaml'
 import { Container } from '@/app/Container'
 import clsx from 'clsx'
+import Link from 'next/link'
 
 const postsDirectory = join(process.cwd(), 'posts')
 
@@ -39,7 +40,9 @@ export default async function PostPage({ params }: any) {
     <main className="flex flex-grow flex-col pb-16 dark:text-white">
       <Container className="flex w-full flex-col items-center pt-20 pb-16">
         <div className="prose lg:prose-xl dark:prose-invert w-full">
-          <h1>{post.frontmatter.title}</h1>
+          <Link href={`/posts/${slug}`}>
+            <h1>{post.frontmatter.title}</h1>
+          </Link>
           <div
             dangerouslySetInnerHTML={{ __html: post.html }}
             className={clsx(
