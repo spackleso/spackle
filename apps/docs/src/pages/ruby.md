@@ -115,10 +115,12 @@ In production, Spackle requires a valid Stripe customer. However, that is not de
   "cus_000000000": {
     "features": [
       {
+        "type": 0,
         "key": "flag_feature",
         "value_flag": true
       },
       {
+        "type": 1,
         "key": "limit_feature",
         "value_limit": 100
       }
@@ -149,10 +151,12 @@ Spackle.store = Spackle::MemoryStore.new()
 Spackle.store.set_customer_data("cus_000000000", {
   "features": [
     {
+      "type": 0,
       "key": "flag_feature",
       "value_flag": True,
     },
     {
+      "type": 1,
       "key": "limit_feature",
       "value_limit": 100,
     },
