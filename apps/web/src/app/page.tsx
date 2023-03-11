@@ -18,10 +18,10 @@ export default function Home() {
                 Leverage Iterative Pricing
               </h3>
               <p className="mx-auto max-w-4xl text-slate-900 dark:text-white">
-                Iterative design isn't limited only to your product. Spackle
-                allows you to experiment with different pricing and product
-                packages easily. Walk into every customer call knowing you're
-                offering the best product at the best price.
+                Iterative design isn&apos;t limited only to your product.
+                Spackle allows you to experiment with different pricing and
+                product packages easily. Walk into every customer call knowing
+                you&apos;re offering the best product at the best price.
               </p>
             </div>
             <div className="mt-8 w-full">
@@ -53,7 +53,7 @@ export default function Home() {
                 Spackle meets you where you already are. Spackle is available in
                 the Stripe App Marketplace and integrates directly with the
                 Stripe platform. Spackle extends the product and pricing
-                functionality you've already invested in. Integrate without
+                functionality you&apos;ve already invested in. Integrate without
                 missing a beat.
               </p>
             </div>
