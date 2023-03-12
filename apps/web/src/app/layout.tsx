@@ -43,9 +43,9 @@ const themeScript = `
 `
 
 export const metadata = {
-  title: 'Spackle - Feature access built on Stripe billing',
+  title: 'Spackle - Product-Market-Pricing Fit Made Easy',
   description:
-    'Spackle allows you to sell what you want without the engineering headache',
+    'Low-code entitlement management platform that allows you to iterate on your pricing, close more deals, and create custom experiences for all of your customers',
 }
 
 export default function Layout({ children }: any) {
