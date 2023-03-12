@@ -105,7 +105,7 @@ export default function Home() {
             Get Started
           </h2>
           <Container className="mt-8 w-full">
-            <p className="mx-auto max-w-xl text-slate-900 dark:text-white">
+            <p className="mx-auto max-w-xl text-slate-900 text-slate-700 dark:text-slate-400">
               Spackle is currently in invite-only beta. Enter your email below
               to add yourself to the wait list.
             </p>
