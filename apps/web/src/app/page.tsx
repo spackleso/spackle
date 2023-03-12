@@ -17,7 +17,7 @@ export default function Home() {
               <h3 className="font-display mx-auto max-w-4xl text-lg font-medium tracking-tight text-slate-900 dark:text-white sm:text-2xl">
                 Leverage Iterative Pricing
               </h3>
-              <p className="mx-auto max-w-4xl text-slate-900 dark:text-white">
+              <p className="mx-auto max-w-4xl text-slate-900 text-slate-700 dark:text-slate-400">
                 Iterative design isn&apos;t limited only to your product.
                 Spackle allows you to experiment with different pricing and
                 product packages easily. Walk into every customer call knowing
@@ -28,7 +28,7 @@ export default function Home() {
               <h3 className="font-display mx-auto max-w-4xl text-lg font-medium tracking-tight text-slate-900 dark:text-white sm:text-2xl">
                 Create Custom Experiences
               </h3>
-              <p className="mx-auto max-w-4xl text-slate-900 dark:text-white">
+              <p className="mx-auto max-w-4xl text-slate-900 text-slate-700 dark:text-slate-400">
                 Spackle handles all of your enterpriese billing scenarios with
                 ease. One-off product packages no longer require meetings with
                 engineering or a codebase filled with billing related
@@ -39,7 +39,7 @@ export default function Home() {
               <h3 className="font-display mx-auto max-w-4xl text-lg font-medium tracking-tight text-slate-900 dark:text-white sm:text-2xl">
                 Close With Confidence
               </h3>
-              <p className="mx-auto max-w-4xl text-slate-900 dark:text-white">
+              <p className="mx-auto max-w-4xl text-slate-900 text-slate-700 dark:text-slate-400">
                 The ability to negotiate product and pricing is a competitive
                 advantage. Close more deals at the best price with the knowledge
                 that the product will handle it.
@@ -49,7 +49,7 @@ export default function Home() {
               <h3 className="font-display mx-auto max-w-4xl text-lg font-medium tracking-tight text-slate-900 dark:text-white sm:text-2xl">
                 All On Stripe Billing
               </h3>
-              <p className="mx-auto max-w-4xl text-slate-900 dark:text-white">
+              <p className="mx-auto max-w-4xl text-slate-900 text-slate-700 dark:text-slate-400">
                 Spackle meets you where you already are. Spackle is available in
                 the Stripe App Marketplace and integrates directly with the
                 Stripe platform. Spackle extends the product and pricing
@@ -69,7 +69,7 @@ export default function Home() {
               <h3 className="font-display mx-auto max-w-4xl text-lg font-medium tracking-tight text-slate-900 dark:text-white sm:text-2xl">
                 Simple Integration
               </h3>
-              <p className="mx-auto max-w-4xl text-slate-900 dark:text-white">
+              <p className="mx-auto max-w-4xl text-slate-900 text-slate-700 dark:text-slate-400">
                 Use any of our SDKs to integrate with Spackle in just a few
                 lines of code. Entitlement authorization should be as easy as a
                 single if statement.
@@ -79,7 +79,7 @@ export default function Home() {
               <h3 className="font-display mx-auto max-w-4xl text-lg font-medium tracking-tight text-slate-900 dark:text-white sm:text-2xl">
                 Tiny Footprint
               </h3>
-              <p className="mx-auto max-w-4xl text-slate-900 dark:text-white">
+              <p className="mx-auto max-w-4xl text-slate-900 text-slate-700 dark:text-slate-400">
                 Spackle takes advantage of global datastores to prevent high
                 memory usage while maintaining low latency.
               </p>
@@ -88,7 +88,7 @@ export default function Home() {
               <h3 className="font-display mx-auto max-w-4xl text-lg font-medium tracking-tight text-slate-900 dark:text-white sm:text-2xl">
                 Remove Stripe Complexity
               </h3>
-              <p className="mx-auto max-w-4xl text-slate-900 dark:text-white">
+              <p className="mx-auto max-w-4xl text-slate-900 text-slate-700 dark:text-slate-400">
                 Stripe billing requires you to replicate their data model in
                 your application. That leads to high implementation and
                 maintenance costs over the life of your product. Spackle allows
