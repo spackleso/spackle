@@ -29,7 +29,7 @@ export default function Home() {
                 Create Custom Experiences
               </h3>
               <p className="mx-auto max-w-4xl text-slate-900 text-slate-700 dark:text-slate-400">
-                Spackle handles all of your enterpriese billing scenarios with
+                Spackle handles all of your enterprise billing scenarios with
                 ease. One-off product packages no longer require meetings with
                 engineering or a codebase filled with billing related
                 complexity.
