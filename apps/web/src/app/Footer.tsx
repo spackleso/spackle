@@ -4,7 +4,7 @@ import { comfortaa } from '@/app/font'
 
 export function Footer() {
   return (
-    <footer className="flex-none bg-slate-50 dark:bg-slate-900">
+    <footer className="flex-none">
       <Container>
         <div className="pb-16">
           <div className="mx-auto flex items-center justify-center">
