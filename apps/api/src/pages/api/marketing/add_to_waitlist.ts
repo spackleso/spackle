@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import supabase from 'spackle-supabase'
 import * as Sentry from '@sentry/nextjs'
 import { z } from 'zod'
+import { publishMessage } from '@/slack'
 
 const upsertWaitList = async (email: string) => {
   let response = await supabase.from('wait_list_entries').upsert(
@@ -37,6 +38,16 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     console.error(error)
     Sentry.captureException(error)
     return res.status(400).json({ error })
+  }
+
+  try {
+    await publishMessage(
+      'spackle-waitlist',
+      `New waitlist entry from landing page email: ${user_email}`,
+    )
+  } catch (error) {
+    console.error(error)
+    Sentry.captureException(error)
   }
 
   res.status(200).json({

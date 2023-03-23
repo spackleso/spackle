@@ -3,6 +3,7 @@ import { verifySignature } from '@/stripe/signature'
 import supabase from 'spackle-supabase'
 import * as Sentry from '@sentry/nextjs'
 import { z } from 'zod'
+import { publishMessage } from '@/slack'
 
 const upsertWaitList = async (email: string, accountId: string) => {
   let response = await supabase.from('wait_list_entries').upsert(
@@ -45,6 +46,16 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     console.error(error)
     Sentry.captureException(error)
     return res.status(400).json({ error })
+  }
+
+  try {
+    await publishMessage(
+      'spackle-waitlist',
+      `New waitlist entry from Stripe email: ${user_email} account_id: ${account_id}`,
+    )
+  } catch (error) {
+    console.error(error)
+    Sentry.captureException(error)
   }
 
   res.status(200).json({
