@@ -38,6 +38,10 @@ const chunkArr = (arr: any[], size: number) => {
   return chunkedArr
 }
 
+const customerKey = (customerId: string, version: number) => {
+  return `${customerId}:${version}`
+}
+
 export const storeAccountStates = async (stripeAccountId: string) => {
   console.log('Storing account states for', stripeAccountId)
   const { data, error } = await supabase
@@ -66,6 +70,15 @@ export const storeAccountStates = async (stripeAccountId: string) => {
             CustomerId: { S: stripe_id },
             State: { S: JSON.stringify(state) },
             Version: { N: state.version.toString() },
+          },
+        },
+      })
+      ops.push({
+        PutRequest: {
+          Item: {
+            AccountId: { S: IdentityId },
+            CustomerId: { S: customerKey(stripe_id, state.version) },
+            State: { S: JSON.stringify(state) },
           },
         },
       })
@@ -104,6 +117,15 @@ export const storeCustomerState = async (
       CustomerId: { S: stripeCustomerId },
       State: { S: JSON.stringify(state) },
       Version: { N: state.version.toString() },
+    },
+  })
+
+  await client.putItem({
+    TableName: DYNAMODB_TABLE_NAME!,
+    Item: {
+      AccountId: { S: IdentityId },
+      CustomerId: { S: customerKey(stripeCustomerId, state.version) },
+      State: { S: JSON.stringify(state) },
     },
   })
 }
