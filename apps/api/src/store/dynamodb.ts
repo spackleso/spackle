@@ -73,6 +73,19 @@ export const storeAccountStates = async (stripeAccountId: string) => {
           },
         },
       })
+    }
+
+    await client.batchWriteItem({
+      RequestItems: {
+        [DYNAMODB_TABLE_NAME!]: ops,
+      },
+    })
+  }
+
+  for (let chunk of chunkArr(data, 25)) {
+    const ops = []
+    for (let { stripe_id } of chunk) {
+      const state = await getCustomerState(stripeAccountId, stripe_id)
       ops.push({
         PutRequest: {
           Item: {
