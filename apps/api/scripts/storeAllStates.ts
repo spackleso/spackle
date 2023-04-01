@@ -8,12 +8,10 @@ async function main() {
     return
   }
 
-  const promises = []
   for (const { stripe_id } of data) {
     console.log(`Storing ${stripe_id}...`)
-    promises.push(storeAccountStates(stripe_id))
+    await storeAccountStates(stripe_id)
   }
-  await Promise.all(promises)
 }
 
 main()
