@@ -67,29 +67,6 @@ export const storeAccountStates = async (stripeAccountId: string) => {
         PutRequest: {
           Item: {
             AccountId: { S: IdentityId },
-            CustomerId: { S: stripe_id },
-            State: { S: JSON.stringify(state) },
-            Version: { N: state.version.toString() },
-          },
-        },
-      })
-    }
-
-    await client.batchWriteItem({
-      RequestItems: {
-        [DYNAMODB_TABLE_NAME!]: ops,
-      },
-    })
-  }
-
-  for (let chunk of chunkArr(data, 25)) {
-    const ops = []
-    for (let { stripe_id } of chunk) {
-      const state = await getCustomerState(stripeAccountId, stripe_id)
-      ops.push({
-        PutRequest: {
-          Item: {
-            AccountId: { S: IdentityId },
             CustomerId: { S: customerKey(stripe_id, state.version) },
             State: { S: JSON.stringify(state) },
           },
@@ -122,16 +99,6 @@ export const storeCustomerState = async (
   if (!IdentityId) {
     throw new Error('IdentityId not set')
   }
-
-  await client.putItem({
-    TableName: DYNAMODB_TABLE_NAME!,
-    Item: {
-      AccountId: { S: IdentityId },
-      CustomerId: { S: stripeCustomerId },
-      State: { S: JSON.stringify(state) },
-      Version: { N: state.version.toString() },
-    },
-  })
 
   await client.putItem({
     TableName: DYNAMODB_TABLE_NAME!,
