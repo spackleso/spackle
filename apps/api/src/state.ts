@@ -221,6 +221,7 @@ export const getCustomerSubscriptionsState = async (
     .select('stripe_json')
     .eq('stripe_account_id', accountId)
     .eq('stripe_customer_id', customerId)
+    .neq('status', 'canceled')
 
   if (subscriptionsError) {
     throw new SupabaseError(subscriptionsError)

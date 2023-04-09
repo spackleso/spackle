@@ -263,9 +263,12 @@ export const syncAllAccountModeData = async (
   }
 
   // Subscriptions & Subscription Items
-  for await (const stripeSubscription of stripe.subscriptions.list({
-    stripeAccount: stripe_account_id,
-  })) {
+  for await (const stripeSubscription of stripe.subscriptions.list(
+    { status: 'all' },
+    {
+      stripeAccount: stripe_account_id,
+    },
+  )) {
     console.info(`Syncing subscription ${stripeSubscription.id}`)
     try {
       await upsertStripeSubscription(
