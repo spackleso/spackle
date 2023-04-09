@@ -1,5 +1,5 @@
 import supabase from 'spackle-supabase'
-import { storeAccountStates } from '../src/store/dynamodb'
+import { syncAllAccountData } from '../src/stripe/sync'
 
 async function main() {
   const { data } = await supabase.from('stripe_accounts').select('stripe_id')
