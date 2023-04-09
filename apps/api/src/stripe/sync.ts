@@ -26,7 +26,7 @@ export const getOrSyncStripeAccount = async (stripe_id: string) => {
 
 export const syncStripeAccount = async (
   stripe_id: string,
-  name: string | undefined,
+  name: string | undefined | null,
 ) => {
   return await upsertStripeAccount(stripe_id, name)
 }

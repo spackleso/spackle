@@ -13,7 +13,7 @@ export const getStripeAccount = async (stripe_id: string) => {
 
 export const upsertStripeAccount = async (
   stripe_id: string,
-  name: string | undefined,
+  name: string | undefined | null,
 ) => {
   const insert = {
     stripe_id,
