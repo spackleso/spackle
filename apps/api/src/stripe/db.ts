@@ -11,16 +11,51 @@ export const getStripeAccount = async (stripe_id: string) => {
   return data
 }
 
-export const upsertStripeAccount = async (stripe_id: string) => {
+export const upsertStripeAccount = async (
+  stripe_id: string,
+  name: string | undefined,
+) => {
+  const insert = {
+    stripe_id,
+    stripe_json: {},
+  }
+
+  if (name) {
+    insert.name = name
+  }
+
   const { data, error } = await supabase
     .from('stripe_accounts')
-    .upsert(
-      {
-        stripe_id,
-        stripe_json: {},
-      },
-      { onConflict: 'stripe_id' },
-    )
+    .upsert(insert, { onConflict: 'stripe_id' })
+    .select()
+    .maybeSingle()
+
+  if (error) throw new SupabaseError(error)
+  return data
+}
+
+export const upsertStripeUser = async (
+  stripe_account_id: string,
+  stripe_id: string,
+  email: string | undefined,
+  name: string | undefined,
+) => {
+  const insert = {
+    stripe_account_id,
+    stripe_id,
+  }
+
+  if (email) {
+    insert.email = email
+  }
+
+  if (name) {
+    insert.name = name
+  }
+
+  const { data, error } = await supabase
+    .from('stripe_users')
+    .upsert(insert, { onConflict: 'stripe_account_id,stripe_id' })
     .select()
     .maybeSingle()
 

@@ -12,6 +12,7 @@ import {
   upsertStripeProduct,
   upsertStripeSubscription,
   upsertStripeSubscriptionItem,
+  upsertStripeUser,
 } from '@/stripe/db'
 import { Mode } from '@/types'
 import { storeAccountStatesAsync, storeCustomerState } from '@/store/dynamodb'
@@ -23,8 +24,20 @@ export const getOrSyncStripeAccount = async (stripe_id: string) => {
   return await syncStripeAccount(stripe_id)
 }
 
-export const syncStripeAccount = async (stripe_id: string) => {
-  return await upsertStripeAccount(stripe_id)
+export const syncStripeAccount = async (
+  stripe_id: string,
+  name: string | undefined,
+) => {
+  return await upsertStripeAccount(stripe_id, name)
+}
+
+export const syncStripeUser = async (
+  stripe_account_id,
+  stripe_id,
+  email,
+  name,
+) => {
+  return await upsertStripeUser(stripe_account_id, stripe_id, email, name)
 }
 
 export const getOrSyncStripeProduct = async (

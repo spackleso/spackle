@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import { verifySignature } from '@/stripe/signature'
 import supabase, { SupabaseError } from 'spackle-supabase'
 import * as Sentry from '@sentry/nextjs'
-import { syncStripeAccount } from '@/stripe/sync'
+import { syncStripeAccount, syncStripeUser } from '@/stripe/sync'
 
 const fetchAccount = async (accountId: string) => {
   const { data, error } = await supabase
@@ -32,23 +32,20 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 
   // TODO: handle all errors
-  const { account_id } = req.body
+  const { account_id, account_name, user_email, user_name, user_id } = req.body
 
-  let data
+  let data = await syncStripeAccount(account_id, account_name)
+
   try {
     data = await fetchAccount(account_id)
   } catch (error) {
-    console.error(error)
     Sentry.captureException(error)
     return res.status(400).json({ error })
   }
 
-  // In this case, go ahead and create the account if it doesn't exist
-  if (!data.length) {
-    data = await syncStripeAccount(account_id)
-
+  if (user_id) {
     try {
-      data = await fetchAccount(account_id)
+      await syncStripeUser(account_id, user_id, user_email, user_name)
     } catch (error) {
       Sentry.captureException(error)
       return res.status(400).json({ error })
