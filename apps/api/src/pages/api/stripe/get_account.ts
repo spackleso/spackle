@@ -53,7 +53,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     }
   }
 
-  res.status(200).json(data ? data : {})
+  res.status(200).json(data.length ? data[0] : {})
 }
 
 export default handler
