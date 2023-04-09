@@ -43,13 +43,13 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       throw err
     }
 
-    syncStripeAccount(event.account!)
+    syncStripeAccount(event.account!, null)
 
     console.log(`Received event: ${event.id}`)
     if (event.type === 'account.updated') {
-      await syncStripeAccount((event.data.object as Stripe.Account).id)
+      await syncStripeAccount((event.data.object as Stripe.Account).id, null)
     } else if (event.type === 'account.application.authorized') {
-      await syncStripeAccount(event.account!)
+      await syncStripeAccount(event.account!, null)
     } else if (event.type === 'account.application.deauthorized') {
       console.error(`${event.type} not handled`)
     } else if (event.type === 'customer.created') {
