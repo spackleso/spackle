@@ -14,6 +14,7 @@ const navigation = [
     title: 'Introduction',
     links: [
       { title: 'Getting started', href: '/' },
+      { title: 'PHP', href: '/php' },
       { title: 'Python', href: '/python' },
       { title: 'Ruby', href: '/ruby' },
     ],
