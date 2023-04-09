@@ -15,7 +15,7 @@ export const upsertStripeAccount = async (
   stripe_id: string,
   name: string | undefined | null,
 ) => {
-  const insert = {
+  const insert: any = {
     stripe_id,
     stripe_json: {},
   }
@@ -37,10 +37,10 @@ export const upsertStripeAccount = async (
 export const upsertStripeUser = async (
   stripe_account_id: string,
   stripe_id: string,
-  email: string | undefined,
-  name: string | undefined,
+  email?: string | null,
+  name?: string | null,
 ) => {
-  const insert = {
+  const insert: any = {
     stripe_account_id,
     stripe_id,
   }

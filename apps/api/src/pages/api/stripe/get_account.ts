@@ -34,8 +34,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   // TODO: handle all errors
   const { account_id, account_name, user_email, user_name, user_id } = req.body
 
-  let data = await syncStripeAccount(account_id, account_name)
+  await syncStripeAccount(account_id, account_name)
 
+  let data
   try {
     data = await fetchAccount(account_id)
   } catch (error) {
@@ -52,7 +53,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     }
   }
 
-  res.status(200).json(data.length ? data[0] : {})
+  res.status(200).json(data ? data : {})
 }
 
 export default handler
