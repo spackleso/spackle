@@ -59,6 +59,7 @@ To integrate with your codebase, check out the language specific libraries below
 
 #### Libraries
 
+* [Node.js](/node)
 * [PHP](/php)
 * [Python](/python)
 * [Ruby](/ruby)
