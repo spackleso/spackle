@@ -10,7 +10,7 @@ export function Footer() {
           <div className="mx-auto flex items-center justify-center">
             <Logo className="h-10 w-auto" />
             <h1
-              className={`${comfortaa.className} font-bold lowercase dark:text-white`}
+              className={`${comfortaa.variable} font-bold lowercase dark:text-white`}
             >
               Spackle
             </h1>

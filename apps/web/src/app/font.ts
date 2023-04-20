@@ -13,6 +13,7 @@ export const lexend = Lexend({
 })
 
 export const comfortaa = Comfortaa({
+  variable: '--font-comfortaa',
   weight: ['300', '400', '500', '600', '700'],
   display: 'swap',
 })
