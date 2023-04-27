@@ -12,7 +12,7 @@ interface FrontMatter {
   excerpt: string
 }
 
-async function getPosts(slug: string) {
+async function getPosts() {
   const files = fs.readdirSync(postsDirectory)
   return files.map((file) => {
     const slug = file.replace(/\.md$/, '')

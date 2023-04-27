@@ -34,7 +34,8 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    ".next/types/**/*.ts"
+    ".next/types/**/*.ts",
+    "/Users/hclarke/Projects/spackle/spackle/apps/web/.next/types/**/*.ts"
   ],
   "exclude": [
     "node_modules"
