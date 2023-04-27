@@ -94,6 +94,11 @@ export function Header() {
               <MobileNavigation />
             </div>
             <ThemeSelector className="relative z-10" />
+            <NavLink href="/posts">
+              <span className="flex flex-row items-center gap-1">
+                <span>Blog</span>
+              </span>
+            </NavLink>
             <NavLink href="https://docs.spackle.so">
               <span className="flex flex-row items-center gap-1">
                 <span>Docs</span>

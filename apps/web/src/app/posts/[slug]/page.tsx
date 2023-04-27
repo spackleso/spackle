@@ -10,6 +10,7 @@ const postsDirectory = join(process.cwd(), 'posts')
 
 interface FrontMatter {
   title: string
+  excerpt: string
 }
 
 async function getPost(slug: string) {
@@ -38,7 +39,7 @@ export default async function PostPage({ params }: any) {
 
   return (
     <main className="flex flex-grow flex-col pb-16 dark:text-white">
-      <Container className="flex w-full flex-col items-center pt-20 pb-16">
+      <Container className="flex w-full flex-col items-center pb-16">
         <div className="prose lg:prose-xl dark:prose-invert w-full">
           <Link href={`/posts/${slug}`}>
             <h1>{post.frontmatter.title}</h1>
