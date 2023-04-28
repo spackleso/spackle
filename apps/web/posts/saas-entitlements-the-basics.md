@@ -1,6 +1,9 @@
 ---
 title: "SaaS Entitlements: The Basics"
 excerpt: "SaaS entitlements are a critical component of every SaaS pricing page. They are the features and services enabled by each of the price points, and are often used by customers to assess the value of your product against your competitors."
+isPublished: true
+publishedDate: "2023-04-27"
+updatedDate: "2023-04-27"
 ---
 
 Every SaaS pricing page is made up of the same three components: the pricing model, the price point, and entitlements.

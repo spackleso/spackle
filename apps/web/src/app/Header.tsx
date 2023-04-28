@@ -82,7 +82,7 @@ export function Header() {
             <Link href="#" aria-label="Home" className="flex items-center">
               <Logo className="h-16 w-auto cursor-pointer" />
               <h1
-                className={`${comfortaa.className} font-bold lowercase text-slate-900 dark:text-white`}
+                className={`${comfortaa.className} pr-4 font-bold lowercase text-slate-900 dark:text-white`}
               >
                 Spackle
               </h1>

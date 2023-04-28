@@ -5,25 +5,24 @@ import yaml from 'js-yaml'
 import { Container } from '@/app/Container'
 import clsx from 'clsx'
 import Link from 'next/link'
-
-const postsDirectory = join(process.cwd(), 'posts')
-
-interface FrontMatter {
-  title: string
-  excerpt: string
-}
+import { FrontMatter, postsDirectory } from '../constants'
 
 async function getPost(slug: string) {
   const source = fs.readFileSync(join(postsDirectory, `${slug}.md`), 'utf8')
   const ast = Markdoc.parse(source)
   const content = Markdoc.transform(ast)
   const html = Markdoc.renderers.html(content)
-  const frontmatter = (
+  const { title, excerpt, isPublished, publishedDate, updatedDate } = (
     ast.attributes.frontmatter ? yaml.load(ast.attributes.frontmatter) : {}
   ) as FrontMatter
 
   return {
-    frontmatter,
+    slug,
+    title,
+    excerpt,
+    isPublished,
+    publishedDate: new Date(publishedDate),
+    updatedDate: new Date(updatedDate),
     html,
   }
 }
@@ -31,6 +30,15 @@ async function getPost(slug: string) {
 export async function generateStaticParams() {
   const files = fs.readdirSync(postsDirectory)
   return files.map((file) => ({ slug: file.replace(/\.md$/, '') }))
+}
+
+export async function generateMetadata({ params }: any) {
+  const { slug } = params
+  const post = await getPost(slug)
+  return {
+    title: `Spackle - ${post.title}`,
+    description: post.excerpt,
+  }
 }
 
 export default async function PostPage({ params }: any) {
@@ -42,7 +50,7 @@ export default async function PostPage({ params }: any) {
       <Container className="flex w-full flex-col items-center pb-16">
         <div className="prose lg:prose-xl dark:prose-invert w-full">
           <Link href={`/posts/${slug}`}>
-            <h1>{post.frontmatter.title}</h1>
+            <h1>{post.title}</h1>
           </Link>
           <div
             dangerouslySetInnerHTML={{ __html: post.html }}
