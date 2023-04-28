@@ -47,7 +47,7 @@ export function WaitListForm() {
         <div className="flex flex-row">
           <input
             type="text"
-            className="rounded-l-lg border bg-white px-3 py-2 dark:border-slate-800 dark:bg-slate-900 dark:text-white"
+            className="rounded-l-lg border bg-white px-4 py-3 dark:border-slate-800 dark:bg-slate-900 dark:text-white"
             placeholder="jane@example.com"
             disabled={requestAccess.isLoading}
             onChange={(e) => setEmail(e.target.value)}
@@ -59,7 +59,7 @@ export function WaitListForm() {
               requestAccess.isLoading ? 'bg-slate-400' : 'bg-violet-600'
             }`}
           >
-            {requestAccess.isLoading ? <>...</> : <>Request Access</>}
+            {requestAccess.isLoading ? <>...</> : <>Request a Demo</>}
           </button>
         </div>
         {requestAccess.error && (
