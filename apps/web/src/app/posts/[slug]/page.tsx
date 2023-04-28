@@ -55,9 +55,8 @@ export default async function PostPage({ params }: any) {
           <p className="prose prose-slate prose-sm text-slate-500 dark:text-slate-400">
             Last updated:{' '}
             {new Date(post.updatedDate).toLocaleDateString('en-us', {
-              weekday: 'long',
               year: 'numeric',
-              month: 'short',
+              month: 'long',
               day: 'numeric',
             })}
           </p>
