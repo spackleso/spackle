@@ -1,6 +1,7 @@
 import { Hero } from '@/app/Hero'
 import { Container } from '@/app/Container'
 import { WaitListForm } from './WaitListForm'
+import Link from 'next/link'
 
 export default function Home() {
   return (
@@ -58,6 +59,12 @@ export default function Home() {
               </p>
             </div>
           </Container>
+          <Link
+            href="/posts/saas-entitlements-the-basics"
+            className="mt-16 rounded-lg border border-violet-600 p-4 text-sm font-semibold text-violet-600 ring-slate-700 hover:ring-slate-500 focus:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white active:text-slate-400 active:ring-slate-700"
+          >
+            Read more about entitlements
+          </Link>
         </Container>
         <hr className="my-8 h-px w-full max-w-4xl border-0 bg-gray-200 dark:bg-gray-700" />
         <Container className="flex w-full max-w-full flex-col items-center justify-center py-20 lg:py-32">
@@ -97,6 +104,12 @@ export default function Home() {
               </p>
             </div>
           </Container>
+          <Link
+            href="https://docs.spackle.so/"
+            className="mt-16 rounded-lg border border-violet-600 p-4 text-sm font-semibold text-violet-600 ring-slate-700 hover:ring-slate-500 focus:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white active:text-slate-400 active:ring-slate-700"
+          >
+            Read the docs
+          </Link>
         </Container>
         <hr className="my-8 h-px w-full max-w-4xl border-0 bg-gray-200 dark:bg-gray-700" />
 
