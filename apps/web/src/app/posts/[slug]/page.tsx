@@ -52,6 +52,15 @@ export default async function PostPage({ params }: any) {
           <Link href={`/posts/${slug}`}>
             <h1>{post.title}</h1>
           </Link>
+          <p className="prose prose-slate prose-sm text-slate-500 dark:text-slate-400">
+            Last updated:{' '}
+            {new Date(post.updatedDate).toLocaleDateString('en-us', {
+              weekday: 'long',
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric',
+            })}
+          </p>
           <div
             dangerouslySetInnerHTML={{ __html: post.html }}
             className={clsx(
