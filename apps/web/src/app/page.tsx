@@ -102,14 +102,8 @@ export default function Home() {
 
         <Container className="flex w-full max-w-full flex-col items-center justify-center py-20 lg:py-32">
           <h2 className="font-display mx-auto max-w-4xl text-center text-3xl font-medium tracking-tight text-slate-900 dark:text-white sm:text-4xl">
-            Get Started
+            Ready to get started?
           </h2>
-          <Container className="mt-8 w-full">
-            <p className="mx-auto max-w-xl text-slate-900 text-slate-700 dark:text-slate-400">
-              Spackle is currently in invite-only beta. Enter your email below
-              to add yourself to the wait list.
-            </p>
-          </Container>
           <WaitListForm />
         </Container>
         <hr className="my-8 h-px w-full max-w-4xl border-0 bg-gray-200 dark:bg-gray-700" />
