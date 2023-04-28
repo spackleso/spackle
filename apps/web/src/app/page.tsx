@@ -48,7 +48,7 @@ export default function Home() {
             </div>
             <div className="mt-8 w-full">
               <h3 className="font-display mx-auto max-w-4xl text-lg font-medium tracking-tight text-slate-900 dark:text-white sm:text-2xl">
-                All On Stripe Billing
+                Built On Stripe Billing
               </h3>
               <p className="mx-auto max-w-4xl text-slate-900 text-slate-700 dark:text-slate-400">
                 Spackle meets you where you already are. Spackle is available in
