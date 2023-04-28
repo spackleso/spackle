@@ -11,8 +11,8 @@ export function Hero() {
       </h1>
       <h2 className="mx-auto mt-8 max-w-2xl text-xl tracking-tight text-slate-700 dark:text-slate-400">
         Spackle&apos;s low-code entitlement management platform allows you to
-        iterate on your pricing, close more deals, and create custom experiences
-        for all of your customers
+        iterate on your pricing, close more deals, and create one of a kind
+        experiences for all of your customers
       </h2>
       <WaitListForm />
     </Container>
