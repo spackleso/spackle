@@ -63,7 +63,7 @@ export default function Home() {
             href="/posts/saas-entitlements-the-basics"
             className="mt-16 rounded-lg border border-violet-600 p-4 text-sm font-semibold text-violet-600 ring-slate-700 hover:ring-slate-500 focus:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white active:text-slate-400 active:ring-slate-700"
           >
-            Read more about entitlements
+            Read More About Entitlements
           </Link>
         </Container>
         <hr className="my-8 h-px w-full max-w-4xl border-0 bg-gray-200 dark:bg-gray-700" />
@@ -108,7 +108,7 @@ export default function Home() {
             href="https://docs.spackle.so/"
             className="mt-16 rounded-lg border border-violet-600 p-4 text-sm font-semibold text-violet-600 ring-slate-700 hover:ring-slate-500 focus:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white active:text-slate-400 active:ring-slate-700"
           >
-            Read the docs
+            Read the Docs
           </Link>
         </Container>
         <hr className="my-8 h-px w-full max-w-4xl border-0 bg-gray-200 dark:bg-gray-700" />
