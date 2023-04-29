@@ -1,12 +1,12 @@
 ---
 title: "The Sharp Edges of Stripe Billing"
-excerpt: "Stripe Billing is both the fastest way to recurring revenue and the source of both pricing and technical debt. You've created a product, generated some revenue, and have decided to make some changes to your pricing. What now?"
+excerpt: "Stripe Billing is both the fastest way to recurring revenue and the source of pricing and technical debt. You've created a product, generated some revenue, and have decided to make some changes to your pricing. What now?"
 isPublished: false
 publishedDate: "2023-05-01"
 updatedDate: "2023-05-01"
 ---
 
-*How Stripe Billing is both the fastest way to recurring revenue and the source of both pricing and technical debt.*
+*How Stripe Billing is both the fastest way to recurring revenue and the source of pricing and technical debt. Need help implementing Stripe at your company? Try [Spackle](https://www.spackle.so).*
 
 ## The Stripe Billing Honeymoon
 
@@ -44,7 +44,7 @@ What does this look like in practice? For starters, aside from the initial check
 
 The entitlement table’s data should be set by your Stripe webhook handlers and billing model. If a Stripe customer subscribes to a plan that enables a feature, your webhooks will be notified and you can enable that entitlement for the account.
 
-As you can see, this decouples the billing model and billing state from the rest of your application. The entire billing model could be thrown out and replaced without your application knowing the difference.
+As you can see, this decouples the billing model and billing state from the rest of your application. The entire billing model could be thrown out and replaced without your application knowing the difference. Or maybe you want to try a few variations of pricing to see what works best. You can do that without touching your application code. Simply set up the new plans in Stripe and wire up the entitlements. This is something that's not possible with the traditional Stripe Billing model.
 
 ## Wrapping Up
 
