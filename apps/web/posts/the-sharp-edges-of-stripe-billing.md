@@ -18,11 +18,11 @@ On the engineering side, a sprint has been set aside to build out your billing s
 
 You send the launch announcement and start collecting money. This works well for a while. New features get developed and wedged into the original pricing scheme. Occasionally, you get requests for something a little more custom, but it’s nothing that a couple flags on the account table can’t fix. Your Stripe products page gets longer and longer as you set up custom price points for some of your more special customers.
 
-## Cracks Start To Form
+## Cracks Start to Form
 
 Over time, this starts to get a little unmanageable. There’s pressure to offer enterprise versions of your application as offers with larger dollar amounts start to arrive. Your sales team feels held back.
 
-You were never quite if your pricing was optimal to begin with. And now you’ve now added a lot of functionality to the application. Are you sure you shouldn’t have an additional tier? What about replacing the per user model with a usage based model?
+You were never quite sure if your pricing was optimal to begin with. And now you’ve now added a lot of functionality to the application. Are you sure you shouldn’t have an additional tier? What about replacing the per user model with a usage based model?
 
 The problem is that original pricing structure has wormed its way into every corner of your business logic. To replace your pricing structure is to remove the foundation of much of your app’s functionality. Every authorization check, navigation element, product nudge, and email template (to name just a few), depended on one thing: **that you picked the correct pricing model and price point on the first try and for all time.**
 
@@ -32,7 +32,7 @@ So what do you do? You take the plunge, marking off another development cycle to
 
 But let’s assume you make it through to the other side. You’re happy with your new pricing. You have to be, because you’re effectively in the same place as before but with different pricing. The thought of rolling back or iterating on your decision is something that doesn’t enter your mind.
 
-## Entitlements Save The Day
+## Entitlements Save the Day
 
 Everyone knows what an [entitlement](http://localhost:3002/posts/saas-entitlements-the-basics) is (in the world of SaaS) even if they don’t know the word for it. They are the features that appear on your pricing page, typically divided up between tiers, that convince users to purchase your product. But they serve an important purpose for breaking out of the Stripe Billing cycle of pain followed by massive code refactoring (and even add a few superpowers of their own).
 
