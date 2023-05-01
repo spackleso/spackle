@@ -1,7 +1,7 @@
 ---
 title: "The Sharp Edges of Stripe Billing"
 excerpt: "Stripe Billing is both the fastest way to recurring revenue and the source of pricing and technical debt. You've created a product, generated some revenue, and have decided to make some changes to your pricing. What now?"
-isPublished: false
+isPublished: true
 publishedDate: "2023-05-01"
 updatedDate: "2023-05-01"
 ---
