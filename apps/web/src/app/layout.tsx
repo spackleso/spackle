@@ -3,6 +3,7 @@ import Script from 'next/script'
 import { inter, lexend } from '@/app/font'
 import { Header } from '@/app/Header'
 import { Footer } from '@/app/Footer'
+import PHProvider from './Posthog'
 
 const themeScript = `
   let isDarkMode = window.matchMedia('(prefers-color-scheme: dark)')
@@ -56,27 +57,16 @@ export default function Layout({ children }: any) {
     >
       <head>
         <Script id="theme" dangerouslySetInnerHTML={{ __html: themeScript }} />
-        <Script
-          src="https://www.googletagmanager.com/gtag/js?id=G-LXGRKPLKKY"
-          strategy="afterInteractive"
-        />
-        <Script id="google-analytics" strategy="afterInteractive">
-          {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){window.dataLayer.push(arguments);}
-            gtag('js', new Date());
-
-            gtag('config', 'G-LXGRKPLKKY');
-          `}
-        </Script>
       </head>
-      <body className="bg-white dark:bg-slate-900">
-        <div className="flex h-full min-h-screen flex-col">
-          <Header />
-          {children}
-          <Footer />
-        </div>
-      </body>
+      <PHProvider>
+        <body className="bg-white dark:bg-slate-900">
+          <div className="flex h-full min-h-screen flex-col">
+            <Header />
+            {children}
+            <Footer />
+          </div>
+        </body>
+      </PHProvider>
     </html>
   )
 }
