@@ -21,6 +21,7 @@ resource "aws_dynamodb_table" "main" {
   range_key      = "CustomerId"
   billing_mode   = "PAY_PER_REQUEST"
   stream_enabled = true
+  stream_view_type = "NEW_AND_OLD_IMAGES"
 
   attribute {
     name = "AccountId"
@@ -36,6 +37,76 @@ resource "aws_dynamodb_table" "main" {
     for_each = var.storage_replica_regions
     content {
       region_name = replica.value
+    }
+  }
+}
+
+resource "aws_s3_bucket" "cloudtrail" {
+  bucket = "spackle-${var.environment}-cloudtrail"
+}
+
+data "aws_iam_policy_document" "cloudtrail" {
+  statement {
+    sid    = "AWSCloudTrailAclCheck"
+    effect = "Allow"
+
+    principals {
+      type        = "Service"
+      identifiers = ["cloudtrail.amazonaws.com"]
+    }
+
+    actions   = ["s3:GetBucketAcl"]
+    resources = [aws_s3_bucket.cloudtrail.arn]
+  }
+
+  statement {
+    sid    = "AWSCloudTrailWrite"
+    effect = "Allow"
+
+    principals {
+      type        = "Service"
+      identifiers = ["cloudtrail.amazonaws.com"]
+    }
+
+    actions   = ["s3:PutObject"]
+    resources = ["${aws_s3_bucket.cloudtrail.arn}/*"]
+
+    condition {
+      test     = "StringEquals"
+      variable = "s3:x-amz-acl"
+      values   = ["bucket-owner-full-control"]
+    }
+  }
+}
+
+resource "aws_s3_bucket_policy" "cloudtrail" {
+  bucket = aws_s3_bucket.cloudtrail.id
+  policy = data.aws_iam_policy_document.cloudtrail.json
+}
+
+resource "aws_cloudtrail" "main" {
+  name = "spackle-${var.environment}"
+  s3_bucket_name = aws_s3_bucket.cloudtrail.bucket
+  is_multi_region_trail = true
+  s3_key_prefix = ""
+  enable_log_file_validation = true
+
+  advanced_event_selector {
+    name = "Log events for data table"
+
+    field_selector {
+      field  = "eventCategory"
+      equals = ["Data"]
+    }
+
+    field_selector {
+      field  = "resources.type"
+      equals = ["AWS::DynamoDB::Table"]
+    }
+
+    field_selector {
+      field = "resources.ARN"
+      equals = ["${aws_dynamodb_table.main.arn}"]
     }
   }
 }
