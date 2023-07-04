@@ -72,7 +72,7 @@ export const getStripeProduct = async (
     .select('*')
     .eq('stripe_account_id', stripe_account_id)
     .eq('stripe_id', stripe_id)
-    .single()
+    .maybeSingle()
 
   if (error) throw error
   return data
