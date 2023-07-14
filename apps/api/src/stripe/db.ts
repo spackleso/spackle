@@ -1,3 +1,4 @@
+import { track } from '@/posthog'
 import supabase, { SupabaseError } from 'spackle-supabase'
 
 export const getStripeAccount = async (stripe_id: string) => {
@@ -55,12 +56,40 @@ export const upsertStripeUser = async (
 
   const { data, error } = await supabase
     .from('stripe_users')
-    .upsert(insert, { onConflict: 'stripe_account_id,stripe_id' })
-    .select()
+    .select('*')
+    .eq('stripe_account_id', stripe_account_id)
+    .eq('stripe_id', stripe_id)
     .maybeSingle()
 
   if (error) throw new SupabaseError(error)
-  return data
+
+  if (data) {
+    const { data: updateData, error: updateError } = await supabase
+      .from('stripe_users')
+      .update(insert)
+      .eq('stripe_account_id', stripe_account_id)
+      .eq('stripe_id', stripe_id)
+      .select()
+      .single()
+
+    if (updateError) throw new SupabaseError(updateError)
+    return updateData
+  } else {
+    const { data: insertData, error: insertError } = await supabase
+      .from('stripe_users')
+      .insert(insert)
+      .select()
+      .single()
+
+    if (insertError) throw new SupabaseError(insertError)
+
+    await track(insertData.id.toString(), 'New user', {
+      email: insertData.email,
+      name: insertData.name,
+      stripe_id: insertData.stripe_id,
+    })
+    return insertData
+  }
 }
 
 export const getStripeProduct = async (

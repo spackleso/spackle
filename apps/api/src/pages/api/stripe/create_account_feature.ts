@@ -4,6 +4,8 @@ import { verifySignature } from '@/stripe/signature'
 import { PostgrestResponse } from '@supabase/supabase-js'
 import * as Sentry from '@sentry/nextjs'
 import { storeAccountStatesAsync } from '@/store/dynamodb'
+import { upsertStripeUser } from '@/stripe/db'
+import { track } from '@/posthog'
 
 type Data = {
   success?: boolean
@@ -43,7 +45,17 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
     })
   }
 
-  const { account_id, name, key, type, value_flag, value_limit } = req.body
+  const {
+    account_id,
+    name,
+    key,
+    type,
+    value_flag,
+    value_limit,
+    user_id,
+    user_email,
+    user_name,
+  } = req.body
 
   try {
     await createFeature(account_id, name, key, type, value_flag, value_limit)
@@ -52,6 +64,17 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
     return res.status(400).json({
       error: (error as Error).message,
     })
+  }
+
+  const user = await upsertStripeUser(
+    account_id,
+    user_id,
+    user_email,
+    user_name,
+  )
+
+  if (user) {
+    await track(user.id.toString(), 'Created feature', {})
   }
 
   return res.status(201).json({
