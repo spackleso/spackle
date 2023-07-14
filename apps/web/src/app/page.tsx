@@ -1,7 +1,23 @@
 import { Hero } from '@/app/Hero'
 import { Container } from '@/app/Container'
 import { WaitListForm } from './WaitListForm'
+import PriceBox, { Price } from '@/app/PriceBox'
 import Link from 'next/link'
+
+const prices: Price[] = [
+  {
+    id: 'free',
+    name: 'Free',
+    price: 0,
+    isPro: false,
+  },
+  {
+    id: 'pro',
+    name: 'Pro',
+    price: 300,
+    isPro: true,
+  },
+]
 
 export default function Home() {
   return (
@@ -61,9 +77,9 @@ export default function Home() {
           </Container>
           <Link
             href="/posts/saas-entitlements-the-basics"
-            className="mt-16 rounded-lg border border-violet-600 p-4 text-sm font-semibold text-violet-600 ring-slate-700 hover:ring-slate-500 focus:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white active:text-slate-400 active:ring-slate-700"
+            className="mt-16 text-lg font-semibold leading-6 text-gray-900 underline dark:text-white"
           >
-            Read More About Entitlements
+            Read about entitlements →
           </Link>
         </Container>
         <hr className="my-8 h-px w-full max-w-4xl border-0 bg-gray-200 dark:bg-gray-700" />
@@ -106,18 +122,43 @@ export default function Home() {
           </Container>
           <Link
             href="https://docs.spackle.so/"
-            className="mt-16 rounded-lg border border-violet-600 p-4 text-sm font-semibold text-violet-600 ring-slate-700 hover:ring-slate-500 focus:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white active:text-slate-400 active:ring-slate-700"
+            className="mt-16 text-lg font-semibold leading-6 text-gray-900 underline dark:text-white"
           >
-            Read the Docs
+            Read the docs →
           </Link>
         </Container>
+
         <hr className="my-8 h-px w-full max-w-4xl border-0 bg-gray-200 dark:bg-gray-700" />
 
-        <Container className="flex w-full max-w-full flex-col items-center justify-center py-20 lg:py-32">
+        <Container className="flex w-full max-w-full flex-col items-center justify-center gap-y-8 py-20 lg:py-32">
+          <h2 className="font-display mx-auto max-w-4xl text-center text-3xl font-medium tracking-tight text-slate-900 dark:text-white sm:text-4xl">
+            Pricing
+          </h2>
+          <div className="mt-8 flex max-w-sm flex-col gap-y-4 lg:max-w-5xl lg:flex-row lg:gap-x-12">
+            {prices.map((price) => (
+              <PriceBox key={price.id} price={price} />
+            ))}
+          </div>
+          <div className="max-w-md text-sm text-slate-500 dark:text-slate-300">
+            <p className="text-center leading-4">
+              * MTR = Monthly tracked revenue. The amount of revenue managed by
+              Spackle in a given month.
+            </p>
+          </div>
+        </Container>
+
+        <hr className="my-8 h-px w-full max-w-4xl border-0 bg-gray-200 dark:bg-gray-700" />
+
+        <Container className="flex w-full max-w-full flex-col items-center justify-center gap-y-8 py-20 lg:py-32">
           <h2 className="font-display mx-auto max-w-4xl text-center text-3xl font-medium tracking-tight text-slate-900 dark:text-white sm:text-4xl">
             Ready to get started?
           </h2>
-          <WaitListForm />
+          <Link
+            href="https://marketplace.stripe.com/apps/spackle"
+            className="flex-none rounded-md bg-indigo-500 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 disabled:opacity-25"
+          >
+            Add to Stripe
+          </Link>
         </Container>
         <hr className="my-8 h-px w-full max-w-4xl border-0 bg-gray-200 dark:bg-gray-700" />
       </main>
