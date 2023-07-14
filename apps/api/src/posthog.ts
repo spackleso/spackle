@@ -6,7 +6,6 @@ export const identify = (
   properties: any,
   path: string = '/',
 ) => {
-  console.log('identify', userId, properties, path)
   return fetch(`${host}/capture`, {
     method: 'POST',
     headers: {
@@ -25,7 +24,6 @@ export const identify = (
 }
 
 export const track = (distinctId: string, event: string, properties: any) => {
-  console.log('track', distinctId, event, properties)
   return fetch(`${host}/capture`, {
     method: 'POST',
     headers: {
