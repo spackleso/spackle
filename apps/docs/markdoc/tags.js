@@ -44,8 +44,8 @@ const tags = {
     },
   },
   image: {
-    render: ({ src, alt = '', width, height }) => (
-      <Image src={src} alt={alt} width={width} height={height} quality={100} />
+    render: ({ src, alt = '', width, height, className="rounded-lg shadow-lg" }) => (
+      <Image src={src} alt={alt} width={width} height={height} quality={100} className={className} />
     ),
     attributes: {
       src: { type: String },

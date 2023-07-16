@@ -4,6 +4,7 @@ import { Layout } from '@/components/Layout'
 
 import 'focus-visible'
 import '@/styles/tailwind.css'
+import PHProvider from '@/components/Posthog'
 
 function getNodeText(node: any) {
   let text = ''
@@ -66,9 +67,11 @@ export default function App({ Component, pageProps }: any) {
         <title>{pageTitle}</title>
         {description && <meta name="description" content={description} />}
       </Head>
-      <Layout title={title} tableOfContents={tableOfContents}>
-        <Component {...pageProps} />
-      </Layout>
+      <PHProvider>
+        <Layout title={title} tableOfContents={tableOfContents}>
+          <Component {...pageProps} />
+        </Layout>
+      </PHProvider>
     </>
   )
 }
