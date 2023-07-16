@@ -8,6 +8,7 @@ import { MobileNavigation } from '@/components/MobileNavigation'
 import { Navigation } from '@/components/Navigation'
 import { Prose } from '@/components/Prose'
 import { ThemeSelector } from '@/components/ThemeSelector'
+import PostInstallBanner from './PostInstallBanner'
 
 const navigation = [
   {
@@ -165,6 +166,7 @@ export function Layout({ children, title, tableOfContents }: any) {
           </div>
         </div>
         <div className="min-w-0 max-w-2xl flex-auto px-4 py-16 lg:max-w-none lg:pr-0 lg:pl-8 xl:px-16">
+          <PostInstallBanner />
           <article>
             {(title || section) && (
               <header className="mb-9 space-y-1">
