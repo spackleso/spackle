@@ -68,14 +68,19 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     stripeCustomerId = updateData.billing_stripe_customer_id || undefined
   }
 
-  const session = await stripe.checkout.sessions.create({
-    line_items: [{ price: stripePriceId }],
-    mode: 'subscription',
-    success_url: settingsUrl,
-    cancel_url: settingsUrl,
-    customer: stripeCustomerId,
-    allow_promotion_codes: true,
-  })
+  let session
+  try {
+    session = await stripe.checkout.sessions.create({
+      line_items: [{ price: stripePriceId }],
+      mode: 'subscription',
+      success_url: settingsUrl,
+      cancel_url: settingsUrl,
+      customer: stripeCustomerId,
+      allow_promotion_codes: true,
+    })
+  } catch (error: any) {
+    return res.status(400).json({ error })
+  }
 
   if (session.url) {
     res.redirect(session.url)
