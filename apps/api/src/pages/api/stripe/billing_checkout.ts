@@ -48,7 +48,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     .single()
 
   if (error) {
-    return new Response(error.message, { status: 400 })
+    return res.status(400).json({ error: error.message })
   }
 
   let stripeCustomerId = data.billing_stripe_customer_id || undefined
@@ -62,7 +62,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       .single()
 
     if (updateError) {
-      return new Response(updateError.message, { status: 400 })
+      return res.status(400).json({ error: updateError.message })
     }
 
     stripeCustomerId = updateData.billing_stripe_customer_id || undefined
@@ -83,9 +83,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 
   if (session.url) {
-    res.redirect(session.url)
+    return res.redirect(session.url)
   } else {
-    res.status(400).json({ error: 'Something went wrong' })
+    return res.status(400).json({ error: 'Something went wrong' })
   }
 }
 

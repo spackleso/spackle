@@ -31,12 +31,12 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     .single()
 
   if (error) {
-    return new Response(error.message, { status: 400 })
+    return res.status(400).json({ error: error.message })
   }
 
   let stripeCustomerId = data.billing_stripe_customer_id || undefined
   if (!stripeCustomerId) {
-    return new Response('Account not found', { status: 400 })
+    return res.status(400).json({ error: 'Account not found' })
   }
 
   const session = await stripe.billingPortal.sessions.create({
