@@ -28,6 +28,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { data, error } = await supabase
     .from('stripe_accounts')
     .select('*')
+    .eq('stripe_id', account_id)
     .single()
 
   if (error) {
