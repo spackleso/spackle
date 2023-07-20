@@ -1,3 +1,4 @@
+import { storeAccountStates } from '@/store/dynamodb'
 import supabase from 'spackle-supabase'
 import { syncAllAccountData } from '../src/stripe/sync'
 
@@ -11,6 +12,8 @@ async function main() {
   for (const { stripe_id } of data) {
     console.log(`Syncing ${stripe_id}...`)
     await syncAllAccountData(stripe_id)
+    console.log(`Storing ${stripe_id}...`)
+    await storeAccountStates(stripe_id)
   }
 }
 
