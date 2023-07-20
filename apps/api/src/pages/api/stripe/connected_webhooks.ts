@@ -9,7 +9,7 @@ import {
   syncStripeSubscriptions,
 } from '@/stripe/sync'
 import Stripe from 'stripe'
-import { deleteStripeCustomer, deleteStripeSubscription } from '@/stripe/db'
+import { deleteStripeSubscription } from '@/stripe/db'
 import { storeCustomerStateAsync } from '@/store/dynamodb'
 
 // Live webhook endpoints receive both live and test events.

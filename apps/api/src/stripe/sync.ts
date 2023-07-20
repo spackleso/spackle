@@ -90,6 +90,11 @@ export const syncStripePrice = async (
   })
   const stripe_json = JSON.stringify(stripePrice)
   const stripe_product_id = stripePrice.product
+  await getOrSyncStripeProduct(
+    stripe_account_id,
+    stripe_product_id as string,
+    mode,
+  )
   const price = await upsertStripePrice(
     stripe_account_id,
     stripe_id,
@@ -135,6 +140,7 @@ export const syncStripeSubscriptions = async (
   mode: Mode,
 ) => {
   const stripe = mode === 'live' ? liveStripe : testStripe
+  await getOrSyncStripeCustomer(stripe_account_id, stripe_customer_id, mode)
   for await (const subscription of stripe.subscriptions.list(
     {
       customer: stripe_customer_id,
@@ -169,6 +175,11 @@ export const syncStripeSubscriptionItems = async (
       stripeAccount: stripe_account_id,
     },
   )) {
+    await getOrSyncStripePrice(
+      stripe_account_id,
+      subscriptionItem.price.id,
+      mode,
+    )
     await upsertStripeSubscriptionItem(
       stripe_account_id,
       subscriptionItem.id,
