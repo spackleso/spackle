@@ -6,7 +6,7 @@ export const getStripeAccount = async (stripe_id: string) => {
     .from('stripe_accounts')
     .select('*')
     .eq('stripe_id', stripe_id)
-    .single()
+    .maybeSingle()
 
   if (error) throw new SupabaseError(error)
   return data
@@ -137,7 +137,7 @@ export const getStripePrice = async (
     .select('*')
     .eq('stripe_account_id', stripe_account_id)
     .eq('stripe_id', stripe_id)
-    .single()
+    .maybeSingle()
 
   if (error) throw new SupabaseError(error)
   return data
@@ -176,7 +176,7 @@ export const getStripeCustomer = async (
     .select('*')
     .eq('stripe_account_id', stripe_account_id)
     .eq('stripe_id', stripe_id)
-    .single()
+    .maybeSingle()
 
   if (error) throw new SupabaseError(error)
   return data
