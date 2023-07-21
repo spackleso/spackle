@@ -9,6 +9,21 @@ export default function Checkout() {
   const account_id = cookieStore.get('account_id')?.value
   const email = cookieStore.get('email')?.value
   const sig = cookieStore.get('sig')?.value
+
+  if (!user_id || !account_id || !email || !sig) {
+    return (
+      <>
+        <main className="flex flex-grow flex-col items-center justify-center pb-16">
+          <Container className="flex w-full max-w-full flex-col items-center justify-center gap-y-8 py-20 lg:py-32">
+            <h2 className="font-display mx-auto max-w-4xl text-center text-3xl font-medium tracking-tight text-slate-900 dark:text-white sm:text-4xl">
+              Something went wrong
+            </h2>
+          </Container>
+        </main>
+      </>
+    )
+  }
+
   return (
     <>
       <main className="flex flex-grow flex-col items-center justify-center pb-16">
