@@ -4,3 +4,7 @@ export enum FeatureType {
   Flag = 0,
   Limit = 1,
 }
+
+export enum SpackleProduct {
+  entitlements = 'entitlements',
+}

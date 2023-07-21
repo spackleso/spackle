@@ -1,6 +1,5 @@
 import { Hero } from '@/app/Hero'
 import { Container } from '@/app/Container'
-import { WaitListForm } from './WaitListForm'
 import PriceBox, { Price } from '@/app/PriceBox'
 import Link from 'next/link'
 
@@ -136,7 +135,14 @@ export default function Home() {
           </h2>
           <div className="mt-8 flex max-w-sm flex-col gap-y-4 lg:max-w-5xl lg:flex-row lg:gap-x-12">
             {prices.map((price) => (
-              <PriceBox key={price.id} price={price} />
+              <PriceBox key={price.id} price={price}>
+                <Link
+                  href="https://marketplace.stripe.com/apps/spackle"
+                  className="flex-none rounded-md bg-indigo-500 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 disabled:opacity-25"
+                >
+                  Add to Stripe
+                </Link>
+              </PriceBox>
             ))}
           </div>
           <div className="max-w-md text-sm text-slate-500 dark:text-slate-300">

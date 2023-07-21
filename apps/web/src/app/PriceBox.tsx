@@ -1,5 +1,6 @@
-import { CheckIcon, XMarkIcon } from '@heroicons/react/24/solid'
+import { CheckIcon } from '@heroicons/react/24/solid'
 import Link from 'next/link'
+import { ReactElement, ReactNode } from 'react'
 
 export type Price = {
   id: string
@@ -8,7 +9,13 @@ export type Price = {
   isPro: boolean
 }
 
-const PriceBox = ({ price }: { price: Price }) => {
+const PriceBox = ({
+  price,
+  children,
+}: {
+  price: Price
+  children: ReactNode
+}) => {
   return (
     <div className="flex flex-col rounded-lg bg-white shadow-lg dark:bg-slate-800 dark:text-white">
       <div className="flex flex-col p-10">
@@ -42,14 +49,7 @@ const PriceBox = ({ price }: { price: Price }) => {
             <span className="text-sm">All Platform SDKs</span>
           </li>
         </ul>
-        <div className="mt-8 flex justify-center">
-          <Link
-            href="https://marketplace.stripe.com/apps/spackle"
-            className="flex-none rounded-md bg-indigo-500 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 disabled:opacity-25"
-          >
-            Add to Stripe
-          </Link>
-        </div>
+        <div className="mt-8 flex justify-center">{children}</div>
       </div>
     </div>
   )

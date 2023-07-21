@@ -1,6 +1,4 @@
-import { Container } from '@/app/Container'
 import Link from 'next/link'
-import { WaitListForm } from './WaitListForm'
 
 export function Hero() {
   return (

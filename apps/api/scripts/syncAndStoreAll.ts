@@ -10,10 +10,20 @@ async function main() {
   }
 
   for (const { stripe_id } of data) {
-    console.log(`Syncing ${stripe_id}...`)
-    await syncAllAccountData(stripe_id)
-    console.log(`Storing ${stripe_id}...`)
-    await storeAccountStates(stripe_id)
+    let retries = 0
+    while (retries < 3) {
+      try {
+        console.log(`Syncing ${stripe_id}...`)
+        await syncAllAccountData(stripe_id)
+        console.log(`Storing ${stripe_id}...`)
+        await storeAccountStates(stripe_id)
+        break
+      } catch (e) {
+        console.error(e)
+        retries++
+        continue
+      }
+    }
   }
 }
 

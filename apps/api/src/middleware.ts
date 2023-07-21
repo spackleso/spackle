@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 export function middleware(request: NextRequest) {
-  // Defer CORS handling when fetching from Stripe
+  // Defer CORS handling when fetching from Stripe or Marketing
   if (
     request.method === 'OPTIONS' &&
     (request.nextUrl.pathname.startsWith('/stripe') ||

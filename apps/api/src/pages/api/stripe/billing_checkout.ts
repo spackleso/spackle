@@ -1,10 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import { liveStripe, testStripe } from '@/stripe'
 import supabase from 'spackle-supabase'
-
-enum SpackleProduct {
-  entitlements = 'entitlements',
-}
+import { SpackleProduct } from '@/types'
 
 const isDev = process.env.NODE_ENV === 'development'
 const stripe = isDev ? testStripe : liveStripe
