@@ -29,7 +29,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     return res.status(400).send('Something went wrong')
   }
 
-  const domain = new URL(process.env.WEB_HOST ?? '').hostname
+  const domain = isDev ? 'localhost' : '.spackle.so'
   res.setHeader('Set-Cookie', [
     serialize('user_id', user_id, { domain, path: '/' }),
     serialize('account_id', account_id, { domain, path: '/' }),
