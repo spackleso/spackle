@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import { handleWebhook } from '@/stripe/webhooks'
 
 // Live webhook endpoints receive both live and test events.
-const webhookSigningSecret = process.env.STRIPE_CONNECTED_WEBHOOK_SECRET || ''
+const webhookSigningSecret = process.env.STRIPE_BILLING_WEBHOOK_SECRET || ''
 
 export const config = {
   api: {
