@@ -13,7 +13,7 @@ export const config = {
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === 'POST') {
     try {
-      handleWebhook(req, webhookSigningSecret)
+      await handleWebhook(req, webhookSigningSecret)
     } catch (err: any) {
       return res.status(400).json({ error: `Webhook Error: ${err.message}` })
     }
