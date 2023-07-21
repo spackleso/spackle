@@ -1,9 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { handleWebhook } from '@/stripe/webhooks'
+import { buffer, handleWebhook } from '@/stripe/webhooks'
 import * as Sentry from '@sentry/nextjs'
-
-// Live webhook endpoints receive both live and test events.
-const webhookSigningSecret = process.env.STRIPE_CONNECTED_WEBHOOK_SECRET || ''
+import { liveStripe as stripe } from '@/stripe'
 
 export const config = {
   api: {
@@ -12,9 +10,26 @@ export const config = {
 }
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
+  // Live webhook endpoints receive both live and test events.
+  const webhookSigningSecret = process.env.STRIPE_CONNECTED_WEBHOOK_SECRET || ''
   if (req.method === 'POST') {
     try {
-      await handleWebhook(req, webhookSigningSecret)
+      const sig = req.headers['stripe-signature'] as string
+      const buf = await buffer(req)
+      const rawBody = buf.toString('utf8')
+
+      let event
+      try {
+        event = stripe.webhooks.constructEvent(
+          rawBody,
+          sig,
+          webhookSigningSecret,
+        )
+      } catch (err: any) {
+        throw err
+      }
+
+      await handleWebhook(event.account!, event)
     } catch (error: any) {
       console.error(error)
       Sentry.captureException(error)
