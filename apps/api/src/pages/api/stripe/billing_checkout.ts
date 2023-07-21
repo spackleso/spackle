@@ -8,6 +8,7 @@ const stripe = isDev ? testStripe : liveStripe
 const settingsUrl = isDev
   ? 'https://dashboard.stripe.com/test/apps/settings-preview'
   : `https://dashboard.stripe.com/settings/apps/${process.env.STRIPE_APP_ID}`
+const host = process.env.HOST || ''
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const user_id = req.query.user_id as string
@@ -71,7 +72,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     session = await stripe.checkout.sessions.create({
       line_items: [{ price: stripePriceId }],
       mode: 'subscription',
-      success_url: settingsUrl,
+      success_url: `${host}/stripe/billing_checkout_success`,
       cancel_url: settingsUrl,
       customer: stripeCustomerId,
       allow_promotion_codes: true,
