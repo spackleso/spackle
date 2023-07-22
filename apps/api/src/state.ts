@@ -1,4 +1,5 @@
 import supabase, { SupabaseError } from 'spackle-supabase'
+import { CustomerState } from '@/types'
 
 export const getAccountFeaturesState = async (accountId: string) => {
   const { data, error } = await supabase

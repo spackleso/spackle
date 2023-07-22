@@ -4,6 +4,7 @@ import * as Sentry from '@sentry/nextjs'
 import supabase from 'spackle-supabase'
 import spackle from '@/spackle'
 import { getCustomerState } from '@/state'
+import { CustomerState } from '@/types'
 
 const account = process.env.STRIPE_ACCOUNT_ID || ''
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
