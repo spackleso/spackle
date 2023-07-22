@@ -29,6 +29,7 @@ app.get('/', (req, res) => {
 })
 
 app.get('/customers/:id/state', async (req, res) => {
+  console.time('request')
   console.time('requestToken')
   try {
     requestToken(req.headers)
@@ -55,6 +56,7 @@ app.get('/customers/:id/state', async (req, res) => {
   console.timeEnd('getItem')
 
   res.json(item.Item?.State.S)
+  console.timeEnd('request')
 })
 
 app.listen(port, () => {
