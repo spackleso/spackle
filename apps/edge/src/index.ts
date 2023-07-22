@@ -4,7 +4,11 @@ import jwt from 'jsonwebtoken'
 import * as dotenv from 'dotenv'
 import { DynamoDBClient, GetItemCommand } from '@aws-sdk/client-dynamodb'
 
-dotenv.config({ path: __dirname + '/.env' })
+console.log('Starting up')
+
+try {
+  dotenv.config({ path: __dirname + '/.env' })
+} catch (error) {}
 
 const app = express()
 
