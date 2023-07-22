@@ -16,11 +16,11 @@ provider "aws" {
 }
 
 resource "aws_dynamodb_table" "main" {
-  name           = "spackle-${var.environment}"
-  hash_key       = "AccountId"
-  range_key      = "CustomerId"
-  billing_mode   = "PAY_PER_REQUEST"
-  stream_enabled = true
+  name             = "spackle-${var.environment}"
+  hash_key         = "AccountId"
+  range_key        = "CustomerId"
+  billing_mode     = "PAY_PER_REQUEST"
+  stream_enabled   = true
   stream_view_type = "NEW_AND_OLD_IMAGES"
 
   attribute {
@@ -85,10 +85,10 @@ resource "aws_s3_bucket_policy" "cloudtrail" {
 }
 
 resource "aws_cloudtrail" "main" {
-  name = "spackle-${var.environment}"
-  s3_bucket_name = aws_s3_bucket.cloudtrail.bucket
-  is_multi_region_trail = true
-  s3_key_prefix = ""
+  name                       = "spackle-${var.environment}"
+  s3_bucket_name             = aws_s3_bucket.cloudtrail.bucket
+  is_multi_region_trail      = true
+  s3_key_prefix              = ""
   enable_log_file_validation = true
 
   advanced_event_selector {
@@ -105,8 +105,13 @@ resource "aws_cloudtrail" "main" {
     }
 
     field_selector {
-      field = "resources.ARN"
+      field  = "resources.ARN"
       equals = ["${aws_dynamodb_table.main.arn}"]
+    }
+
+    field_selector {
+      field      = "eventName"
+      not_equals = ["GetRecords", "GetShardIterator"]
     }
   }
 }

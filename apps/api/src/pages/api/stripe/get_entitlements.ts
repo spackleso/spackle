@@ -29,10 +29,23 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 
   if (data.billing_stripe_customer_id) {
-    const customer = await spackle.customers.retrieve(
-      data.billing_stripe_customer_id,
+    const response = await fetch(
+      spackle.apiBase +
+        '/customers/' +
+        data.billing_stripe_customer_id +
+        '/state',
+      {
+        headers: {
+          Authorization: 'Bearer ' + spackle.apiKey,
+        },
+      },
     )
-    entitlements = customer.data as any
+
+    if (response.status !== 200) {
+      return res.status(400).json({ error: 'Could not fetch customer state' })
+    }
+
+    entitlements = await response.json()
   }
 
   res.status(200).json(entitlements)
