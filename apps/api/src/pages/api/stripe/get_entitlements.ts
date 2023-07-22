@@ -3,7 +3,9 @@ import { verifySignature } from '@/stripe/signature'
 import * as Sentry from '@sentry/nextjs'
 import supabase from 'spackle-supabase'
 import spackle from '@/spackle'
+import { getCustomerState } from '@/state'
 
+const account = process.env.STRIPE_ACCOUNT_ID || ''
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { success } = verifySignature(req)
   if (!success) {
@@ -29,10 +31,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 
   if (data.billing_stripe_customer_id) {
-    const customer = await spackle.customers.retrieve(
-      data.billing_stripe_customer_id,
-    )
-    entitlements = customer.data as any
+    entitlements = getCustomerState(account, data.billing_stripe_customer_id)
   }
 
   res.status(200).json(entitlements)
