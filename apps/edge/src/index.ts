@@ -8,10 +8,21 @@ dotenv.config({ path: __dirname + '/.env' })
 
 const app = express()
 
-const { SUPABASE_JWT_SECRET, DYNAMODB_TABLE_NAME } = process.env
+const {
+  SUPABASE_JWT_SECRET,
+  DYNAMODB_TABLE_NAME,
+  SPACKLE_AWS_ACCESS_KEY_ID,
+  SPACKLE_AWS_SECRET_ACCESS_KEY,
+} = process.env
 const port = process.env.PORT || 3003
 const identityId = 'us-west-2:975730cb-224e-4896-bc1c-987bf15c8986'
-const client = new DynamoDBClient({ region: 'us-west-2' })
+const client = new DynamoDBClient({
+  region: 'us-west-2',
+  credentials: {
+    accessKeyId: SPACKLE_AWS_ACCESS_KEY_ID ?? '',
+    secretAccessKey: SPACKLE_AWS_SECRET_ACCESS_KEY ?? '',
+  },
+})
 
 app.get('/', (req, res) => {
   res.send('')
