@@ -55,7 +55,7 @@ app.get('/customers/:id/state', async (req, res) => {
   )
   console.timeEnd('getItem')
 
-  res.json(item.Item?.State.S)
+  res.send(item.Item?.State.S)
   console.timeEnd('request')
 })
 
