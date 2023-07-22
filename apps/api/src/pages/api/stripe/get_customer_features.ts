@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import supabase from 'spackle-supabase'
 import { verifySignature } from '@/stripe/signature'
 import * as Sentry from '@sentry/nextjs'
+import { getOrSyncStripeCustomer } from '@/stripe/sync'
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { success } = verifySignature(req)

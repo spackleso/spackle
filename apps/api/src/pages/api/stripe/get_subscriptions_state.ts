@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { getSubscriptionFeaturesState } from '@/state'
 import { verifySignature } from '@/stripe/signature'
+import { getOrSyncStripeCustomer } from '@/stripe/sync'
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { success } = verifySignature(req)
