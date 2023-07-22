@@ -11,6 +11,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const { account_id, customer_id, mode } = req.body
 
+  await getOrSyncStripeCustomer(account_id, customer_id, mode)
   const { data, error } = await supabase
     .from('customer_features')
     .select(

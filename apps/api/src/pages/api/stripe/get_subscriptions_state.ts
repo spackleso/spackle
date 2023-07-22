@@ -11,6 +11,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   // TODO: handle all errors
   const { account_id, customer_id, mode } = req.body
 
+  await getOrSyncStripeCustomer(account_id, customer_id, mode)
   const features = await getSubscriptionFeaturesState(account_id, customer_id)
 
   res.status(200).json({
