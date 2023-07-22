@@ -24,7 +24,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     return res.status(400).json({ error })
   }
 
-  let entitlements = {
+  let entitlements: CustomerState = {
     version: 1,
     features: [],
     subscriptions: [],

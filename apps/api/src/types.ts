@@ -8,3 +8,9 @@ export enum FeatureType {
 export enum SpackleProduct {
   entitlements = 'entitlements',
 }
+
+export type CustomerState = {
+  version: number
+  features: any[]
+  subscriptions: any[]
+}

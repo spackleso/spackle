@@ -267,7 +267,7 @@ export const getCustomerSubscriptionsState = async (
 export const getCustomerState = async (
   accountId: string,
   customerId: string,
-) => {
+): CustomerState => {
   const subscriptions = await getCustomerSubscriptionsState(
     accountId,
     customerId,
