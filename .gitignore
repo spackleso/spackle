@@ -4,6 +4,6 @@
 .turbo
 .vscode
 build/**
-dist/**
+**/dist/**
 node_modules
 **/*.terraform
