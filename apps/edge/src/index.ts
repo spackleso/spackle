@@ -29,13 +29,16 @@ app.get('/', (req, res) => {
 })
 
 app.get('/customers/:id/state', async (req, res) => {
+  console.time('requestToken')
   try {
     requestToken(req.headers)
   } catch (error) {
     res.status(401).send('')
     return
   }
+  console.timeEnd('requestToken')
 
+  console.time('getItem')
   const item = await client.send(
     new GetItemCommand({
       TableName: DYNAMODB_TABLE_NAME,
@@ -49,6 +52,7 @@ app.get('/customers/:id/state', async (req, res) => {
       },
     }),
   )
+  console.timeEnd('getItem')
 
   res.json(item.Item?.State.S)
 })
