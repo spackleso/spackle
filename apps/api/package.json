@@ -14,7 +14,7 @@
     "@aws-sdk/client-cognito-identity": "^3.231.0",
     "@aws-sdk/client-dynamodb": "^3.231.0",
     "@sentry/nextjs": "^7.35.0",
-    "@sentry/node": "^7.35.0",
+    "@sentry/node": "^7.60.0",
     "@slack/web-api": "^6.8.1",
     "@types/node": "18.11.18",
     "@types/react": "18.0.26",
