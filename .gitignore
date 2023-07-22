@@ -7,3 +7,4 @@ build/**
 **/dist/**
 node_modules
 **/*.terraform
+secrets.auto.tfvars

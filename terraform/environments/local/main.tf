@@ -8,7 +8,10 @@ terraform {
 }
 
 module "spackle" {
-  source      = "../../modules/spackle"
-  aws_region  = "us-west-2"
-  environment = "local"
+  source                        = "../../modules/spackle"
+  aws_region                    = "us-west-2"
+  environment                   = "local"
+  spackle_aws_access_key_id     = var.spackle_aws_access_key_id
+  spackle_aws_secret_access_key = var.spackle_aws_secret_access_key
+  supabase_jwt_secret           = var.supabase_jwt_secret
 }
