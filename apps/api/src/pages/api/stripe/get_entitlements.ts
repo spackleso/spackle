@@ -31,7 +31,10 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 
   if (data.billing_stripe_customer_id) {
-    entitlements = getCustomerState(account, data.billing_stripe_customer_id)
+    entitlements = await getCustomerState(
+      account,
+      data.billing_stripe_customer_id,
+    )
   }
 
   res.status(200).json(entitlements)
