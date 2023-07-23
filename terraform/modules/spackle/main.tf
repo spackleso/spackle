@@ -199,78 +199,36 @@ resource "aws_cognito_identity_pool_roles_attachment" "main" {
   }
 }
 
-resource "aws_apprunner_service" "edge_us_west_2" {
-  service_name = "spackle-${var.environment}-edge-us-west-2"
+module "edge-us-west-2" {
+  source = "./modules/edge"
 
-  source_configuration {
-    authentication_configuration {
-      connection_arn = "arn:aws:apprunner:us-west-2:540984895707:connection/github-spackle/5acb4f4cdc594c6d8117cd7422c18b9b"
-    }
-
-    code_repository {
-      code_configuration {
-        code_configuration_values {
-          build_command = "cd apps/edge && npm install --dev && npx tsc"
-          port          = "3003"
-          runtime       = "NODEJS_16"
-          start_command = "node apps/edge/dist/index.js"
-          runtime_environment_variables = {
-            AWS_REGION                    = "us-west-2"
-            SUPABASE_JWT_SECRET           = var.supabase_jwt_secret
-            DYNAMODB_TABLE_NAME           = aws_dynamodb_table.main.name
-            PORT                          = "3003"
-            SPACKLE_AWS_ACCESS_KEY_ID     = var.spackle_aws_access_key_id
-            SPACKLE_AWS_SECRET_ACCESS_KEY = var.spackle_aws_secret_access_key
-          }
-        }
-        configuration_source = "API"
-      }
-
-      repository_url = "https://github.com/spackleso/spackle"
-
-      source_code_version {
-        type  = "BRANCH"
-        value = "main"
-      }
-    }
-  }
+  aws_cognito_identity_pool_id  = aws_cognito_identity_pool.main.id
+  aws_cognito_identity_provider = aws_cognito_identity_pool.main.developer_provider_name
+  aws_region                    = "us-west-2"
+  dynamodb_table_name           = aws_dynamodb_table.main.name
+  environment                   = var.environment
+  github_connection_arn         = "arn:aws:apprunner:us-west-2:540984895707:connection/github-spackle/5acb4f4cdc594c6d8117cd7422c18b9b"
+  spackle_aws_access_key_id     = var.spackle_aws_access_key_id
+  spackle_aws_secret_access_key = var.spackle_aws_secret_access_key
+  supabase_jwt_secret           = var.supabase_jwt_secret
 }
 
-resource "aws_apprunner_service" "edge_us_east_1" {
-  count        = contains(local.regions, "us-east-1") ? 1 : 0
-  provider     = aws.us-east-1
-  service_name = "spackle-${var.environment}-edge-us-east-1"
 
-  source_configuration {
-    authentication_configuration {
-      connection_arn = "arn:aws:apprunner:us-east-1:540984895707:connection/github-spackle/7c9389f6773b44d19154ce3913b1edf4"
-    }
 
-    code_repository {
-      code_configuration {
-        code_configuration_values {
-          build_command = "cd apps/edge && npm install --dev && npx tsc"
-          port          = "3003"
-          runtime       = "NODEJS_16"
-          start_command = "node apps/edge/dist/index.js"
-          runtime_environment_variables = {
-            AWS_REGION                    = "us-east-1"
-            SUPABASE_JWT_SECRET           = var.supabase_jwt_secret
-            DYNAMODB_TABLE_NAME           = aws_dynamodb_table.main.name
-            PORT                          = "3003"
-            SPACKLE_AWS_ACCESS_KEY_ID     = var.spackle_aws_access_key_id
-            SPACKLE_AWS_SECRET_ACCESS_KEY = var.spackle_aws_secret_access_key
-          }
-        }
-        configuration_source = "API"
-      }
-
-      repository_url = "https://github.com/spackleso/spackle"
-
-      source_code_version {
-        type  = "BRANCH"
-        value = "main"
-      }
-    }
+module "edge-us-east-1" {
+  source = "./modules/edge"
+  count  = contains(local.regions, "us-east-1") ? 1 : 0
+  providers = {
+    aws = aws.us-east-1
   }
+
+  aws_cognito_identity_pool_id  = aws_cognito_identity_pool.main.id
+  aws_cognito_identity_provider = aws_cognito_identity_pool.main.developer_provider_name
+  aws_region                    = "us-east-1"
+  dynamodb_table_name           = aws_dynamodb_table.main.name
+  environment                   = var.environment
+  github_connection_arn         = "arn:aws:apprunner:us-east-1:540984895707:connection/github-spackle/7c9389f6773b44d19154ce3913b1edf4"
+  spackle_aws_access_key_id     = var.spackle_aws_access_key_id
+  spackle_aws_secret_access_key = var.spackle_aws_secret_access_key
+  supabase_jwt_secret           = var.supabase_jwt_secret
 }

@@ -3,6 +3,10 @@ import * as dotenv from 'dotenv'
 import express from 'express'
 import jwt from 'jsonwebtoken'
 import { DynamoDBClient, GetItemCommand } from '@aws-sdk/client-dynamodb'
+import {
+  CognitoIdentityClient,
+  GetOpenIdTokenForDeveloperIdentityCommand,
+} from '@aws-sdk/client-cognito-identity'
 import { IncomingHttpHeaders } from 'http'
 
 try {
@@ -12,6 +16,8 @@ try {
 const app = express()
 
 const {
+  AWS_COGNITO_IDENTITY_POOL_ID,
+  AWS_COGNITO_IDENTITY_PROVIDER,
   AWS_REGION,
   DYNAMODB_TABLE_NAME,
   PORT,
@@ -20,7 +26,6 @@ const {
   SUPABASE_JWT_SECRET,
 } = process.env
 
-const identityId = 'us-west-2:975730cb-224e-4896-bc1c-987bf15c8986'
 const client = new DynamoDBClient({
   region: AWS_REGION ?? '',
   credentials: {
@@ -54,22 +59,29 @@ app.get('/', (req, res) => {
 
 app.get('/customers/:id/state', async (req, res) => {
   console.time('request')
-  console.time('requestToken')
+  let accountId: string = ''
   try {
-    requestToken(req.headers)
+    const { sub } = requestToken(req.headers)
+    accountId = sub
   } catch (error) {
     res.status(401).send('')
+    console.timeEnd('request')
     return
   }
-  console.timeEnd('requestToken')
 
-  console.time('getItem')
+  const { IdentityId } = await getIdentityToken(accountId)
+  if (!IdentityId) {
+    res.status(401).send('')
+    console.timeEnd('request')
+    return
+  }
+
   const item = await client.send(
     new GetItemCommand({
       TableName: DYNAMODB_TABLE_NAME,
       Key: {
         AccountId: {
-          S: identityId,
+          S: IdentityId,
         },
         CustomerId: {
           S: `${req.params.id}:1`,
@@ -77,14 +89,9 @@ app.get('/customers/:id/state', async (req, res) => {
       },
     }),
   )
-  console.timeEnd('getItem')
 
   res.end(item.Item?.State.S)
   console.timeEnd('request')
-})
-
-app.get('/debug-sentry', function mainHandler(req, res) {
-  throw new Error('My first Sentry error!')
 })
 
 app.use(Sentry.Handlers.errorHandler())
@@ -114,4 +121,32 @@ const requestToken = (headers: IncomingHttpHeaders) => {
   return {
     sub: payload.sub as string,
   }
+}
+
+const getIdentityToken = async (accountId: string) => {
+  if (
+    !SPACKLE_AWS_ACCESS_KEY_ID ||
+    !SPACKLE_AWS_SECRET_ACCESS_KEY ||
+    !AWS_COGNITO_IDENTITY_POOL_ID ||
+    !AWS_COGNITO_IDENTITY_PROVIDER
+  ) {
+    throw new Error('Missing AWS credentials')
+  }
+
+  const client = new CognitoIdentityClient({
+    region: 'us-west-2',
+    credentials: {
+      accessKeyId: SPACKLE_AWS_ACCESS_KEY_ID,
+      secretAccessKey: SPACKLE_AWS_SECRET_ACCESS_KEY,
+    },
+  })
+
+  const command = new GetOpenIdTokenForDeveloperIdentityCommand({
+    IdentityPoolId: AWS_COGNITO_IDENTITY_POOL_ID,
+    Logins: {
+      [AWS_COGNITO_IDENTITY_PROVIDER]: accountId,
+    },
+  })
+
+  return await client.send(command)
 }
