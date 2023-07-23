@@ -213,8 +213,6 @@ module "edge-us-west-2" {
   supabase_jwt_secret           = var.supabase_jwt_secret
 }
 
-
-
 module "edge-us-east-1" {
   source = "./modules/edge"
   count  = contains(local.regions, "us-east-1") ? 1 : 0

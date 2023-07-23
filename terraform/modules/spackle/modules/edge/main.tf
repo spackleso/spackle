@@ -45,3 +45,8 @@ resource "aws_apprunner_service" "edge" {
     }
   }
 }
+
+resource "aws_apprunner_custom_domain_association" "edge" {
+  domain_name = "${var.aws_region}.edge.spackle.so"
+  service_arn = aws_apprunner_service.edge.arn
+}
