@@ -205,6 +205,7 @@ module "edge-us-west-2" {
   aws_cognito_identity_pool_id  = aws_cognito_identity_pool.main.id
   aws_cognito_identity_provider = aws_cognito_identity_pool.main.developer_provider_name
   aws_region                    = "us-west-2"
+  betterstack_logs_token        = var.betterstack_logs_token
   dynamodb_table_name           = aws_dynamodb_table.main.name
   environment                   = var.environment
   github_connection_arn         = "arn:aws:apprunner:us-west-2:540984895707:connection/github-spackle/5acb4f4cdc594c6d8117cd7422c18b9b"
@@ -223,6 +224,7 @@ module "edge-us-east-1" {
   aws_cognito_identity_pool_id  = aws_cognito_identity_pool.main.id
   aws_cognito_identity_provider = aws_cognito_identity_pool.main.developer_provider_name
   aws_region                    = "us-east-1"
+  betterstack_logs_token        = var.betterstack_logs_token
   dynamodb_table_name           = aws_dynamodb_table.main.name
   environment                   = var.environment
   github_connection_arn         = "arn:aws:apprunner:us-east-1:540984895707:connection/github-spackle/7c9389f6773b44d19154ce3913b1edf4"

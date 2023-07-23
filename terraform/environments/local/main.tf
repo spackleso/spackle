@@ -10,6 +10,7 @@ terraform {
 module "spackle" {
   source                        = "../../modules/spackle"
   aws_region                    = "us-west-2"
+  betterstack_logs_token        = var.betterstack_logs_token
   environment                   = "local"
   spackle_aws_access_key_id     = var.spackle_aws_access_key_id
   spackle_aws_secret_access_key = var.spackle_aws_secret_access_key

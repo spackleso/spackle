@@ -50,3 +50,83 @@ resource "aws_apprunner_custom_domain_association" "edge" {
   domain_name = "${var.aws_region}.edge.spackle.so"
   service_arn = aws_apprunner_service.edge.arn
 }
+
+data "aws_iam_policy_document" "lambda" {
+  statement {
+    effect = "Allow"
+
+    principals {
+      type        = "Service"
+      identifiers = ["lambda.amazonaws.com"]
+    }
+
+    actions = ["sts:AssumeRole"]
+  }
+}
+
+data "aws_cloudwatch_log_group" "application_edge_logs" {
+  name = "/aws/apprunner/spackle-${var.environment}-edge/${aws_apprunner_service.edge.service_id}/application"
+}
+
+data "aws_cloudwatch_log_group" "service_edge_logs" {
+  name = "/aws/apprunner/spackle-${var.environment}-edge/${aws_apprunner_service.edge.service_id}/service"
+}
+
+resource "aws_iam_role" "edge_logs" {
+  name               = "spackle-${var.environment}-edge-logs-${var.aws_region}"
+  assume_role_policy = data.aws_iam_policy_document.lambda.json
+}
+
+resource "aws_iam_role_policy_attachment" "lambda" {
+  role       = aws_iam_role.edge_logs.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+}
+
+data "archive_file" "edge_logs" {
+  type        = "zip"
+  source_file = "${path.module}/lambda.js"
+  output_path = "${path.module}/lambda_function_payload.zip"
+}
+
+resource "aws_lambda_function" "edge_logs" {
+  filename         = "${path.module}/lambda_function_payload.zip"
+  function_name    = "spackle_${var.environment}_edge_logs"
+  role             = aws_iam_role.edge_logs.arn
+  handler          = "lambda.handler"
+  source_code_hash = data.archive_file.edge_logs.output_base64sha256
+  runtime          = "nodejs18.x"
+
+  environment {
+    variables = {
+      BETTERSTACK_LOGS_TOKEN = var.betterstack_logs_token
+    }
+  }
+}
+
+resource "aws_cloudwatch_log_subscription_filter" "edge_application" {
+  name            = "spackle-${var.environment}-edge"
+  log_group_name  = data.aws_cloudwatch_log_group.application_edge_logs.name
+  destination_arn = aws_lambda_function.edge_logs.arn
+  filter_pattern  = ""
+}
+
+resource "aws_cloudwatch_log_subscription_filter" "edge_service" {
+  name            = "spackle-${var.environment}-edge"
+  log_group_name  = data.aws_cloudwatch_log_group.service_edge_logs.name
+  destination_arn = aws_lambda_function.edge_logs.arn
+  filter_pattern  = ""
+}
+
+resource "aws_lambda_permission" "application_edge_logs" {
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.edge_logs.arn
+  principal     = "logs.${var.aws_region}.amazonaws.com"
+  source_arn    = "${data.aws_cloudwatch_log_group.application_edge_logs.arn}:*"
+}
+
+resource "aws_lambda_permission" "service_edge_logs" {
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.edge_logs.arn
+  principal     = "logs.${var.aws_region}.amazonaws.com"
+  source_arn    = "${data.aws_cloudwatch_log_group.service_edge_logs.arn}:*"
+}

@@ -76,6 +76,7 @@ app.get('/customers/:id/state', async (req, res) => {
     return
   }
 
+  const schemaVersion = req.headers['x-spackle-schema-version'] ?? '1'
   const item = await client.send(
     new GetItemCommand({
       TableName: DYNAMODB_TABLE_NAME,
@@ -84,13 +85,17 @@ app.get('/customers/:id/state', async (req, res) => {
           S: IdentityId,
         },
         CustomerId: {
-          S: `${req.params.id}:1`,
+          S: `${req.params.id}:${schemaVersion}`,
         },
       },
     }),
   )
 
-  res.end(item.Item?.State.S)
+  if (item.Item?.State.S) {
+    res.end(item.Item?.State.S)
+  } else {
+    res.status(404).send('')
+  }
   console.timeEnd('request')
 })
 

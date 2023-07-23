@@ -1,6 +1,7 @@
 variable "aws_cognito_identity_pool_id" {}
 variable "aws_cognito_identity_provider" {}
 variable "aws_region" {}
+variable "betterstack_logs_token" {}
 variable "dynamodb_table_name" {}
 variable "environment" {}
 variable "github_connection_arn" {}
