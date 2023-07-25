@@ -3,16 +3,14 @@ from getpass import getpass
 
 spackle.api_key = getpass('Enter your Spackle API key: ')
 customer_id = input('Enter your customer\'s Stripe ID: ')
-feature_key = input('Enter the feature key you want to explore: ')
 
 customer = spackle.wait_for_customer(customer_id)
-feature = next(feature for feature in customer.data['features'] if feature['key'] == feature_key)
-if feature['type'] == 0:
-    enabled = customer.enabled(feature_key)
-    print(f'\nFeature {feature_key} is {"enabled" if enabled else "disabled"} for customer {customer_id}')
-else:
-    limit = customer.limit(feature_key)
-    if limit == float('inf'):
-        print(f'\nFeature {feature_key} has no limit for customer {customer_id}')
+
+print("")
+print(f'Features for {customer_id}')
+print('------------------------')
+for feature in customer.data['features']:
+    if feature['type'] == 0:
+        print(f'Flag {feature["key"]}: {feature["value_flag"]}')
     else:
-        print(f'\nFeature {feature_key} has a limit of {limit} for customer {customer_id}')
+        print(f'Limit {feature["key"]}: {feature["value_limit"]}')
