@@ -1,3 +1,4 @@
+import { XMarkIcon } from '@heroicons/react/20/solid'
 import { CheckIcon } from '@heroicons/react/24/solid'
 import { ReactNode } from 'react'
 
@@ -47,12 +48,14 @@ const PriceBox = ({
             <CheckIcon className="h-4 w-4 text-green-500" />
             <span className="text-sm">All Platform SDKs</span>
           </li>
-          {price.isPro && (
-            <li className="flex flex-row items-center gap-x-1">
+          <li className="flex flex-row items-center gap-x-1">
+            {price.isPro ? (
               <CheckIcon className="h-4 w-4 text-green-500" />
-              <span className="text-sm">Live Mode</span>
-            </li>
-          )}
+            ) : (
+              <XMarkIcon className="h-4 w-4 text-gray-500" />
+            )}
+            <span className="text-sm">Live Mode</span>
+          </li>
         </ul>
         <div className="mt-8 flex justify-center">{children}</div>
       </div>
