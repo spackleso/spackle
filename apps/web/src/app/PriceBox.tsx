@@ -31,6 +31,9 @@ const PriceBox = ({
             {price.isPro ? 'Per to $1,000 MTR*' : 'Up to $1,000 MTR*'}
           </span>
         </div>
+        <div className="mt-8 text-sm font-semibold text-slate-900 dark:text-white">
+          Features
+        </div>
         <hr className="my-2" />
         <ul className="flex flex-col gap-y-2">
           <li className="flex flex-row items-center gap-x-1">
