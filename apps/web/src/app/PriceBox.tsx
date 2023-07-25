@@ -1,3 +1,4 @@
+import { XMarkIcon } from '@heroicons/react/20/solid'
 import { CheckIcon } from '@heroicons/react/24/solid'
 import { ReactNode } from 'react'
 
@@ -29,9 +30,6 @@ const PriceBox = ({
           <span className="text-xs text-slate-900 dark:text-white">
             {price.isPro ? 'Per to $1,000 MTR*' : 'Up to $1,000 MTR*'}
           </span>
-        </div>
-        <div className="mt-8 text-sm font-semibold text-slate-900 dark:text-white">
-          Features
         </div>
         <hr className="my-2" />
         <ul className="flex flex-col gap-y-2">
