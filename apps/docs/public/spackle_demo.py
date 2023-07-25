@@ -5,7 +5,7 @@ spackle.api_key = getpass('Enter your Spackle API key: ')
 customer_id = input('Enter your customer\'s Stripe ID: ')
 feature_key = input('Enter the feature key you want to explore: ')
 
-customer = spackle.Customer.retrieve(customer_id)
+customer = spackle.wait_for_customer(customer_id)
 feature = next(feature for feature in customer.data['features'] if feature['key'] == feature_key)
 if feature['type'] == 0:
     enabled = customer.enabled(feature_key)
