@@ -4,8 +4,6 @@ import Link from 'next/link'
 import { cookies } from 'next/headers'
 
 export default function Checkout() {
-  console.log('check1')
-  console.log('cookies', cookies().getAll())
   const cookieStore = cookies()
   const user_id = cookieStore.get('user_id')?.value
   const account_id = cookieStore.get('account_id')?.value
