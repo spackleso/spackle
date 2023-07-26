@@ -1,7 +1,7 @@
 import * as Sentry from '@sentry/node'
 import * as dotenv from 'dotenv'
 import express from 'express'
-import { getIdentityToken, requestToken } from './auth'
+import { requestToken } from './auth'
 import { getCustomerState } from './dynamodb'
 
 try {
@@ -23,7 +23,7 @@ Sentry.init({
       app,
     }),
   ],
-  // Performance Monitoring
+  // Performance monitoring disabled for now
   enableTracing: false,
   tracesSampleRate: 0,
 })
@@ -57,27 +57,8 @@ app.get('/customers/:id/state', async (req, res) => {
     req.params.id,
     Number(schemaVersion),
   )
-  if (state) {
-    console.log('Found state in DynamoDB with AccountId:', accountId)
-    res.end(state)
-    console.timeEnd('request')
-    return
-  }
 
-  const { IdentityId } = await getIdentityToken(accountId)
-  if (!IdentityId) {
-    res.status(401).send('')
-    console.timeEnd('request')
-    return
-  }
-
-  state = await getCustomerState(
-    IdentityId,
-    req.params.id,
-    Number(schemaVersion),
-  )
   if (state) {
-    console.log('Found state in DynamoDB with AccountId:', IdentityId)
     res.end(state)
   } else {
     res.status(404).send('')

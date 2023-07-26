@@ -5,10 +5,6 @@ import app from './app'
 import * as dynamodb from './dynamodb'
 
 jest.mock('./dynamodb')
-jest.mock('./auth', () => ({
-  ...jest.requireActual('./auth'),
-  getIdentityToken: jest.fn().mockResolvedValue({ IdentityId: 'cognito' }),
-}))
 
 const { SUPABASE_JWT_SECRET } = process.env
 
@@ -64,19 +60,5 @@ describe('Customer state route', () => {
       })
 
     expect(res.statusCode).toEqual(404)
-  })
-
-  test('fallback to cognito identity if customer not found', async () => {
-    ;(dynamodb.getCustomerState as jest.Mock).mockResolvedValueOnce(undefined)
-    ;(dynamodb.getCustomerState as jest.Mock).mockResolvedValueOnce(
-      JSON.stringify({ foo: 'bar' }),
-    )
-    const res = await request(app)
-      .get('/customers/1/state')
-      .set({
-        Authorization: `Bearer ${generateToken('acct_1234')}`,
-      })
-
-    expect(res.statusCode).toEqual(200)
   })
 })
