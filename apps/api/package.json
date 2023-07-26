@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "types": "supabase gen types typescript --local > src/schema.gen.ts",
-    "test": "yarn jest --config jest.config.js"
+    "test": "yarn jest --coverage"
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.231.0",
