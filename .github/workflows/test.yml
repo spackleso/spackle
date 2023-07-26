@@ -17,7 +17,7 @@ jobs:
 
       - uses: supabase/setup-cli@v1
         with:
-          version: 1.27.10
+          version: 1.60.1
 
       - run: supabase start
 
