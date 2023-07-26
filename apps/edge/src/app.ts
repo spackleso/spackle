@@ -24,7 +24,8 @@ Sentry.init({
     }),
   ],
   // Performance Monitoring
-  tracesSampleRate: 1.0, // Capture 100% of the transactions, reduce in production!,
+  enableTracing: false,
+  tracesSampleRate: 0,
 })
 
 app.use(Sentry.Handlers.requestHandler())
