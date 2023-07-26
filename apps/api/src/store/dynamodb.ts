@@ -1,7 +1,6 @@
 import { getCustomerState } from '@/state'
 import supabase, { SupabaseError } from 'spackle-supabase'
 import { DynamoDB } from '@aws-sdk/client-dynamodb'
-import { getIdentityToken } from '@/cognito'
 import { getQueue } from '@/queue'
 
 const {
@@ -53,36 +52,7 @@ export const storeAccountStates = async (stripeAccountId: string) => {
     throw new SupabaseError(error)
   }
 
-  const { IdentityId } = await getIdentityToken(stripeAccountId)
-  if (!IdentityId) {
-    throw new Error('IdentityId not set')
-  }
-
   const client = getClient()
-  // Deprecated IdentityId version
-  for (let chunk of chunkArr(data, 25)) {
-    const ops = []
-    for (let { stripe_id } of chunk) {
-      const state = await getCustomerState(stripeAccountId, stripe_id)
-      ops.push({
-        PutRequest: {
-          Item: {
-            AccountId: { S: IdentityId },
-            CustomerId: { S: customerKey(stripe_id, state.version) },
-            State: { S: JSON.stringify(state) },
-          },
-        },
-      })
-    }
-
-    await client.batchWriteItem({
-      RequestItems: {
-        [DYNAMODB_TABLE_NAME!]: ops,
-      },
-    })
-  }
-
-  // Current AccountId version
   for (let chunk of chunkArr(data, 25)) {
     const ops = []
     for (let { stripe_id } of chunk) {
@@ -118,20 +88,6 @@ export const storeCustomerState = async (
   console.log('Storing customer state for', stripeAccountId, stripeCustomerId)
   const state = await getCustomerState(stripeAccountId, stripeCustomerId)
   const client = getClient()
-
-  const { IdentityId } = await getIdentityToken(stripeAccountId)
-  if (!IdentityId) {
-    throw new Error('IdentityId not set')
-  }
-
-  await client.putItem({
-    TableName: DYNAMODB_TABLE_NAME!,
-    Item: {
-      AccountId: { S: IdentityId },
-      CustomerId: { S: customerKey(stripeCustomerId, state.version) },
-      State: { S: JSON.stringify(state) },
-    },
-  })
 
   await client.putItem({
     TableName: DYNAMODB_TABLE_NAME!,
