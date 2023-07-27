@@ -1,17 +1,15 @@
-import supabase from 'spackle-supabase'
+import db, { stripeAccounts } from 'spackle-db'
 import { syncAllAccountData } from '../src/stripe/sync'
 
 async function main() {
-  const { data } = await supabase.from('stripe_accounts').select('stripe_id')
-
-  if (!data) {
-    return
+  const result = await db
+    .select({ stripeId: stripeAccounts.stripeId })
+    .from(stripeAccounts)
+  for (const { stripeId } of result) {
+    console.log(`Syncing ${stripeId}...`)
+    await syncAllAccountData(stripeId)
   }
-
-  for (const { stripe_id } of data) {
-    console.log(`Syncing ${stripe_id}...`)
-    await syncAllAccountData(stripe_id)
-  }
+  process.exit(0)
 }
 
 main()

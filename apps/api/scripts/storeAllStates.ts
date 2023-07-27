@@ -1,17 +1,19 @@
-import supabase from 'spackle-supabase'
+import db, { stripeAccounts } from 'spackle-db'
 import { storeAccountStates } from '../src/store/dynamodb'
 
 async function main() {
-  const { data } = await supabase.from('stripe_accounts').select('stripe_id')
+  const result = await db
+    .select({
+      stripeId: stripeAccounts.stripeId,
+    })
+    .from(stripeAccounts)
 
-  if (!data) {
-    return
+  for (const { stripeId } of result) {
+    console.log(`Storing ${stripeId}...`)
+    await storeAccountStates(stripeId)
   }
 
-  for (const { stripe_id } of data) {
-    console.log(`Storing ${stripe_id}...`)
-    await storeAccountStates(stripe_id)
-  }
+  process.exit(0)
 }
 
 main()

@@ -1,6 +1,7 @@
 import { storeCustomerState } from '../src/store/dynamodb'
 import { program } from 'commander'
-import supabase from 'spackle-supabase'
+import db, { stripeCustomers } from 'spackle-db'
+import { eq } from 'drizzle-orm'
 
 program.argument('<customer_id>', 'The stripe customer to sync')
 program.parse()
@@ -8,12 +9,13 @@ program.parse()
 const [customerId] = program.args
 
 async function main(customerId: string) {
-  const { data } = await supabase
-    .from('stripe_customers')
-    .select('stripe_account_id')
-    .eq('stripe_id', customerId)
-    .maybeSingle()
-  await storeCustomerState(data!.stripe_account_id, customerId)
+  const result = await db
+    .select({ stripeAccountId: stripeCustomers.stripeAccountId })
+    .from(stripeCustomers)
+    .where(eq(stripeCustomers.stripeId, customerId))
+  const { stripeAccountId } = result[0]
+  await storeCustomerState(stripeAccountId, customerId)
+  process.exit(0)
 }
 
 main(customerId)

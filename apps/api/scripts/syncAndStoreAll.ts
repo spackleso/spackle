@@ -1,22 +1,23 @@
 import { storeAccountStates } from '@/store/dynamodb'
+import db, { stripeAccounts } from 'spackle-db'
 import supabase from 'spackle-supabase'
 import { syncAllAccountData } from '../src/stripe/sync'
 
 async function main() {
-  const { data } = await supabase.from('stripe_accounts').select('stripe_id')
+  const result = await db
+    .select({
+      stripeId: stripeAccounts.stripeId,
+    })
+    .from(stripeAccounts)
 
-  if (!data) {
-    return
-  }
-
-  for (const { stripe_id } of data) {
+  for (const { stripeId } of result) {
     let retries = 0
     while (retries < 3) {
       try {
-        console.log(`Syncing ${stripe_id}...`)
-        await syncAllAccountData(stripe_id)
-        console.log(`Storing ${stripe_id}...`)
-        await storeAccountStates(stripe_id)
+        console.log(`Syncing ${stripeId}...`)
+        await syncAllAccountData(stripeId)
+        console.log(`Storing ${stripeId}...`)
+        await storeAccountStates(stripeId)
         break
       } catch (e) {
         console.error(e)
@@ -25,6 +26,7 @@ async function main() {
       }
     }
   }
+  process.exit(0)
 }
 
 main()
