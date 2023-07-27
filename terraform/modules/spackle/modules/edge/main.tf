@@ -22,8 +22,6 @@ resource "aws_apprunner_service" "edge" {
           runtime       = "NODEJS_16"
           start_command = "node apps/edge/dist/index.js"
           runtime_environment_variables = {
-            AWS_COGNITO_IDENTITY_POOL_ID  = var.aws_cognito_identity_pool_id
-            AWS_COGNITO_IDENTITY_PROVIDER = var.aws_cognito_identity_provider
             AWS_REGION                    = var.aws_region
             DYNAMODB_TABLE_NAME           = var.dynamodb_table_name
             PORT                          = "3003"
@@ -47,6 +45,7 @@ resource "aws_apprunner_service" "edge" {
 }
 
 resource "aws_apprunner_custom_domain_association" "edge" {
+  count = var.environment == "prod" ? 1 : 0
   domain_name = "${var.aws_region}.edge.spackle.so"
   service_arn = aws_apprunner_service.edge.arn
 }

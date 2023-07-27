@@ -132,78 +132,10 @@ resource "aws_cloudtrail" "main" {
   }
 }
 
-resource "aws_cognito_identity_pool" "main" {
-  identity_pool_name               = "spackle-${var.environment}"
-  allow_unauthenticated_identities = false
-  allow_classic_flow               = false
-  developer_provider_name          = "cognito-${var.environment}.spackle.so"
-}
-
-resource "aws_iam_role" "authenticated" {
-  name = "spackle_${var.environment}_client"
-
-  assume_role_policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Principal": {
-        "Federated": "cognito-identity.amazonaws.com"
-      },
-      "Action": "sts:AssumeRoleWithWebIdentity",
-      "Condition": {
-        "StringEquals": {
-          "cognito-identity.amazonaws.com:aud": "${aws_cognito_identity_pool.main.id}"
-        },
-        "ForAnyValue:StringLike": {
-          "cognito-identity.amazonaws.com:amr": "authenticated"
-        }
-      }
-    }
-  ]
-}
-EOF
-}
-
-resource "aws_iam_role_policy" "authenticated" {
-  name = "spackle_${var.environment}_client"
-  role = aws_iam_role.authenticated.id
-
-  policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-      {
-          "Effect": "Allow",
-          "Action": [
-              "dynamodb:GetItem",
-              "dynamodb:Query"
-          ],
-          "Resource": ["${aws_dynamodb_table.main.arn}"],
-          "Condition": {
-              "ForAllValues:StringEquals": {
-                  "dynamodb:LeadingKeys": ["$${cognito-identity.amazonaws.com:sub}"]
-              }
-          }
-      }
-  ]
-}
-EOF
-}
-
-resource "aws_cognito_identity_pool_roles_attachment" "main" {
-  identity_pool_id = aws_cognito_identity_pool.main.id
-  roles = {
-    "authenticated" = aws_iam_role.authenticated.arn
-  }
-}
 
 module "edge-us-west-2" {
   source = "./modules/edge"
 
-  aws_cognito_identity_pool_id  = aws_cognito_identity_pool.main.id
-  aws_cognito_identity_provider = aws_cognito_identity_pool.main.developer_provider_name
   aws_region                    = "us-west-2"
   betterstack_logs_token        = var.betterstack_logs_token
   dynamodb_table_name           = aws_dynamodb_table.main.name
@@ -221,8 +153,6 @@ module "edge-us-east-1" {
     aws = aws.us-east-1
   }
 
-  aws_cognito_identity_pool_id  = aws_cognito_identity_pool.main.id
-  aws_cognito_identity_provider = aws_cognito_identity_pool.main.developer_provider_name
   aws_region                    = "us-east-1"
   betterstack_logs_token        = var.betterstack_logs_token
   dynamodb_table_name           = aws_dynamodb_table.main.name
