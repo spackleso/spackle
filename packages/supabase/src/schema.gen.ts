@@ -95,26 +95,6 @@ export interface Database {
           value_limit?: number | null
         }
       }
-      invites: {
-        Row: {
-          created_at: string | null
-          id: number
-          notes: string | null
-          token: string
-        }
-        Insert: {
-          created_at?: string | null
-          id?: number
-          notes?: string | null
-          token?: string
-        }
-        Update: {
-          created_at?: string | null
-          id?: number
-          notes?: string | null
-          token?: string
-        }
-      }
       price_features: {
         Row: {
           created_at: string | null
@@ -181,7 +161,6 @@ export interface Database {
           id: number
           initial_sync_complete: boolean
           initial_sync_started_at: string | null
-          invite_id: number | null
           name: string | null
           stripe_id: string
           stripe_json: Json | null
@@ -193,7 +172,6 @@ export interface Database {
           id?: number
           initial_sync_complete?: boolean
           initial_sync_started_at?: string | null
-          invite_id?: number | null
           name?: string | null
           stripe_id: string
           stripe_json?: Json | null
@@ -205,7 +183,6 @@ export interface Database {
           id?: number
           initial_sync_complete?: boolean
           initial_sync_started_at?: string | null
-          invite_id?: number | null
           name?: string | null
           stripe_id?: string
           stripe_json?: Json | null
@@ -382,29 +359,6 @@ export interface Database {
           created_at?: string | null
           stripe_account_id?: string | null
           token?: string
-        }
-      }
-      wait_list_entries: {
-        Row: {
-          created_at: string | null
-          email: string
-          id: number
-          invite_id: number | null
-          stripe_account_id: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          email: string
-          id?: number
-          invite_id?: number | null
-          stripe_account_id?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          email?: string
-          id?: number
-          invite_id?: number | null
-          stripe_account_id?: string | null
         }
       }
     }
