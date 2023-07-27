@@ -21,13 +21,23 @@ jobs:
 
       - run: supabase start
 
-      - name: Verify generated types match Postgres schema
+      - name: Verify generated Supabase types match Postgres schema
         run: |
           cd packages/supabase
           yarn types
           if ! git diff --ignore-space-at-eol --exit-code --quiet src/schema.gen.ts; then
             echo "Detected uncommitted changes after build. See status below:"
             git diff src/schema.gen.ts
+            exit 1
+          fi
+
+      - name: Verify generated Drizzle types match Postgres schema
+        run: |
+          cd packages/db
+          yarn types
+          if ! git diff --ignore-space-at-eol --exit-code --quiet drizzle/schema.ts; then
+            echo "Detected uncommitted changes after build. See status below:"
+            git diff drizzle/schema.ts
             exit 1
           fi
 
