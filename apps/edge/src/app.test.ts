@@ -1,6 +1,8 @@
+/**
+ * @jest-environment node
+ */
 import request from 'supertest'
 import jwt from 'jsonwebtoken'
-
 import app from './app'
 import * as dynamodb from './dynamodb'
 

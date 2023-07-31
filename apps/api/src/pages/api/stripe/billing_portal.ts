@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import { liveStripe, testStripe } from '@/stripe'
-import supabase from 'spackle-supabase'
+import db, { stripeAccounts } from 'spackle-db'
+import { eq } from 'drizzle-orm'
 
 const isDev = process.env.NODE_ENV === 'development'
 const stripe = isDev ? testStripe : liveStripe
@@ -22,20 +23,24 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       process.env.STRIPE_SIGNING_SECRET as string,
     )
   } catch (error: any) {
-    return res.status(400).json({ error })
+    console.error(error)
+    return res.status(403).json({
+      error: 'Unauthorized',
+    })
   }
 
-  const { data, error } = await supabase
-    .from('stripe_accounts')
-    .select('*')
-    .eq('stripe_id', account_id)
-    .single()
+  const result = await db
+    .select()
+    .from(stripeAccounts)
+    .where(eq(stripeAccounts.stripeId, account_id))
 
-  if (error) {
-    return res.status(400).json({ error: error.message })
+  if (!result.length) {
+    return res.status(400).json({ error: 'Account not found' })
   }
 
-  let stripeCustomerId = data.billing_stripe_customer_id || undefined
+  const account = result[0]
+
+  let stripeCustomerId = account.billingStripeCustomerId || undefined
   if (!stripeCustomerId) {
     return res.status(400).json({ error: 'Account not found' })
   }

@@ -1,29 +1,25 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { verifySignature } from '@/stripe/signature'
-import * as Sentry from '@sentry/nextjs'
-import supabase from 'spackle-supabase'
-import spackle from '@/spackle'
 import { getCustomerState } from '@/state'
 import { CustomerState } from '@/types'
+import db, { stripeAccounts } from 'spackle-db'
+import { eq } from 'drizzle-orm'
 
-const account = process.env.STRIPE_ACCOUNT_ID || ''
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { success } = verifySignature(req)
+  const { success, error } = verifySignature(req)
   if (!success) {
-    return res.status(400).send('')
+    return res.status(403).json({
+      error: 'Unauthorized',
+    })
   }
 
   const { account_id } = req.body
-  const { data, error } = await supabase
-    .from('stripe_accounts')
+  const result = await db
     .select()
-    .eq('stripe_id', account_id)
-    .single()
+    .from(stripeAccounts)
+    .where(eq(stripeAccounts.stripeId, account_id))
 
-  if (error) {
-    Sentry.captureException(error)
-    return res.status(400).json({ error })
-  }
+  const data = result[0]
 
   let entitlements: CustomerState = {
     version: 1,
@@ -31,11 +27,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     subscriptions: [],
   }
 
-  if (data.billing_stripe_customer_id) {
-    entitlements = await getCustomerState(
-      account,
-      data.billing_stripe_customer_id,
-    )
+  const account = process.env.STRIPE_ACCOUNT_ID || ''
+  if (data.billingStripeCustomerId) {
+    entitlements = await getCustomerState(account, data.billingStripeCustomerId)
   }
 
   res.status(200).json(entitlements)

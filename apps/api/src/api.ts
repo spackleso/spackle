@@ -2,7 +2,8 @@ import { IncomingHttpHeaders } from 'http'
 import * as Sentry from '@sentry/nextjs'
 import jwt from 'jsonwebtoken'
 import { NextApiRequest, NextApiResponse } from 'next'
-import supabase from 'spackle-supabase'
+import db, { tokens } from 'spackle-db'
+import { eq } from 'drizzle-orm'
 
 const { SUPABASE_JWT_SECRET } = process.env
 
@@ -16,17 +17,13 @@ export type AuthenticatedNextApiHandler = {
   (req: AuthenticatedNextApiRequest, res: NextApiResponse): Promise<void>
 }
 
-export const getToken = async (account_id: string) => {
-  const response = await supabase
-    .from('tokens')
-    .select('token')
-    .eq('stripe_account_id', account_id)
+export const getToken = async (stripeAccountId: string) => {
+  const result = await db
+    .select()
+    .from(tokens)
+    .where(eq(tokens.stripeAccountId, stripeAccountId))
 
-  if (response.error) {
-    throw new Error(response.error.message)
-  }
-
-  return response
+  return result.length ? result[0] : null
 }
 
 export const createToken = async (stripeAccountId: string) => {
@@ -34,25 +31,23 @@ export const createToken = async (stripeAccountId: string) => {
     throw new Error('Signing key not set')
   }
 
-  const response = await supabase
-    .from('tokens')
-    .insert({
-      stripe_account_id: stripeAccountId,
-      token: jwt.sign(
-        {
-          sub: stripeAccountId,
-          iat: Math.floor(Date.now() / 1000),
-        },
-        SUPABASE_JWT_SECRET,
-      ),
+  const token = jwt.sign(
+    {
+      sub: stripeAccountId,
+      iat: Math.floor(Date.now() / 1000),
+    },
+    SUPABASE_JWT_SECRET,
+  )
+
+  const result = await db
+    .insert(tokens)
+    .values({
+      stripeAccountId,
+      token,
     })
-    .select()
+    .returning()
 
-  if (response.error) {
-    throw new Error(response.error.message)
-  }
-
-  return response
+  return result[0]
 }
 
 export const requestToken = (headers: IncomingHttpHeaders) => {
@@ -109,7 +104,7 @@ export const getPagination = (req: NextApiRequest, size: number = 10) => {
   const from = page ? page * limit : 0
   const to = page ? from + size : size
 
-  return { from, to }
+  return { from, to, limit: limit + 1 }
 }
 
 export const middleware = (

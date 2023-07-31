@@ -1,83 +1,138 @@
 import crypto from 'crypto'
 import { execSync } from 'child_process'
-import supabase from 'spackle-supabase'
 import { createToken } from '@/api'
+import db, {
+  customerFeatures,
+  features,
+  priceFeatures,
+  productFeatures,
+  stripeAccounts,
+  stripeCustomers,
+  stripePrices,
+  stripeProducts,
+  stripeSubscriptionItems,
+  stripeSubscriptions,
+  stripeUsers,
+} from 'spackle-db'
+import { NextApiHandler, NextApiRequest, NextApiResponse } from 'next'
+import { createRequest, createResponse, RequestOptions } from 'node-mocks-http'
+import { liveStripe as stripe } from '@/stripe'
+
+export type ApiRequest = NextApiRequest & ReturnType<typeof createRequest>
+export type ApiResponse = NextApiResponse & ReturnType<typeof createResponse>
+
+export const testHandler = async (
+  handler: NextApiHandler,
+  options: RequestOptions,
+) => {
+  const req = createRequest<ApiRequest>(options)
+  const res = createResponse<ApiResponse>()
+
+  await handler(req, res)
+  return res
+}
+
+export const stripeTestHandler = async (
+  handler: NextApiHandler,
+  options: RequestOptions,
+) => {
+  options = {
+    ...options,
+    headers: {
+      ...options.headers,
+      'Stripe-Signature': stripe.webhooks.generateTestHeaderString({
+        payload: JSON.stringify(options.body),
+        secret: process.env.STRIPE_SIGNING_SECRET ?? '',
+      }),
+    },
+  }
+
+  return await testHandler(handler, options)
+}
 
 export const initializeTestDatabase = async () => {
   execSync('supabase db reset')
 }
 
-export const stripeId = (prefix: string) => {
+export const genStripeId = (prefix: string) => {
   return `${prefix}_${crypto.randomBytes(16).toString('hex')}`
 }
 
 export const createAccount = async () => {
-  const { data } = (await supabase
-    .from('stripe_accounts')
-    .insert({
-      stripe_id: stripeId('acct'),
+  const stripeId = genStripeId('acct')
+  const result = await db
+    .insert(stripeAccounts)
+    .values({
+      stripeId,
     })
-    .select()) as any
-
-  return data[0]
+    .returning()
+  return result[0]
 }
 
-export const createStripeCustomer = async (stripe_account_id: string) => {
-  const stripe_id = stripeId('cust')
-  const { data: customerData } = (await supabase
-    .from('stripe_customers')
-    .insert({
-      stripe_id,
-      stripe_account_id,
-      stripe_json: JSON.stringify({
-        id: stripe_id,
-      }),
+export const createUser = async (stripeAccountId: string) => {
+  const stripeId = genStripeId('usr')
+  const result = await db
+    .insert(stripeUsers)
+    .values({
+      stripeId,
+      stripeAccountId,
     })
-    .select()) as any
-  return customerData[0]
+    .returning()
+  return result[0]
 }
 
-export const createStripeProduct = async (stripe_account_id: string) => {
-  const stripe_id = stripeId('prod')
-  const { data } = (await supabase
-    .from('stripe_products')
-    .insert({
-      stripe_account_id,
-      stripe_id,
-      stripe_json: JSON.stringify({
-        id: stripe_id,
+export const createStripeCustomer = async (stripeAccountId: string) => {
+  const stripeId = genStripeId('cust')
+  const result = await db
+    .insert(stripeCustomers)
+    .values({
+      stripeId,
+      stripeAccountId,
+      stripeJson: JSON.stringify({
+        id: stripeId,
       }),
     })
-    .select()) as any
+    .returning()
+  return result[0]
+}
 
-  return data[0]
+export const createStripeProduct = async (stripeAccountId: string) => {
+  const stripeId = genStripeId('prod')
+  const result = await db
+    .insert(stripeProducts)
+    .values({
+      stripeAccountId,
+      stripeId,
+      stripeJson: JSON.stringify({
+        id: stripeId,
+      }),
+    })
+    .returning()
+  return result[0]
 }
 
 export const createStripePrice = async (
-  stripe_account_id: string,
-  stripe_product_id: string,
+  stripeAccountId: string,
+  stripeProductId: string,
 ) => {
-  const stripe_id = stripeId('price')
-  const { data } = (await supabase
-    .from('stripe_prices')
-    .insert({
-      stripe_account_id,
-      stripe_product_id,
-      stripe_id,
-      stripe_json: JSON.stringify({
-        id: stripe_id,
+  const stripeId = genStripeId('price')
+  const result = await db
+    .insert(stripePrices)
+    .values({
+      stripeAccountId,
+      stripeProductId,
+      stripeId,
+      stripeJson: JSON.stringify({
+        id: stripeId,
       }),
     })
-    .select()) as any
-
-  return data[0]
+    .returning()
+  return result[0]
 }
 
 export const createAccountWithToken = async () => {
   const account = await createAccount()
-
-  const { data: tokenData } = await createToken(account.stripe_id)
-  const token = tokenData[0]
+  const token = await createToken(account.stripeId)
 
   return {
     account,
@@ -86,144 +141,147 @@ export const createAccountWithToken = async () => {
 }
 
 export const createStripeSubscription = async (
-  stripe_account_id: string,
-  stripe_customer_id: string,
-  stripe_price_id: string,
-  stripe_json: string,
-  stripe_id: string = stripeId('sub'),
-  si_id: string = stripeId('si'),
+  stripeAccountId: string,
+  stripeCustomerId: string,
+  stripePriceId: string,
+  stripeJson: string,
+  stripeId: string = genStripeId('sub'),
+  siId: string = genStripeId('si'),
 ) => {
-  const { data } = (await supabase
-    .from('stripe_subscriptions')
-    .insert({
+  const subs = await db
+    .insert(stripeSubscriptions)
+    .values({
       status: 'active',
-      stripe_account_id,
-      stripe_customer_id,
-      stripe_id,
-      stripe_json: stripe_json,
+      stripeAccountId,
+      stripeCustomerId,
+      stripeId,
+      stripeJson,
     })
-    .select()) as any
+    .returning()
 
-  await supabase.from('stripe_subscription_items').insert({
-    stripe_account_id,
-    stripe_id: si_id,
-    stripe_price_id,
-    stripe_subscription_id: data[0].stripe_id,
-  })
+  const res = await db
+    .insert(stripeSubscriptionItems)
+    .values({
+      stripeAccountId,
+      stripeId: siId,
+      stripePriceId,
+      stripeSubscriptionId: subs[0].stripeId,
+    })
+    .returning()
 
-  return data[0]
+  return subs[0]
 }
 
 export const createFlagFeature = async (
-  stripe_account_id: string,
+  stripeAccountId: string,
   name: string,
   key: string,
-  value_flag: boolean,
+  valueFlag: boolean,
 ) => {
-  const { data: featureData } = (await supabase
-    .from('features')
-    .insert({
+  const result = await db
+    .insert(features)
+    .values({
       name,
       key,
       type: 0,
-      value_flag,
-      stripe_account_id,
+      valueFlag,
+      stripeAccountId,
     })
-    .select()) as any
-  return featureData[0]
+    .returning()
+  return result[0]
 }
 
 export const createLimitFeature = async (
-  stripe_account_id: string,
+  stripeAccountId: string,
   name: string,
   key: string,
-  value_limit: number,
+  valueLimit: number,
 ) => {
-  const { data: featureData } = (await supabase
-    .from('features')
-    .insert({
+  const result = await db
+    .insert(features)
+    .values({
       name,
       key,
       type: 1,
-      value_limit,
-      stripe_account_id,
+      valueLimit: valueLimit.toString(),
+      stripeAccountId,
     })
-    .select()) as any
-  return featureData[0]
+    .returning()
+  return result[0]
 }
 
 export const createProductFeature = async (
-  stripe_account_id: string,
+  stripeAccountId: string,
   name: string,
   key: string,
-  value_flag: boolean,
+  valueFlag: boolean,
+  product?: any,
 ) => {
-  const feature = await createFlagFeature(
-    stripe_account_id,
-    name,
-    key,
-    value_flag,
-  )
-  const product = await createStripeProduct(stripe_account_id)
-  const { data: productFeatureData } = (await supabase
-    .from('product_features')
-    .insert({
-      stripe_account_id,
-      feature_id: feature.id,
-      stripe_product_id: product.stripe_id,
-      value_flag,
+  const feature = await createFlagFeature(stripeAccountId, name, key, valueFlag)
+
+  if (!product) {
+    product = await createStripeProduct(stripeAccountId)
+  }
+
+  const result = await db
+    .insert(productFeatures)
+    .values({
+      stripeAccountId,
+      featureId: feature.id,
+      stripeProductId: product.stripeId,
+      valueFlag,
     })
-    .select()) as any
-  return productFeatureData[0]
+    .returning()
+  return result[0]
 }
 
 export const createPriceFeature = async (
-  stripe_account_id: string,
+  stripeAccountId: string,
   name: string,
   key: string,
-  value_flag: boolean,
+  valueFlag: boolean,
+  price?: any,
 ) => {
-  const feature = await createFlagFeature(
-    stripe_account_id,
-    name,
-    key,
-    value_flag,
-  )
-  const product = await createStripeProduct(stripe_account_id)
-  const price = await createStripePrice(stripe_account_id, product.stripe_id)
-  const { data: priceFeatureData } = (await supabase
-    .from('price_features')
-    .insert({
-      stripe_account_id,
-      feature_id: feature.id,
-      stripe_price_id: price.stripe_id,
-      value_flag,
+  const feature = await createFlagFeature(stripeAccountId, name, key, valueFlag)
+  const product = await createStripeProduct(stripeAccountId)
+
+  if (!price) {
+    price = await createStripePrice(stripeAccountId, product.stripeId)
+  }
+
+  const result = await db
+    .insert(priceFeatures)
+    .values({
+      stripeAccountId,
+      featureId: feature.id,
+      stripePriceId: price.stripeId,
+      valueFlag,
     })
-    .select()) as any
-  return priceFeatureData[0]
+    .returning()
+  return result[0]
 }
 
 export const createCustomerFeature = async (
-  stripe_account_id: string,
+  stripeAccountId: string,
   name: string,
   key: string,
-  value_flag: boolean,
+  valueFlag: boolean,
+  customer?: any,
 ) => {
-  const feature = await createFlagFeature(
-    stripe_account_id,
-    name,
-    key,
-    value_flag,
-  )
-  const customer = await createStripeCustomer(stripe_account_id)
-  const { data: customerFeatureData } = (await supabase
-    .from('customer_features')
-    .insert({
-      stripe_account_id,
-      feature_id: feature.id,
-      stripe_customer_id: customer.stripe_id,
-      value_flag,
+  const feature = await createFlagFeature(stripeAccountId, name, key, valueFlag)
+
+  if (!customer) {
+    customer = await createStripeCustomer(stripeAccountId)
+  }
+
+  const result = await db
+    .insert(customerFeatures)
+    .values({
+      stripeAccountId,
+      featureId: feature.id,
+      stripeCustomerId: customer.stripeId,
+      valueFlag,
     })
-    .select()) as any
-  return customerFeatureData[0]
+    .returning()
+  return result[0]
 }

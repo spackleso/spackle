@@ -1,4 +1,9 @@
 import { DynamoDBClient, GetItemCommand } from '@aws-sdk/client-dynamodb'
+import * as dotenv from 'dotenv'
+
+try {
+  dotenv.config({ path: __dirname + '/.env' })
+} catch (error) {}
 
 const {
   AWS_REGION,

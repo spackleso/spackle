@@ -1,6 +1,12 @@
-import { createMocks } from 'node-mocks-http'
+/**
+ * @jest-environment node
+ */
 import handler from '@/pages/api/v1/features/index'
-import { createAccountWithToken, createFlagFeature } from '@/tests/helpers'
+import {
+  createAccountWithToken,
+  createFlagFeature,
+  testHandler,
+} from '@/tests/helpers'
 import { storeAccountStatesAsync } from '@/store/dynamodb'
 
 jest.mock('@/store/dynamodb', () => {
@@ -11,12 +17,11 @@ jest.mock('@/store/dynamodb', () => {
 })
 
 test('Requires an API token', async () => {
-  const { req, res } = createMocks({
+  const res = await testHandler(handler, {
     method: 'GET',
     body: {},
   })
 
-  await handler(req, res)
   expect(res._getStatusCode()).toBe(403)
   expect(res._getData()).toBe(
     JSON.stringify({
@@ -27,7 +32,7 @@ test('Requires an API token', async () => {
 
 test('Invalid methods return a 405 error', async () => {
   const { token } = await createAccountWithToken()
-  const { req, res } = createMocks({
+  const res = await testHandler(handler, {
     method: 'PUT',
     headers: {
       Authorization: `Bearer ${token.token}`,
@@ -35,24 +40,17 @@ test('Invalid methods return a 405 error', async () => {
     body: {},
   })
 
-  await handler(req, res)
   expect(res._getStatusCode()).toBe(405)
 })
 
 describe('GET', () => {
   test('Returns a list of features', async () => {
     const { account, token } = await createAccountWithToken()
-    const { req, res } = createMocks({
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${token.token}`,
-      },
-    })
 
     const features = []
     for (let i = 0; i < 5; i++) {
       const feature = await createFlagFeature(
-        account.stripe_id,
+        account.stripeId,
         `Feature ${i}`,
         `feature_${i}`,
         false,
@@ -60,17 +58,23 @@ describe('GET', () => {
       features.push(feature)
     }
 
-    await handler(req, res)
+    const res = await testHandler(handler, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token.token}`,
+      },
+    })
+
     expect(res._getData()).toBe(
       JSON.stringify({
         data: features.map((feature) => ({
-          created_at: feature.created_at,
+          created_at: feature.createdAt,
           id: feature.id,
           key: feature.key,
           name: feature.name,
           type: feature.type,
-          value_flag: feature.value_flag,
-          value_limit: feature.value_limit,
+          value_flag: feature.valueFlag,
+          value_limit: feature.valueLimit,
         })),
         has_more: false,
       }),
@@ -80,17 +84,11 @@ describe('GET', () => {
   describe('Pagination', () => {
     test('Returns a paginated list of features', async () => {
       const { account, token } = await createAccountWithToken()
-      const { req, res } = createMocks({
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token.token}`,
-        },
-      })
 
       const features = []
       for (let i = 0; i < 11; i++) {
         const feature = await createFlagFeature(
-          account.stripe_id,
+          account.stripeId,
           `Feature ${i}`,
           `feature_${i}`,
           false,
@@ -98,17 +96,23 @@ describe('GET', () => {
         features.push(feature)
       }
 
-      await handler(req, res)
+      const res = await testHandler(handler, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token.token}`,
+        },
+      })
+
       expect(res._getData()).toBe(
         JSON.stringify({
           data: features.slice(0, 10).map((feature) => ({
-            created_at: feature.created_at,
+            created_at: feature.createdAt,
             id: feature.id,
             key: feature.key,
             name: feature.name,
             type: feature.type,
-            value_flag: feature.value_flag,
-            value_limit: feature.value_limit,
+            value_flag: feature.valueFlag,
+            value_limit: feature.valueLimit,
           })),
           has_more: true,
         }),
@@ -117,7 +121,19 @@ describe('GET', () => {
 
     test('Page parameters', async () => {
       const { account, token } = await createAccountWithToken()
-      const { req, res } = createMocks({
+
+      const features = []
+      for (let i = 0; i < 11; i++) {
+        const feature = await createFlagFeature(
+          account.stripeId,
+          `Feature ${i}`,
+          `feature_${i}`,
+          false,
+        )
+        features.push(feature)
+      }
+
+      const res = await testHandler(handler, {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${token.token}`,
@@ -127,28 +143,16 @@ describe('GET', () => {
         },
       })
 
-      const features = []
-      for (let i = 0; i < 11; i++) {
-        const feature = await createFlagFeature(
-          account.stripe_id,
-          `Feature ${i}`,
-          `feature_${i}`,
-          false,
-        )
-        features.push(feature)
-      }
-
-      await handler(req, res)
       expect(res._getData()).toBe(
         JSON.stringify({
           data: features.slice(10, 11).map((feature) => ({
-            created_at: feature.created_at,
+            created_at: feature.createdAt,
             id: feature.id,
             key: feature.key,
             name: feature.name,
             type: feature.type,
-            value_flag: feature.value_flag,
-            value_limit: feature.value_limit,
+            value_flag: feature.valueFlag,
+            value_limit: feature.valueLimit,
           })),
           has_more: false,
         }),
@@ -160,7 +164,7 @@ describe('GET', () => {
 describe('POST', () => {
   test('Creates a new feature', async () => {
     const { account, token } = await createAccountWithToken()
-    const { req, res } = createMocks({
+    const res = await testHandler(handler, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${token.token}`,
@@ -173,7 +177,6 @@ describe('POST', () => {
         value_limit: null,
       },
     })
-    await handler(req, res)
     expect(res._getStatusCode()).toBe(201)
     const data = JSON.parse(res._getData())
     expect(res._getData()).toBe(
@@ -187,12 +190,12 @@ describe('POST', () => {
         value_limit: null,
       }),
     )
-    expect(storeAccountStatesAsync).toHaveBeenCalledWith(account.stripe_id)
+    expect(storeAccountStatesAsync).toHaveBeenCalledWith(account.stripeId)
   })
 
   test('Validates field schema for flag', async () => {
     const { token } = await createAccountWithToken()
-    const { req, res } = createMocks({
+    const res = await testHandler(handler, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${token.token}`,
@@ -201,7 +204,6 @@ describe('POST', () => {
         type: 0,
       },
     })
-    await handler(req, res)
     expect(res._getStatusCode()).toBe(400)
     expect(res._getData()).toBe(
       JSON.stringify({
@@ -219,7 +221,7 @@ describe('POST', () => {
 
   test('Validates field schema for limit', async () => {
     const { token } = await createAccountWithToken()
-    const { req, res } = createMocks({
+    const res = await testHandler(handler, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${token.token}`,
@@ -228,7 +230,6 @@ describe('POST', () => {
         type: 1,
       },
     })
-    await handler(req, res)
     expect(res._getStatusCode()).toBe(400)
     expect(res._getData()).toBe(
       JSON.stringify({

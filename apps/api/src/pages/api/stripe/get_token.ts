@@ -6,19 +6,18 @@ import { createToken, getToken } from '@/api'
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { success } = verifySignature(req)
   if (!success) {
-    return res.status(400).send('')
+    return res.status(403).json({
+      error: 'Unauthorized',
+    })
   }
 
   const { account_id } = req.body
 
   let token
   try {
-    const { data: tokens } = await getToken(account_id)
-    if (tokens.length) {
-      token = tokens[0].token
-    } else {
-      const { data: tokens } = await createToken(account_id)
-      token = tokens[0].token
+    token = await getToken(account_id)
+    if (!token) {
+      token = await createToken(account_id)
     }
   } catch (error) {
     console.log(error)
@@ -26,7 +25,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     return res.status(400).json({})
   }
 
-  res.status(200).json({ token })
+  res.status(200).json({ token: token.token })
 }
 
 export default handler

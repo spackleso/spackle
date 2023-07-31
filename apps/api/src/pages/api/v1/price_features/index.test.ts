@@ -1,4 +1,6 @@
-import { createMocks } from 'node-mocks-http'
+/**
+ * @jest-environment node
+ */
 import handler from '@/pages/api/v1/price_features/index'
 import {
   createAccountWithToken,
@@ -7,6 +9,7 @@ import {
   createPriceFeature,
   createStripePrice,
   createStripeProduct,
+  testHandler,
 } from '@/tests/helpers'
 import { storeAccountStatesAsync } from '@/store/dynamodb'
 
@@ -18,12 +21,11 @@ jest.mock('@/store/dynamodb', () => {
 })
 
 test('Requires an API token', async () => {
-  const { req, res } = createMocks({
+  const res = await testHandler(handler, {
     method: 'GET',
     body: {},
   })
 
-  await handler(req, res)
   expect(res._getStatusCode()).toBe(403)
   expect(res._getData()).toBe(
     JSON.stringify({
@@ -34,7 +36,7 @@ test('Requires an API token', async () => {
 
 test('Invalid methods return a 405 error', async () => {
   const { token } = await createAccountWithToken()
-  const { req, res } = createMocks({
+  const res = await testHandler(handler, {
     method: 'PUT',
     headers: {
       Authorization: `Bearer ${token.token}`,
@@ -42,24 +44,17 @@ test('Invalid methods return a 405 error', async () => {
     body: {},
   })
 
-  await handler(req, res)
   expect(res._getStatusCode()).toBe(405)
 })
 
 describe('GET', () => {
   test('Returns a list of price features', async () => {
     const { account, token } = await createAccountWithToken()
-    const { req, res } = createMocks({
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${token.token}`,
-      },
-    })
-
     const priceFeatures = []
+
     for (let i = 0; i < 5; i++) {
       const priceFeature = await createPriceFeature(
-        account.stripe_id,
+        account.stripeId,
         `Feature ${i}`,
         `feature_${i}`,
         false,
@@ -67,16 +62,22 @@ describe('GET', () => {
       priceFeatures.push(priceFeature)
     }
 
-    await handler(req, res)
+    const res = await testHandler(handler, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token.token}`,
+      },
+    })
+
     expect(res._getData()).toBe(
       JSON.stringify({
         data: priceFeatures.map((priceFeature) => ({
-          created_at: priceFeature.created_at,
-          feature_id: priceFeature.feature_id,
+          created_at: priceFeature.createdAt,
+          feature_id: priceFeature.featureId,
           id: priceFeature.id,
-          stripe_price_id: priceFeature.stripe_price_id,
-          value_flag: priceFeature.value_flag,
-          value_limit: priceFeature.value_limit,
+          stripe_price_id: priceFeature.stripePriceId,
+          value_flag: priceFeature.valueFlag,
+          value_limit: priceFeature.valueLimit,
         })),
         has_more: false,
       }),
@@ -86,17 +87,11 @@ describe('GET', () => {
   describe('Pagination', () => {
     test('Returns a paginated list of features', async () => {
       const { account, token } = await createAccountWithToken()
-      const { req, res } = createMocks({
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token.token}`,
-        },
-      })
 
       const priceFeatures = []
       for (let i = 0; i < 11; i++) {
         const priceFeature = await createPriceFeature(
-          account.stripe_id,
+          account.stripeId,
           `Feature ${i}`,
           `feature_${i}`,
           false,
@@ -104,16 +99,22 @@ describe('GET', () => {
         priceFeatures.push(priceFeature)
       }
 
-      await handler(req, res)
+      const res = await testHandler(handler, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token.token}`,
+        },
+      })
+
       expect(res._getData()).toBe(
         JSON.stringify({
           data: priceFeatures.slice(0, 10).map((priceFeature) => ({
-            created_at: priceFeature.created_at,
-            feature_id: priceFeature.feature_id,
+            created_at: priceFeature.createdAt,
+            feature_id: priceFeature.featureId,
             id: priceFeature.id,
-            stripe_price_id: priceFeature.stripe_price_id,
-            value_flag: priceFeature.value_flag,
-            value_limit: priceFeature.value_limit,
+            stripe_price_id: priceFeature.stripePriceId,
+            value_flag: priceFeature.valueFlag,
+            value_limit: priceFeature.valueLimit,
           })),
           has_more: true,
         }),
@@ -122,7 +123,19 @@ describe('GET', () => {
 
     test('Page parameters', async () => {
       const { account, token } = await createAccountWithToken()
-      const { req, res } = createMocks({
+
+      const priceFeatures = []
+      for (let i = 0; i < 11; i++) {
+        const priceFeature = await createPriceFeature(
+          account.stripeId,
+          `Feature ${i}`,
+          `feature_${i}`,
+          false,
+        )
+        priceFeatures.push(priceFeature)
+      }
+
+      const res = await testHandler(handler, {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${token.token}`,
@@ -132,27 +145,15 @@ describe('GET', () => {
         },
       })
 
-      const priceFeatures = []
-      for (let i = 0; i < 11; i++) {
-        const priceFeature = await createPriceFeature(
-          account.stripe_id,
-          `Feature ${i}`,
-          `feature_${i}`,
-          false,
-        )
-        priceFeatures.push(priceFeature)
-      }
-
-      await handler(req, res)
       expect(res._getData()).toBe(
         JSON.stringify({
           data: priceFeatures.slice(10, 11).map((priceFeature) => ({
-            created_at: priceFeature.created_at,
-            feature_id: priceFeature.feature_id,
+            created_at: priceFeature.createdAt,
+            feature_id: priceFeature.featureId,
             id: priceFeature.id,
-            stripe_price_id: priceFeature.stripe_price_id,
-            value_flag: priceFeature.value_flag,
-            value_limit: priceFeature.value_limit,
+            stripe_price_id: priceFeature.stripePriceId,
+            value_flag: priceFeature.valueFlag,
+            value_limit: priceFeature.valueLimit,
           })),
           has_more: false,
         }),
@@ -164,26 +165,25 @@ describe('GET', () => {
 describe('POST', () => {
   test('Creates a new feature', async () => {
     const { account, token } = await createAccountWithToken()
-    const product = await createStripeProduct(account.stripe_id)
-    const price = await createStripePrice(account.stripe_id, product.stripe_id)
+    const product = await createStripeProduct(account.stripeId)
+    const price = await createStripePrice(account.stripeId, product.stripeId)
     const feature = await createFlagFeature(
-      account.stripe_id,
+      account.stripeId,
       'Feature 1',
       'feature_1',
       false,
     )
-    const { req, res } = createMocks({
+    const res = await testHandler(handler, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${token.token}`,
       },
       body: {
-        stripe_price_id: price.stripe_id,
+        stripe_price_id: price.stripeId,
         feature_id: feature.id,
         value_flag: true,
       },
     })
-    await handler(req, res)
     expect(res._getStatusCode()).toBe(201)
     const data = JSON.parse(res._getData())
     expect(res._getData()).toBe(
@@ -191,35 +191,34 @@ describe('POST', () => {
         created_at: data.created_at,
         feature_id: feature.id,
         id: data.id,
-        stripe_price_id: price.stripe_id,
+        stripe_price_id: price.stripeId,
         value_flag: true,
         value_limit: null,
       }),
     )
-    expect(storeAccountStatesAsync).toHaveBeenCalledWith(account.stripe_id)
+    expect(storeAccountStatesAsync).toHaveBeenCalledWith(account.stripeId)
   })
 
   test('Validates field schema for flag', async () => {
     const { account, token } = await createAccountWithToken()
-    const product = await createStripeProduct(account.stripe_id)
-    const price = await createStripePrice(account.stripe_id, product.stripe_id)
+    const product = await createStripeProduct(account.stripeId)
+    const price = await createStripePrice(account.stripeId, product.stripeId)
     const feature = await createFlagFeature(
-      account.stripe_id,
+      account.stripeId,
       'Feature 1',
       'feature_1',
       false,
     )
-    const { req, res } = createMocks({
+    const res = await testHandler(handler, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${token.token}`,
       },
       body: {
-        stripe_price_id: price.stripe_id,
+        stripe_price_id: price.stripeId,
         feature_id: feature.id,
       },
     })
-    await handler(req, res)
     expect(res._getStatusCode()).toBe(400)
     expect(res._getData()).toBe(
       JSON.stringify({
@@ -233,25 +232,24 @@ describe('POST', () => {
 
   test('Validates field schema for limit', async () => {
     const { account, token } = await createAccountWithToken()
-    const product = await createStripeProduct(account.stripe_id)
-    const price = await createStripePrice(account.stripe_id, product.stripe_id)
+    const product = await createStripeProduct(account.stripeId)
+    const price = await createStripePrice(account.stripeId, product.stripeId)
     const feature = await createLimitFeature(
-      account.stripe_id,
+      account.stripeId,
       'Feature 1',
       'feature_1',
       100,
     )
-    const { req, res } = createMocks({
+    const res = await testHandler(handler, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${token.token}`,
       },
       body: {
-        stripe_price_id: price.stripe_id,
+        stripe_price_id: price.stripeId,
         feature_id: feature.id,
       },
     })
-    await handler(req, res)
     expect(res._getStatusCode()).toBe(400)
     expect(res._getData()).toBe(
       JSON.stringify({

@@ -1,40 +1,40 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import supabase from 'spackle-supabase'
 import { verifySignature } from '@/stripe/signature'
-import * as Sentry from '@sentry/nextjs'
 import { getOrSyncStripeCustomer } from '@/stripe/sync'
+import db, { customerFeatures, features } from 'spackle-db'
+import { and, eq } from 'drizzle-orm'
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { success } = verifySignature(req)
   if (!success) {
-    return res.status(400).send('')
+    return res.status(403).json({
+      error: 'Unauthorized',
+    })
   }
 
   const { account_id, customer_id, mode } = req.body
 
   await getOrSyncStripeCustomer(account_id, customer_id, mode)
-  const { data, error } = await supabase
-    .from('customer_features')
-    .select(
-      `
-        id,
-        feature_id,
-        value_flag,
-        value_limit,
-        features(name)
-      `,
+
+  const data = await db
+    .select({
+      id: customerFeatures.id,
+      feature_id: customerFeatures.featureId,
+      value_flag: customerFeatures.valueFlag,
+      value_limit: customerFeatures.valueLimit,
+      name: features.name,
+    })
+    .from(customerFeatures)
+    .leftJoin(features, eq(customerFeatures.featureId, features.id))
+    .where(
+      and(
+        eq(customerFeatures.stripeAccountId, account_id),
+        eq(customerFeatures.stripeCustomerId, customer_id),
+      ),
     )
-    .eq('stripe_account_id', account_id)
-    .eq('stripe_customer_id', customer_id)
-    .order('name', { foreignTable: 'features', ascending: true })
+    .orderBy(features.name)
 
-  if (error) {
-    Sentry.captureException(error)
-  }
-
-  res.status(200).json({
-    data: data || [],
-  })
+  res.status(200).json({ data })
 }
 
 export default handler

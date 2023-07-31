@@ -1,9 +1,12 @@
+/**
+ * @jest-environment node
+ */
 import {
   createAccountWithToken,
   createFlagFeature,
   createStripeCustomer,
+  testHandler,
 } from '@/tests/helpers'
-import { createMocks } from 'node-mocks-http'
 import handler from '@/pages/api/v1/customers/[id]/state'
 import { storeCustomerStateAsync } from '@/store/dynamodb'
 
@@ -21,12 +24,11 @@ jest.mock('@/queue', () => {
 })
 
 test('Requires an API token', async () => {
-  const { req, res } = createMocks({
+  const res = await testHandler(handler, {
     method: 'GET',
     body: {},
   })
 
-  await handler(req, res)
   expect(res._getStatusCode()).toBe(403)
   expect(res._getData()).toBe(
     JSON.stringify({
@@ -37,7 +39,7 @@ test('Requires an API token', async () => {
 
 test('Invalid methods return a 405 error', async () => {
   const { token } = await createAccountWithToken()
-  const { req, res } = createMocks({
+  const res = await testHandler(handler, {
     method: 'PUT',
     headers: {
       Authorization: `Bearer ${token.token}`,
@@ -45,13 +47,12 @@ test('Invalid methods return a 405 error', async () => {
     body: {},
   })
 
-  await handler(req, res)
   expect(res._getStatusCode()).toBe(405)
 })
 
 test('Returns a 404 if the customer does not exist', async () => {
   const { token } = await createAccountWithToken()
-  const { req, res } = createMocks({
+  const res = await testHandler(handler, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${token.token}`,
@@ -61,50 +62,47 @@ test('Returns a 404 if the customer does not exist', async () => {
     },
   })
 
-  await handler(req, res)
   expect(res._getStatusCode()).toBe(404)
 })
 
 test('Returns a 404 if the customer does not belong to the account', async () => {
   const { token } = await createAccountWithToken()
   const { account: otherAccount } = await createAccountWithToken()
-  const customer = await createStripeCustomer(otherAccount.stripe_id)
+  const customer = await createStripeCustomer(otherAccount.stripeId)
 
-  const { req, res } = createMocks({
+  const res = await testHandler(handler, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${token.token}`,
     },
     query: {
-      id: customer.stripe_id,
+      id: customer.stripeId,
     },
   })
 
-  await handler(req, res)
   expect(res._getStatusCode()).toBe(404)
 })
 
 test('Returns a customer state', async () => {
   const { account, token } = await createAccountWithToken()
-  const customer = await createStripeCustomer(account.stripe_id)
+  const customer = await createStripeCustomer(account.stripeId)
   const feature = await createFlagFeature(
-    account.stripe_id,
+    account.stripeId,
     `Feature 1`,
     `feature_1`,
     false,
   )
 
-  const { req, res } = createMocks({
+  const res = await testHandler(handler, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${token.token}`,
     },
     query: {
-      id: customer.stripe_id,
+      id: customer.stripeId,
     },
   })
 
-  await handler(req, res)
   expect(res._getStatusCode()).toBe(200)
   expect(res._getData()).toBe(
     JSON.stringify({
@@ -115,15 +113,15 @@ test('Returns a customer state', async () => {
           name: feature.name,
           key: feature.key,
           type: feature.type,
-          value_flag: feature.value_flag,
-          value_limit: feature.value_limit,
+          value_flag: feature.valueFlag,
+          value_limit: feature.valueLimit,
         },
       ],
       subscriptions: [],
     }),
   )
   expect(storeCustomerStateAsync).toHaveBeenCalledWith(
-    account.stripe_id,
-    customer.stripe_id,
+    account.stripeId,
+    customer.stripeId,
   )
 })

@@ -1,39 +1,36 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import supabase from 'spackle-supabase'
 import { verifySignature } from '@/stripe/signature'
-import * as Sentry from '@sentry/nextjs'
+import db, { features, productFeatures } from 'spackle-db'
+import { and, eq } from 'drizzle-orm'
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { success } = verifySignature(req)
   if (!success) {
-    return res.status(400).send('')
+    return res.status(403).json({
+      error: 'Unauthorized',
+    })
   }
 
-  const { account_id, product_id, mode } = req.body
-
-  const { data, error } = await supabase
-    .from('product_features')
-    .select(
-      `
-        id,
-        feature_id,
-        value_flag,
-        value_limit,
-        features(name)
-      `,
+  const { account_id, product_id } = req.body
+  const data = await db
+    .select({
+      id: productFeatures.id,
+      feature_id: productFeatures.featureId,
+      value_flag: productFeatures.valueFlag,
+      value_limit: productFeatures.valueLimit,
+      name: features.name,
+    })
+    .from(productFeatures)
+    .leftJoin(features, eq(productFeatures.featureId, features.id))
+    .where(
+      and(
+        eq(productFeatures.stripeAccountId, account_id),
+        eq(productFeatures.stripeProductId, product_id),
+      ),
     )
-    .eq('stripe_account_id', account_id)
-    .eq('stripe_product_id', product_id)
-    .order('name', { foreignTable: 'features', ascending: true })
+    .orderBy(features.name)
 
-  if (error) {
-    Sentry.captureException(error)
-  }
-
-  // TODO: pop features key before serialization
-  res.status(200).json({
-    data: data || [],
-  })
+  res.status(200).json({ data })
 }
 
 export default handler

@@ -1,32 +1,35 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { verifySignature } from '@/stripe/signature'
-import supabase, { SupabaseError } from 'spackle-supabase'
 import * as Sentry from '@sentry/nextjs'
 import { syncStripeAccount, syncStripeUser } from '@/stripe/sync'
+import db, { stripeAccounts } from 'spackle-db'
+import { eq } from 'drizzle-orm'
 
-const fetchAccount = async (accountId: string) => {
-  const { data, error } = await supabase
-    .from('stripe_accounts')
-    .select(
-      `
-        has_acknowledged_setup,
-        id,
-        initial_sync_complete,
-        initial_sync_started_at,
-        stripe_id
-      `,
-    )
-    .eq('stripe_id', accountId)
-    .limit(1)
+const fetchAccount = async (stripeAccountId: string) => {
+  const result = await db
+    .select({
+      has_acknowledged_setup: stripeAccounts.hasAcknowledgedSetup,
+      id: stripeAccounts.id,
+      initial_sync_complete: stripeAccounts.initialSyncComplete,
+      initial_sync_started_at: stripeAccounts.initialSyncStartedAt,
+      stripe_id: stripeAccounts.stripeId,
+    })
+    .from(stripeAccounts)
+    .where(eq(stripeAccounts.stripeId, stripeAccountId))
 
-  if (error) throw new SupabaseError(error)
-  return data
+  return result[0]
 }
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
+  if (req.method === 'HEAD') {
+    return res.status(200).end()
+  }
+
   const { success } = verifySignature(req)
   if (!success) {
-    return res.status(400).send('')
+    return res.status(403).json({
+      error: 'Unauthorized',
+    })
   }
 
   // TODO: handle all errors
@@ -34,9 +37,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
   await syncStripeAccount(account_id, account_name)
 
-  let data
+  let account
   try {
-    data = await fetchAccount(account_id)
+    account = await fetchAccount(account_id)
   } catch (error) {
     Sentry.captureException(error)
     return res.status(400).json({ error })
@@ -51,7 +54,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     }
   }
 
-  res.status(200).json(data.length ? data[0] : {})
+  res.status(200).json(account)
 }
 
 export default handler

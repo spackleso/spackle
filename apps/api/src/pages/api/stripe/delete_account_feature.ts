@@ -1,30 +1,30 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import supabase from 'spackle-supabase'
 import { verifySignature } from '@/stripe/signature'
 import * as Sentry from '@sentry/nextjs'
 import { storeAccountStatesAsync } from '@/store/dynamodb'
+import db, { features } from 'spackle-db'
+import { and, eq } from 'drizzle-orm'
 
 type Data = {}
 
-const deleteFeature = async (account_id: string, feature_id: string) => {
-  const response = await supabase
-    .from('features')
-    .delete()
-    .eq('stripe_account_id', account_id)
-    .eq('id', feature_id)
-
-  if (response.error) {
-    throw new Error(response.error.message)
-  }
-
-  await storeAccountStatesAsync(account_id)
-  return response
+const deleteFeature = async (stripeAccountId: string, featureId: number) => {
+  await db
+    .delete(features)
+    .where(
+      and(
+        eq(features.stripeAccountId, stripeAccountId),
+        eq(features.id, featureId),
+      ),
+    )
+  await storeAccountStatesAsync(stripeAccountId)
 }
 
 const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   const { success } = verifySignature(req)
   if (!success) {
-    return res.status(400).send('')
+    return res.status(403).json({
+      error: 'Unauthorized',
+    })
   }
 
   // TODO: handle all errors

@@ -2,45 +2,45 @@ name: CI
 
 on: push
 
-env:
-  SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
-  SUPABASE_JWT_SECRET: super-secret-jwt-token-with-at-least-32-characters-long
-  SUPABASE_URL: http://localhost:54321
-
 jobs:
   test:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+
+      - name: Use Node.js 16
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16.x
+
+      - name: Install redis
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y redis-tools redis-server
+
+      - name: Verify that redis is up
+        run: redis-cli ping
+
       - name: Install modules
         run: yarn
 
-      - uses: supabase/setup-cli@v1
+      - name: Set up Supabase
+        uses: supabase/setup-cli@v1
         with:
           version: 1.60.1
 
       - run: supabase start
 
-      - name: Verify generated Supabase types match Postgres schema
-        run: |
-          cd packages/supabase
-          yarn types
-          if ! git diff --ignore-space-at-eol --exit-code --quiet src/schema.gen.ts; then
-            echo "Detected uncommitted changes after build. See status below:"
-            git diff src/schema.gen.ts
-            exit 1
-          fi
-
-      - name: Verify generated Drizzle types match Postgres schema
-        run: |
-          cd packages/db
-          yarn types
-          if ! git diff --ignore-space-at-eol --exit-code --quiet drizzle/schema.ts; then
-            echo "Detected uncommitted changes after build. See status below:"
-            git diff drizzle/schema.ts
-            exit 1
-          fi
-
       - name: Run tests
-        run: |
-          echo Hi
+        run: yarn test
+        env:
+          AWS_REGION: us-west-2
+          DATABASE_URL: postgresql://postgres:postgres@localhost:54322/postgres
+          REDIS_URL: redis://localhost:6379
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          SUPABASE_JWT_SECRET: super-secret-jwt-token-with-at-least-32-characters-long
+          SUPABASE_URL: http://localhost:54321
+          STRIPE_SIGNING_SECRET: ${{ secrets.STRIPE_SIGNING_SECRET }}
+          STRIPE_LIVE_SECRET_KEY: ${{ secrets.STRIPE_LIVE_SECRET_KEY }}
+          STRIPE_TEST_SECRET_KEY: ${{ secrets.STRIPE_TEST_SECRET_KEY }}

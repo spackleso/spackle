@@ -1,6 +1,5 @@
 import { storeAccountStates } from '@/store/dynamodb'
 import db, { stripeAccounts } from 'spackle-db'
-import supabase from 'spackle-supabase'
 import { syncAllAccountData } from '../src/stripe/sync'
 
 async function main() {
