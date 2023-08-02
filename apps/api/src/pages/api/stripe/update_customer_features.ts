@@ -63,7 +63,7 @@ const updateCustomerFeatures = async (
 
   const featureIds = data.map((pf: any) => pf.feature_id)
   const deleted = result.filter((pf) => !featureIds.includes(pf.featureId))
-  if (deleted) {
+  if (deleted.length) {
     await db.delete(customerFeatures).where(
       inArray(
         customerFeatures.id,
