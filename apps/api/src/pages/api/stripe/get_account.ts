@@ -14,7 +14,7 @@ const fetchAccount = async (accountId: string) => {
         initial_sync_complete,
         initial_sync_started_at,
         invite_id,
-        stripe_id,
+        stripe_id
       `,
     )
     .eq('stripe_id', accountId)
