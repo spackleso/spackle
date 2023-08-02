@@ -5,6 +5,7 @@ import { cookies } from 'next/headers'
 
 export default function Checkout() {
   const cookieStore = cookies()
+  console.log(cookieStore.getAll())
   const user_id = cookieStore.get('user_id')?.value
   const account_id = cookieStore.get('account_id')?.value
   const email = cookieStore.get('email')?.value
