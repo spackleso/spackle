@@ -88,9 +88,9 @@ export const createStripeCustomer = async (stripeAccountId: string) => {
     .values({
       stripeId,
       stripeAccountId,
-      stripeJson: JSON.stringify({
+      stripeJson: {
         id: stripeId,
-      }),
+      },
     })
     .returning()
   return result[0]
@@ -103,9 +103,9 @@ export const createStripeProduct = async (stripeAccountId: string) => {
     .values({
       stripeAccountId,
       stripeId,
-      stripeJson: JSON.stringify({
+      stripeJson: {
         id: stripeId,
-      }),
+      },
     })
     .returning()
   return result[0]
@@ -122,9 +122,9 @@ export const createStripePrice = async (
       stripeAccountId,
       stripeProductId,
       stripeId,
-      stripeJson: JSON.stringify({
+      stripeJson: {
         id: stripeId,
-      }),
+      },
     })
     .returning()
   return result[0]
@@ -144,7 +144,7 @@ export const createStripeSubscription = async (
   stripeAccountId: string,
   stripeCustomerId: string,
   stripePriceId: string,
-  stripeJson: string,
+  stripeJson: any,
   stripeId: string = genStripeId('sub'),
   siId: string = genStripeId('si'),
 ) => {

@@ -240,7 +240,7 @@ describe('Subscription state', () => {
       account.stripeId,
       customer.stripeId,
       price.stripeId,
-      JSON.stringify({
+      {
         id: sid,
         items: {
           data: [
@@ -253,7 +253,7 @@ describe('Subscription state', () => {
             },
           ],
         },
-      }),
+      },
       sid,
       siid,
     )

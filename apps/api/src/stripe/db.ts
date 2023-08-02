@@ -132,7 +132,7 @@ export const getStripeProduct = async (
 export const upsertStripeProduct = async (
   stripeAccountId: string,
   stripeId: string,
-  stripeJson: string,
+  stripeJson: any,
 ) => {
   const stripeProduct = await getStripeProduct(stripeAccountId, stripeId)
 
@@ -186,7 +186,7 @@ export const upsertStripePrice = async (
   stripeAccountId: string,
   stripeId: string,
   stripeProductId: string,
-  stripeJson: string,
+  stripeJson: any,
 ) => {
   const stripePrice = await getStripePrice(stripeAccountId, stripeId)
 
@@ -235,7 +235,7 @@ export const getStripeCustomer = async (
 export const upsertStripeCustomer = async (
   stripeAccountId: string,
   stripeId: string,
-  stripeJson: string,
+  stripeJson: any,
 ) => {
   const stripeCustomer = await getStripeCustomer(stripeAccountId, stripeId)
 
@@ -290,7 +290,7 @@ export const upsertStripeSubscription = async (
   stripeId: string,
   stripeCustomerId: string,
   status: string,
-  stripeJson: string,
+  stripeJson: any,
 ) => {
   const stripeSubscription = await getStripeSubscription(
     stripeAccountId,
@@ -364,7 +364,7 @@ export const upsertStripeSubscriptionItem = async (
   stripeId: string,
   stripePriceId: string,
   stripeSubscriptionId: string,
-  stripeJson: string,
+  stripeJson: any,
 ) => {
   const stripeSubscriptionItem = await getStripeSubscriptionItem(
     stripeAccountId,

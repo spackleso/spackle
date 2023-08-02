@@ -60,11 +60,10 @@ export const syncStripeProduct = async (
   const stripeProduct = await stripe.products.retrieve(stripeId, {
     stripeAccount: stripeAccountId,
   })
-  const stripeJson = JSON.stringify(stripeProduct)
   const product = await upsertStripeProduct(
     stripeAccountId,
     stripeId,
-    stripeJson,
+    JSON.parse(JSON.stringify(stripeProduct)),
   )
   await storeAccountStatesAsync(stripeAccountId)
   return product
@@ -89,7 +88,7 @@ export const syncStripePrice = async (
   const stripePrice = await stripe.prices.retrieve(stripeId, {
     stripeAccount: stripeAccountId,
   })
-  const stripeJson = JSON.stringify(stripePrice)
+  const stripeJson = JSON.parse(JSON.stringify(stripePrice))
   const stripeProductId = stripePrice.product
   await getOrSyncStripeProduct(stripeAccountId, stripeProductId as string, mode)
   const price = await upsertStripePrice(
@@ -121,7 +120,7 @@ export const syncStripeCustomer = async (
   const stripeCustomer = await stripe.customers.retrieve(stripeId, {
     stripeAccount: stripeAccountId,
   })
-  const stripeJson = JSON.stringify(stripeCustomer)
+  const stripeJson = JSON.parse(JSON.stringify(stripeCustomer))
   const customer = await upsertStripeCustomer(
     stripeAccountId,
     stripeId,
@@ -151,7 +150,7 @@ export const syncStripeSubscriptions = async (
       subscription.id,
       stripeCustomerId,
       subscription.status,
-      JSON.stringify(subscription),
+      JSON.parse(JSON.stringify(subscription)),
     )
     await syncStripeSubscriptionItems(stripeAccountId, subscription.id, mode)
   }
@@ -178,7 +177,7 @@ export const syncStripeSubscriptionItems = async (
       subscriptionItem.id,
       subscriptionItem.price.id,
       subscriptionItem.subscription,
-      JSON.stringify(subscriptionItem),
+      JSON.parse(JSON.stringify(subscriptionItem)),
     )
   }
 }
@@ -240,7 +239,7 @@ export const syncAllAccountModeData = async (
       await upsertStripeCustomer(
         stripeAccountId,
         stripeCustomer.id,
-        JSON.stringify(stripeCustomer),
+        JSON.parse(JSON.stringify(stripeCustomer)),
       )
     } catch (error) {
       console.error(error)
@@ -257,7 +256,7 @@ export const syncAllAccountModeData = async (
       await upsertStripeProduct(
         stripeAccountId,
         stripeProduct.id,
-        JSON.stringify(stripeProduct),
+        JSON.parse(JSON.stringify(stripeProduct)),
       )
     } catch (error) {
       console.error(error)
@@ -275,7 +274,7 @@ export const syncAllAccountModeData = async (
         stripeAccountId,
         stripePrice.id,
         stripePrice.product as string,
-        JSON.stringify(stripePrice),
+        JSON.parse(JSON.stringify(stripePrice)),
       )
     } catch (error) {
       console.error(error)
@@ -297,7 +296,7 @@ export const syncAllAccountModeData = async (
         stripeSubscription.id,
         stripeSubscription.customer as string,
         stripeSubscription.status,
-        JSON.stringify(stripeSubscription),
+        JSON.parse(JSON.stringify(stripeSubscription)),
       )
     } catch (error) {
       console.error(error)
