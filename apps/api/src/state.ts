@@ -300,7 +300,6 @@ export const getCustomerSubscriptionsState = async (
     )
 
   const products = productsData.map((item: any) => item.stripe_json)
-  console.log(products)
   const productsMap = products.reduce((a, v) => {
     a[v.id] = v
     return a
