@@ -8,6 +8,7 @@ const [accountId] = program.args
 
 async function main(accountId: string) {
   await storeAccountStates(accountId)
+  process.exit(0)
 }
 
 main(accountId)
