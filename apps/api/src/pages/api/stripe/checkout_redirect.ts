@@ -26,7 +26,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       process.env.STRIPE_SIGNING_SECRET as string,
     )
   } catch (error: any) {
-    return res.status(400).send('Something went wrong')
+    return res.status(403).json({
+      error: 'Unauthorized',
+    })
   }
 
   const domain = isDev ? 'localhost' : '.spackle.so'

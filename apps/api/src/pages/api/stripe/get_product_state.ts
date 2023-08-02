@@ -5,11 +5,13 @@ import { verifySignature } from '@/stripe/signature'
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { success } = verifySignature(req)
   if (!success) {
-    return res.status(400).send('')
+    return res.status(403).json({
+      error: 'Unauthorized',
+    })
   }
 
   // TODO: handle all errors
-  const { account_id, product_id, mode } = req.body
+  const { account_id, product_id } = req.body
 
   const features = await getProductFeaturesState(account_id, product_id)
 

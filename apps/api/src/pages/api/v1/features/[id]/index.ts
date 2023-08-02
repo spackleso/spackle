@@ -1,7 +1,8 @@
-import { AuthenticatedNextApiRequest, getPagination, middleware } from '@/api'
+import { AuthenticatedNextApiRequest, middleware } from '@/api'
 import { FeatureType } from '@/types'
+import { and, eq } from 'drizzle-orm'
 import { NextApiResponse } from 'next'
-import supabase from 'spackle-supabase'
+import db, { features } from 'spackle-db'
 import { z } from 'zod'
 
 const featureSchema = z.object({
@@ -16,11 +17,6 @@ const featureSchema = z.object({
 
 type Feature = z.infer<typeof featureSchema>
 
-type List = {
-  data: Feature[]
-  has_more: boolean
-}
-
 type Error = {
   error: string
 }
@@ -29,30 +25,45 @@ const handleGet = async (
   req: AuthenticatedNextApiRequest,
   res: NextApiResponse<Feature | Error>,
 ) => {
-  let { id } = req.query
+  let id: string | undefined = req.query.id as string | undefined
 
   if (!id) {
     return res.status(404).json({ error: 'Not found' })
   }
 
   const primaryKey = parseInt(id as string)
-  const { data } = await supabase
-    .from('features')
-    .select('created_at, id, key, name, type, value_flag, value_limit')
-    .eq('stripe_account_id', req.stripeAccountId)
-    .eq(primaryKey ? 'id' : 'key', primaryKey || id)
-    .maybeSingle()
+  const result = await db
+    .select({
+      created_at: features.createdAt,
+      id: features.id,
+      key: features.key,
+      name: features.name,
+      type: features.type,
+      value_flag: features.valueFlag,
+      value_limit: features.valueLimit,
+    })
+    .from(features)
+    .where(
+      and(
+        eq(features.stripeAccountId, req.stripeAccountId),
+        eq(features[primaryKey ? 'id' : 'key'], primaryKey || id),
+      ),
+    )
 
-  if (!data) {
+  if (!result.length) {
     return res.status(404).json({ error: 'Not found' })
   }
 
-  return res.status(200).json(data)
+  const feature = result[0]
+  return res.status(200).json({
+    ...feature,
+    value_limit: feature.value_limit ? parseFloat(feature.value_limit) : null,
+  })
 }
 
 const handler = async (
   req: AuthenticatedNextApiRequest,
-  res: NextApiResponse<List | Feature | Error>,
+  res: NextApiResponse<Feature | Error>,
 ) => {
   return await handleGet(req, res)
 }

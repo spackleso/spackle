@@ -1,11 +1,10 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import supabase from 'spackle-supabase'
 import { verifySignature } from '@/stripe/signature'
-import { PostgrestResponse } from '@supabase/supabase-js'
 import * as Sentry from '@sentry/nextjs'
 import { storeAccountStatesAsync } from '@/store/dynamodb'
 import { upsertStripeUser } from '@/stripe/db'
 import { track } from '@/posthog'
+import db, { features } from 'spackle-db'
 
 type Data = {
   success?: boolean
@@ -13,35 +12,31 @@ type Data = {
 }
 
 const createFeature = async (
-  account_id: string,
+  stripeAccountId: string,
   name: string,
   key: string,
   type: number,
-  value_flag: boolean | null,
-  value_limit: number | null,
-): Promise<PostgrestResponse<any>> => {
-  const response = await supabase.from('features').insert({
+  valueFlag: boolean | null,
+  valueLimit: number | null,
+) => {
+  const values = {
+    stripeAccountId,
     name,
     key,
     type,
-    value_flag,
-    value_limit,
-    stripe_account_id: account_id,
-  })
-
-  if (response.error) {
-    throw new Error(response.error.message)
+    valueFlag,
+    valueLimit: valueLimit === null ? null : valueLimit.toString(),
   }
-
-  await storeAccountStatesAsync(account_id)
-  return response
+  const result = await db.insert(features).values(values).returning()
+  await storeAccountStatesAsync(stripeAccountId)
+  return result[0]
 }
 
 const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   const { success } = verifySignature(req)
   if (!success) {
-    return res.status(400).json({
-      error: 'Signature verification failed',
+    return res.status(403).json({
+      error: 'Unauthorized',
     })
   }
 
@@ -66,15 +61,17 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
     })
   }
 
-  const user = await upsertStripeUser(
-    account_id,
-    user_id,
-    user_email,
-    user_name,
-  )
+  if (user_id) {
+    const user = await upsertStripeUser(
+      account_id,
+      user_id,
+      user_email,
+      user_name,
+    )
 
-  if (user) {
-    await track(user.id.toString(), 'Created feature', {})
+    if (user) {
+      await track(user.id.toString(), 'Created feature', {})
+    }
   }
 
   return res.status(201).json({

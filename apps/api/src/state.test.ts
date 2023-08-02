@@ -1,3 +1,6 @@
+/**
+ * @jest-environment node
+ */
 import {
   getAccountFeaturesState,
   getCustomerFeaturesState,
@@ -5,28 +8,34 @@ import {
   getPriceFeaturesState,
   getProductFeaturesState,
 } from './state'
-import supabase from 'spackle-supabase'
 import {
   createAccount,
   createStripeCustomer,
   createFlagFeature,
   createLimitFeature,
-  stripeId,
+  genStripeId,
   createStripeProduct,
   createStripePrice,
   createStripeSubscription,
 } from '@/tests/helpers'
+import db, {
+  customerFeatures,
+  priceFeatures,
+  productFeatures,
+  stripePrices,
+  stripeProducts,
+} from 'spackle-db'
 
 describe('Features state', () => {
   test('Get accounts state should return all account features', async () => {
     const account = await createAccount()
     const feature = await createFlagFeature(
-      account.stripe_id,
+      account.stripeId,
       'Feature',
       'feature',
       false,
     )
-    const state = await getAccountFeaturesState(account.stripe_id)
+    const state = await getAccountFeaturesState(account.stripeId)
     expect(state).toStrictEqual([
       {
         id: feature.id,
@@ -42,31 +51,34 @@ describe('Features state', () => {
   test('Get product state should return overridden account features', async () => {
     const account = await createAccount()
     const feature = await createFlagFeature(
-      account.stripe_id,
+      account.stripeId,
       'Feature',
       'feature',
       false,
     )
 
-    const { data: productData } = (await supabase
-      .from('stripe_products')
-      .insert({
-        stripe_id: stripeId('prod'),
-        stripe_account_id: account.stripe_id,
+    const sProducts = await db
+      .insert(stripeProducts)
+      .values({
+        stripeId: genStripeId('prod'),
+        stripeAccountId: account.stripeId,
       })
-      .select()) as any
-    const product = productData[0]
+      .returning()
+    const product = sProducts[0]
 
-    await supabase.from('product_features').insert({
-      value_flag: true,
-      stripe_account_id: account.stripe_id,
-      stripe_product_id: product.stripe_id,
-      feature_id: feature.id,
-    })
+    await db
+      .insert(productFeatures)
+      .values({
+        valueFlag: true,
+        stripeAccountId: account.stripeId,
+        stripeProductId: product.stripeId,
+        featureId: feature.id,
+      })
+      .returning()
 
     const state = await getProductFeaturesState(
-      account.stripe_id,
-      product.stripe_id,
+      account.stripeId,
+      product.stripeId,
     )
     expect(state).toStrictEqual([
       {
@@ -83,42 +95,42 @@ describe('Features state', () => {
   test('Get price state should return overridden account features', async () => {
     const account = await createAccount()
     const feature = await createFlagFeature(
-      account.stripe_id,
+      account.stripeId,
       'Feature',
       'feature',
       false,
     )
 
-    const { data: productData } = (await supabase
-      .from('stripe_products')
-      .insert({
-        stripe_id: stripeId('prod'),
-        stripe_account_id: account.stripe_id,
+    const sProducts = await db
+      .insert(stripeProducts)
+      .values({
+        stripeId: genStripeId('prod'),
+        stripeAccountId: account.stripeId,
       })
-      .select()) as any
-    const product = productData[0]
+      .returning()
+    const product = sProducts[0]
 
-    const { data: priceData } = (await supabase
-      .from('stripe_prices')
-      .insert({
-        stripe_id: stripeId('price'),
-        stripe_account_id: account.stripe_id,
-        stripe_product_id: product.stripe_id,
+    const sPrices = await db
+      .insert(stripePrices)
+      .values({
+        stripeId: genStripeId('price'),
+        stripeAccountId: account.stripeId,
+        stripeProductId: product.stripeId,
       })
-      .select()) as any
-    const price = priceData[0]
+      .returning()
+    const price = sPrices[0]
 
-    await supabase.from('price_features').insert({
-      value_flag: true,
-      stripe_account_id: account.stripe_id,
-      stripe_price_id: price.stripe_id,
-      feature_id: feature.id,
+    await db.insert(priceFeatures).values({
+      valueFlag: true,
+      stripeAccountId: account.stripeId,
+      stripePriceId: price.stripeId,
+      featureId: feature.id,
     })
 
     const state = await getPriceFeaturesState(
-      account.stripe_id,
-      product.stripe_id,
-      price.stripe_id,
+      account.stripeId,
+      product.stripeId,
+      price.stripeId,
     )
     expect(state).toStrictEqual([
       {
@@ -134,48 +146,57 @@ describe('Features state', () => {
 
   test('Get customer state should return overridden subscription features', async () => {
     const account = await createAccount()
-    const customer = await createStripeCustomer(account.stripe_id)
+    const customer = await createStripeCustomer(account.stripeId)
     const trueFeature = await createFlagFeature(
-      account.stripe_id,
+      account.stripeId,
       'Default True',
       'default_true',
       true,
     )
     const falseFeature = await createFlagFeature(
-      account.stripe_id,
+      account.stripeId,
       'Default False',
       'default_false',
       false,
     )
     const limitFeature = await createLimitFeature(
-      account.stripe_id,
+      account.stripeId,
       'Default 20',
       'default_20',
       20,
     )
 
-    await supabase.from('customer_features').insert({
-      value_flag: true,
-      stripe_account_id: account.stripe_id,
-      stripe_customer_id: customer.stripe_id,
-      feature_id: falseFeature.id,
-    })
-    await supabase.from('customer_features').insert({
-      value_flag: false,
-      stripe_account_id: account.stripe_id,
-      stripe_customer_id: customer.stripe_id,
-      feature_id: trueFeature.id,
-    })
-    await supabase.from('customer_features').insert({
-      value_limit: null,
-      stripe_account_id: account.stripe_id,
-      stripe_customer_id: customer.stripe_id,
-      feature_id: limitFeature.id,
-    })
+    await db
+      .insert(customerFeatures)
+      .values({
+        valueFlag: true,
+        stripeAccountId: account.stripeId,
+        stripeCustomerId: customer.stripeId,
+        featureId: falseFeature.id,
+      })
+      .returning()
+    await db
+      .insert(customerFeatures)
+      .values({
+        valueFlag: false,
+        stripeAccountId: account.stripeId,
+        stripeCustomerId: customer.stripeId,
+        featureId: trueFeature.id,
+      })
+      .returning()
+    await db
+      .insert(customerFeatures)
+      .values({
+        valueLimit: null,
+        stripeAccountId: account.stripeId,
+        stripeCustomerId: customer.stripeId,
+        featureId: limitFeature.id,
+      })
+      .returning()
 
     const state = await getCustomerFeaturesState(
-      account.stripe_id,
-      customer.stripe_id,
+      account.stripeId,
+      customer.stripeId,
     )
 
     expect(state).toStrictEqual([
@@ -210,15 +231,15 @@ describe('Features state', () => {
 describe('Subscription state', () => {
   test('Get subscription state should return a stripe subscription object', async () => {
     const account = await createAccount()
-    const customer = await createStripeCustomer(account.stripe_id)
-    const product = await createStripeProduct(account.stripe_id)
-    const price = await createStripePrice(account.stripe_id, product.stripe_id)
-    const sid = stripeId('sub')
-    const siid = stripeId('si')
+    const customer = await createStripeCustomer(account.stripeId)
+    const product = await createStripeProduct(account.stripeId)
+    const price = await createStripePrice(account.stripeId, product.stripeId)
+    const sid = genStripeId('sub')
+    const siid = genStripeId('si')
     const subscription = await createStripeSubscription(
-      account.stripe_id,
-      customer.stripe_id,
-      price.stripe_id,
+      account.stripeId,
+      customer.stripeId,
+      price.stripeId,
       JSON.stringify({
         id: sid,
         items: {
@@ -226,8 +247,8 @@ describe('Subscription state', () => {
             {
               id: siid,
               price: {
-                id: price.stripe_id,
-                product: product.stripe_id,
+                id: price.stripeId,
+                product: product.stripeId,
               },
             },
           ],
@@ -238,20 +259,20 @@ describe('Subscription state', () => {
     )
 
     const state = await getCustomerSubscriptionsState(
-      account.stripe_id,
-      customer.stripe_id,
+      account.stripeId,
+      customer.stripeId,
     )
     expect(state).toStrictEqual([
       {
-        id: subscription.stripe_id,
+        id: subscription.stripeId,
         items: {
           data: [
             {
               id: siid,
               price: {
-                id: price.stripe_id,
+                id: price.stripeId,
                 product: {
-                  id: product.stripe_id,
+                  id: product.stripeId,
                 },
               },
             },

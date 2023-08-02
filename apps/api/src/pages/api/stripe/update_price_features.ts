@@ -1,88 +1,86 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import supabase from 'spackle-supabase'
 import { verifySignature } from '@/stripe/signature'
 import * as Sentry from '@sentry/nextjs'
 import { getOrSyncStripeAccount, getOrSyncStripePrice } from '@/stripe/sync'
 import { storeAccountStatesAsync } from '@/store/dynamodb'
+import db, { priceFeatures } from 'spackle-db'
+import { and, eq, inArray } from 'drizzle-orm'
 
 const updatePriceFeatures = async (
-  account_id: string,
-  price_id: string,
-  price_features: any[],
+  stripeAccountId: string,
+  stripePriceId: string,
+  data: any[],
 ) => {
   // Create
-  const newPriceFeatures = price_features
+  const newPriceFeatures = data
     .filter((pf: any) => !pf.hasOwnProperty('id'))
     .map((pf: any) => ({
-      stripe_account_id: account_id,
-      stripe_price_id: price_id,
-      feature_id: pf.feature_id,
-      value_limit: pf.value_limit,
-      value_flag: pf.value_flag,
+      stripeAccountId,
+      stripePriceId,
+      featureId: pf.feature_id,
+      valueLimit: pf.value_limit,
+      valueFlag: pf.value_flag,
     }))
 
-  const { error: createError } = await supabase
-    .from('price_features')
-    .insert(newPriceFeatures)
-
-  if (createError) {
-    throw new Error(createError.message)
+  if (newPriceFeatures.length > 0) {
+    await db.insert(priceFeatures).values(newPriceFeatures)
   }
 
   // Update
-  const updatedPriceFeatures = price_features
+  const updatedPriceFeatures = data
     .filter((pf: any) => pf.hasOwnProperty('id'))
     .map((pf: any) => ({
-      feature_id: pf.feature_id,
+      featureId: pf.feature_id,
       id: pf.id,
-      stripe_account_id: account_id,
-      stripe_price_id: price_id,
-      value_flag: pf.value_flag,
-      value_limit: pf.value_limit,
+      stripeAccountId,
+      stripePriceId,
+      valueFlag: pf.value_flag,
+      valueLimit: pf.value_limit,
     }))
 
-  const { error: updateError } = await supabase
-    .from('price_features')
-    .upsert(updatedPriceFeatures)
-
-  if (updateError) {
-    throw new Error(updateError.message)
+  for (const pf of updatedPriceFeatures) {
+    await db
+      .update(priceFeatures)
+      .set(pf)
+      .where(
+        and(
+          eq(priceFeatures.stripeAccountId, pf.stripeAccountId),
+          eq(priceFeatures.id, pf.id),
+        ),
+      )
   }
 
   // Delete
-  const { data: all, error: getError } = await supabase
-    .from('price_features')
-    .select('*')
-    .eq('stripe_account_id', account_id)
-    .eq('stripe_price_id', price_id)
+  const result = await db
+    .select()
+    .from(priceFeatures)
+    .where(
+      and(
+        eq(priceFeatures.stripeAccountId, stripeAccountId),
+        eq(priceFeatures.stripePriceId, stripePriceId),
+      ),
+    )
 
-  if (getError) {
-    throw new Error(getError.message)
-  }
-
-  const featureIds = price_features.map((pf: any) => pf.feature_id)
-  const deleted = all?.filter((pf) => !featureIds.includes(pf.feature_id))
+  const featureIds = data.map((pf: any) => pf.feature_id)
+  const deleted = result.filter((pf) => !featureIds.includes(pf.featureId))
   if (deleted) {
-    const { error: deleteError } = await supabase
-      .from('price_features')
-      .delete()
-      .in(
-        'id',
-        deleted?.map((pf) => pf.id),
-      )
-
-    if (deleteError) {
-      throw new Error(deleteError.message)
-    }
+    await db.delete(priceFeatures).where(
+      inArray(
+        priceFeatures.id,
+        deleted.map((pf) => pf.id),
+      ),
+    )
   }
 
-  await storeAccountStatesAsync(account_id)
+  await storeAccountStatesAsync(stripeAccountId)
 }
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { success } = verifySignature(req)
   if (!success) {
-    return res.status(400).send('')
+    return res.status(403).json({
+      error: 'Unauthorized',
+    })
   }
   // TODO: handle all errors
   const { account_id, price_id, price_features, mode } = req.body
@@ -92,9 +90,10 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     await updatePriceFeatures(account_id, price_id, price_features)
   } catch (error) {
     Sentry.captureException(error)
-    return res.status(400).json({
+    res.status(400).json({
       error: (error as Error).message,
     })
+    return
   }
 
   res.status(200).json({

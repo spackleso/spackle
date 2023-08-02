@@ -1,88 +1,86 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import supabase from 'spackle-supabase'
 import { verifySignature } from '@/stripe/signature'
 import * as Sentry from '@sentry/nextjs'
 import { getOrSyncStripeAccount, getOrSyncStripeCustomer } from '@/stripe/sync'
 import { storeCustomerState } from '@/store/dynamodb'
+import db, { customerFeatures } from 'spackle-db'
+import { and, eq, inArray } from 'drizzle-orm'
 
 const updateCustomerFeatures = async (
-  account_id: string,
-  customer_id: string,
-  customer_features: any[],
+  stripeAccountId: string,
+  stripeCustomerId: string,
+  data: any[],
 ) => {
   // Create new features
-  const newCustomerFeatures = customer_features
+  const newCustomerFeatures = data
     .filter((pf: any) => !pf.hasOwnProperty('id'))
     .map((pf: any) => ({
-      stripe_account_id: account_id,
-      stripe_customer_id: customer_id,
-      feature_id: pf.feature_id,
-      value_limit: pf.value_limit,
-      value_flag: pf.value_flag,
+      stripeAccountId,
+      stripeCustomerId,
+      featureId: pf.feature_id,
+      valueLimit: pf.value_limit,
+      valueFlag: pf.value_flag,
     }))
 
-  const { error: createError } = await supabase
-    .from('customer_features')
-    .insert(newCustomerFeatures)
-
-  if (createError) {
-    throw new Error(createError.message)
+  if (newCustomerFeatures.length > 0) {
+    await db.insert(customerFeatures).values(newCustomerFeatures)
   }
 
   // Update
-  const updatedCustomerFeatures = customer_features
+  const updatedCustomerFeatures = data
     .filter((pf: any) => pf.hasOwnProperty('id'))
     .map((pf: any) => ({
-      feature_id: pf.feature_id,
+      featureId: pf.feature_id,
       id: pf.id,
-      stripe_account_id: account_id,
-      stripe_customer_id: customer_id,
-      value_flag: pf.value_flag,
-      value_limit: pf.value_limit,
+      stripeAccountId,
+      stripeCustomerId,
+      valueFlag: pf.value_flag,
+      valueLimit: pf.value_limit,
     }))
 
-  const { error: updateError } = await supabase
-    .from('customer_features')
-    .upsert(updatedCustomerFeatures)
-
-  if (updateError) {
-    throw new Error(updateError.message)
+  for (const pf of updatedCustomerFeatures) {
+    await db
+      .update(customerFeatures)
+      .set(pf)
+      .where(
+        and(
+          eq(customerFeatures.stripeAccountId, pf.stripeAccountId),
+          eq(customerFeatures.id, pf.id),
+        ),
+      )
   }
 
   // Delete
-  const { data: all, error: getError } = await supabase
-    .from('customer_features')
-    .select('*')
-    .eq('stripe_account_id', account_id)
-    .eq('stripe_customer_id', customer_id)
+  const result = await db
+    .select()
+    .from(customerFeatures)
+    .where(
+      and(
+        eq(customerFeatures.stripeAccountId, stripeAccountId),
+        eq(customerFeatures.stripeCustomerId, stripeCustomerId),
+      ),
+    )
 
-  if (getError) {
-    throw new Error(getError.message)
-  }
-
-  const featureIds = customer_features.map((pf: any) => pf.feature_id)
-  const deleted = all?.filter((pf) => !featureIds.includes(pf.feature_id))
+  const featureIds = data.map((pf: any) => pf.feature_id)
+  const deleted = result.filter((pf) => !featureIds.includes(pf.featureId))
   if (deleted) {
-    const { error: deleteError } = await supabase
-      .from('customer_features')
-      .delete()
-      .in(
-        'id',
-        deleted?.map((pf) => pf.id),
-      )
-
-    if (deleteError) {
-      throw new Error(deleteError.message)
-    }
+    await db.delete(customerFeatures).where(
+      inArray(
+        customerFeatures.id,
+        deleted.map((pf) => pf.id),
+      ),
+    )
   }
 
-  await storeCustomerState(account_id, customer_id)
+  await storeCustomerState(stripeAccountId, stripeCustomerId)
 }
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { success } = verifySignature(req)
   if (!success) {
-    return res.status(400).send('')
+    return res.status(403).json({
+      error: 'Unauthorized',
+    })
   }
   // TODO: handle all errors
   const { account_id, customer_id, customer_features, mode } = req.body
@@ -92,6 +90,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     await getOrSyncStripeCustomer(account_id, customer_id, mode)
     await updateCustomerFeatures(account_id, customer_id, customer_features)
   } catch (error) {
+    console.error(error)
     Sentry.captureException(error)
     return res.status(400).json({
       error: (error as Error).message,

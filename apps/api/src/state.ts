@@ -1,38 +1,57 @@
-import supabase, { SupabaseError } from 'spackle-supabase'
 import { CustomerState } from '@/types'
+import db, {
+  customerFeatures,
+  features,
+  priceFeatures,
+  productFeatures,
+  stripePrices,
+  stripeProducts,
+  stripeSubscriptionItems,
+  stripeSubscriptions,
+} from 'spackle-db'
+import { and, eq, inArray, ne } from 'drizzle-orm'
 
-export const getAccountFeaturesState = async (accountId: string) => {
-  const { data, error } = await supabase
-    .from('features')
-    .select('id,name,key,type,value_flag,value_limit')
-    .eq('stripe_account_id', accountId)
-    .order('name', { ascending: true })
+export const getAccountFeaturesState = async (stripeAccountId: string) => {
+  const result = await db
+    .select({
+      id: features.id,
+      name: features.name,
+      key: features.key,
+      type: features.type,
+      value_flag: features.valueFlag,
+      value_limit: features.valueLimit,
+    })
+    .from(features)
+    .where(eq(features.stripeAccountId, stripeAccountId))
+    .orderBy(features.name)
 
-  if (error) {
-    throw new SupabaseError(error)
-  }
-
-  return data || []
+  return result || []
 }
 
 export const getProductFeaturesState = async (
-  accountId: string,
-  productId: string,
+  stripeAccountId: string,
+  stripeProductId: string,
 ): Promise<any[]> => {
-  const accountState = await getAccountFeaturesState(accountId)
-
-  const { data: productFeatures, error: productFeaturesError } = await supabase
-    .from('product_features')
-    .select('id,value_flag,value_limit,feature_id,features(name)')
-    .eq('stripe_account_id', accountId)
-    .eq('stripe_product_id', productId)
-
-  if (productFeaturesError) {
-    throw new SupabaseError(productFeaturesError)
-  }
+  const accountState = await getAccountFeaturesState(stripeAccountId)
+  const result = await db
+    .select({
+      id: productFeatures.id,
+      value_flag: productFeatures.valueFlag,
+      value_limit: productFeatures.valueLimit,
+      feature_id: productFeatures.featureId,
+      name: features.name,
+    })
+    .from(productFeatures)
+    .leftJoin(features, eq(productFeatures.featureId, features.id))
+    .where(
+      and(
+        eq(productFeatures.stripeAccountId, stripeAccountId),
+        eq(productFeatures.stripeProductId, stripeProductId),
+      ),
+    )
 
   const productFeaturesMap: { [key: string]: any } =
-    productFeatures?.reduce(
+    result?.reduce(
       (a, v) => ({
         ...a,
         [v.feature_id]: v,
@@ -56,24 +75,33 @@ export const getProductFeaturesState = async (
 }
 
 export const getPriceFeaturesState = async (
-  accountId: string,
-  productId: string,
-  priceId: string,
+  stripeAccountId: string,
+  stripeProductId: string,
+  stripePriceId: string,
 ): Promise<any[]> => {
-  const productState = await getProductFeaturesState(accountId, productId)
-
-  const { data: priceFeatures, error: productFeaturesError } = await supabase
-    .from('price_features')
-    .select('id,value_flag,value_limit,feature_id,features(name)')
-    .eq('stripe_account_id', accountId)
-    .eq('stripe_price_id', priceId)
-
-  if (productFeaturesError) {
-    throw new SupabaseError(productFeaturesError)
-  }
+  const productState = await getProductFeaturesState(
+    stripeAccountId,
+    stripeProductId,
+  )
+  const result = await db
+    .select({
+      id: priceFeatures.id,
+      value_flag: priceFeatures.valueFlag,
+      value_limit: priceFeatures.valueLimit,
+      feature_id: priceFeatures.featureId,
+      name: features.name,
+    })
+    .from(priceFeatures)
+    .leftJoin(features, eq(priceFeatures.featureId, features.id))
+    .where(
+      and(
+        eq(priceFeatures.stripeAccountId, stripeAccountId),
+        eq(priceFeatures.stripePriceId, stripePriceId),
+      ),
+    )
 
   const priceFeaturesMap: { [key: string]: any } =
-    priceFeatures?.reduce(
+    result?.reduce(
       (a, v) => ({
         ...a,
         [v.feature_id]: v,
@@ -97,22 +125,35 @@ export const getPriceFeaturesState = async (
 }
 
 export const getSubscriptionFeaturesState = async (
-  accountId: string,
-  customerId: string,
+  stripeAccountId: string,
+  stripeCustomerId: string,
 ) => {
-  const { data: items, error } = await supabase
-    .from('stripe_subscription_items')
-    .select(
-      'stripe_price_id, stripe_subscriptions!inner(*), stripe_prices!inner(*)',
+  const items = await db
+    .select({
+      stripePriceId: stripeSubscriptionItems.stripePriceId,
+      stripeSubscriptions,
+      stripePrices,
+    })
+    .from(stripeSubscriptionItems)
+    .leftJoin(
+      stripeSubscriptions,
+      eq(
+        stripeSubscriptionItems.stripeSubscriptionId,
+        stripeSubscriptions.stripeId,
+      ),
     )
-    .eq('stripe_account_id', accountId)
-    .eq('stripe_subscriptions.stripe_customer_id', customerId)
+    .leftJoin(
+      stripePrices,
+      eq(stripeSubscriptionItems.stripePriceId, stripePrices.stripeId),
+    )
+    .where(
+      and(
+        eq(stripeSubscriptionItems.stripeAccountId, stripeAccountId),
+        eq(stripeSubscriptions.stripeCustomerId, stripeCustomerId),
+      ),
+    )
 
-  if (error) {
-    throw new SupabaseError(error)
-  }
-
-  const accountState = await getAccountFeaturesState(accountId)
+  const accountState = await getAccountFeaturesState(stripeAccountId)
   const accountMap: { [key: string]: any } =
     accountState?.reduce(
       (a, v) => ({
@@ -126,19 +167,18 @@ export const getSubscriptionFeaturesState = async (
   for (const item of items!) {
     if (
       ['active', 'past_due', 'incomplete', 'trialing'].includes(
-        (item.stripe_subscriptions as any).status,
+        (item.stripeSubscriptions as any).status,
       )
     ) {
       const state = await getPriceFeaturesState(
-        accountId,
-        (item.stripe_prices as any).stripe_product_id,
-        item.stripe_price_id,
+        stripeAccountId,
+        item.stripePrices?.stripeProductId!,
+        item.stripePriceId,
       )
       priceStates.push(state)
     }
   }
 
-  // TODO: test
   const priceMap = priceStates.reduce((a, v) => {
     for (const feature of v) {
       const stale = a[feature.id]
@@ -170,27 +210,33 @@ export const getSubscriptionFeaturesState = async (
 }
 
 export const getCustomerFeaturesState = async (
-  accountId: string,
-  customerId: string,
+  stripeAccountId: string,
+  stripeCustomerId: string,
 ): Promise<any[]> => {
   const subscriptionsState = await getSubscriptionFeaturesState(
-    accountId,
-    customerId,
+    stripeAccountId,
+    stripeCustomerId,
   )
 
-  const { data: customerFeatures, error: customerFeaturesError } =
-    await supabase
-      .from('customer_features')
-      .select('id,value_flag,value_limit,feature_id,features(name)')
-      .eq('stripe_account_id', accountId)
-      .eq('stripe_customer_id', customerId)
-
-  if (customerFeaturesError) {
-    throw new SupabaseError(customerFeaturesError)
-  }
+  const result = await db
+    .select({
+      id: customerFeatures.id,
+      value_flag: customerFeatures.valueFlag,
+      value_limit: customerFeatures.valueLimit,
+      feature_id: customerFeatures.featureId,
+      name: features.name,
+    })
+    .from(customerFeatures)
+    .leftJoin(features, eq(customerFeatures.featureId, features.id))
+    .where(
+      and(
+        eq(customerFeatures.stripeAccountId, stripeAccountId),
+        eq(customerFeatures.stripeCustomerId, stripeCustomerId),
+      ),
+    )
 
   const customerFeaturesMap: { [key: string]: any } =
-    customerFeatures?.reduce(
+    result?.reduce(
       (a, v) => ({
         ...a,
         [v.feature_id]: v,
@@ -214,18 +260,24 @@ export const getCustomerFeaturesState = async (
 }
 
 export const getCustomerSubscriptionsState = async (
-  accountId: string,
-  customerId: string,
+  stripeAccountId: string,
+  stripeCustomerId: string,
 ) => {
-  const { data: subscriptionsData, error: subscriptionsError } = await supabase
-    .from('stripe_subscriptions')
-    .select('stripe_json')
-    .eq('stripe_account_id', accountId)
-    .eq('stripe_customer_id', customerId)
-    .neq('status', 'canceled')
+  const subscriptionsData = await db
+    .select({
+      stripe_json: stripeSubscriptions.stripeJson,
+    })
+    .from(stripeSubscriptions)
+    .where(
+      and(
+        eq(stripeSubscriptions.stripeAccountId, stripeAccountId),
+        eq(stripeSubscriptions.stripeCustomerId, stripeCustomerId),
+        ne(stripeSubscriptions.status, 'canceled'),
+      ),
+    )
 
-  if (subscriptionsError) {
-    throw new SupabaseError(subscriptionsError)
+  if (!subscriptionsData.length) {
+    return []
   }
 
   const subscriptions = subscriptionsData.map((item: any) =>
@@ -239,15 +291,15 @@ export const getCustomerSubscriptionsState = async (
     }
   }
 
-  const { data: productsData, error: productsError } = await supabase
-    .from('stripe_products')
-    .select('stripe_json')
-    .eq('stripe_account_id', accountId)
-    .in('stripe_id', productIds)
-
-  if (productsError) {
-    throw new SupabaseError(productsError)
-  }
+  const productsData = await db
+    .select({ stripe_json: stripeProducts.stripeJson })
+    .from(stripeProducts)
+    .where(
+      and(
+        eq(stripeProducts.stripeAccountId, stripeAccountId),
+        inArray(stripeProducts.stripeId, productIds),
+      ),
+    )
 
   const products = productsData.map((item: any) => JSON.parse(item.stripe_json))
   const productsMap = products.reduce((a, v) => {

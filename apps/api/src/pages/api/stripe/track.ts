@@ -6,7 +6,9 @@ import { upsertStripeUser } from '@/stripe/db'
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { success } = verifySignature(req)
   if (!success) {
-    return res.status(400).send('')
+    return res.status(403).json({
+      error: 'Unauthorized',
+    })
   }
 
   const { account_id, user_id, user_email, user_name, event, properties } =

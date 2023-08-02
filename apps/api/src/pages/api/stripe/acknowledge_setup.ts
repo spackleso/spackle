@@ -1,27 +1,22 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { verifySignature } from '@/stripe/signature'
-import supabase from 'spackle-supabase'
 import * as Sentry from '@sentry/nextjs'
+import db, { stripeAccounts } from 'spackle-db'
+import { eq } from 'drizzle-orm'
 
-const acknowledgeSetup = async (account_id: string) => {
-  let response = await supabase
-    .from('stripe_accounts')
-    .update({
-      has_acknowledged_setup: true,
+const acknowledgeSetup = async (stripeAccountId: string) => {
+  await db
+    .update(stripeAccounts)
+    .set({
+      hasAcknowledgedSetup: true,
     })
-    .eq('stripe_id', account_id)
-
-  if (response.error) {
-    throw new Error(response.error.message)
-  }
-
-  return response
+    .where(eq(stripeAccounts.stripeId, stripeAccountId))
 }
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { success } = verifySignature(req)
   if (!success) {
-    return res.status(400).send('')
+    return res.status(403).json({ error: 'Unauthorized' })
   }
 
   const { account_id } = req.body

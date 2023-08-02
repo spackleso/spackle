@@ -1,285 +1,403 @@
 import { track } from '@/posthog'
-import supabase, { SupabaseError } from 'spackle-supabase'
+import db, {
+  stripeAccounts,
+  stripeCustomers,
+  stripePrices,
+  stripeProducts,
+  stripeSubscriptionItems,
+  stripeSubscriptions,
+  stripeUsers,
+} from 'spackle-db'
+import { and, eq } from 'drizzle-orm'
 
-export const getStripeAccount = async (stripe_id: string) => {
-  const { data, error } = await supabase
-    .from('stripe_accounts')
-    .select('*')
-    .eq('stripe_id', stripe_id)
-    .maybeSingle()
+export const getStripeAccount = async (stripeId: string) => {
+  const result = await db
+    .select()
+    .from(stripeAccounts)
+    .where(eq(stripeAccounts.stripeId, stripeId))
 
-  if (error) throw new SupabaseError(error)
-  return data
+  if (result.length) {
+    return result[0]
+  }
+
+  return null
 }
 
 export const upsertStripeAccount = async (
-  stripe_id: string,
+  stripeId: string,
   name: string | undefined | null,
 ) => {
-  const insert: any = {
-    stripe_id,
-    stripe_json: {},
+  let stripeAccount = await getStripeAccount(stripeId)
+  let result
+  if (stripeAccount) {
+    if (name) {
+      result = await db
+        .update(stripeAccounts)
+        .set({ name })
+        .where(eq(stripeAccounts.id, stripeAccount.id))
+        .returning()
+    } else {
+      result = [stripeAccount]
+    }
+  } else {
+    result = await db
+      .insert(stripeAccounts)
+      .values({ stripeId, name, stripeJson: {} })
+      .returning()
   }
+  return result[0]
+}
 
-  if (name) {
-    insert.name = name
-  }
-
-  const { data, error } = await supabase
-    .from('stripe_accounts')
-    .upsert(insert, { onConflict: 'stripe_id' })
+export const getStripeUser = async (
+  stripeAccountId: string,
+  stripeId: string,
+) => {
+  const result = await db
     .select()
-    .maybeSingle()
+    .from(stripeUsers)
+    .where(
+      and(
+        eq(stripeUsers.stripeAccountId, stripeAccountId),
+        eq(stripeUsers.stripeId, stripeId),
+      ),
+    )
 
-  if (error) throw new SupabaseError(error)
-  return data
+  if (result.length) {
+    return result[0]
+  }
+
+  return null
 }
 
 export const upsertStripeUser = async (
-  stripe_account_id: string,
-  stripe_id: string,
+  stripeAccountId: string,
+  stripeId: string,
   email?: string | null,
   name?: string | null,
 ) => {
-  const insert: any = {
-    stripe_account_id,
-    stripe_id,
-  }
+  const stripeUser = await getStripeUser(stripeAccountId, stripeId)
 
-  if (email) {
-    insert.email = email
-  }
-
-  if (name) {
-    insert.name = name
-  }
-
-  const { data, error } = await supabase
-    .from('stripe_users')
-    .select('*')
-    .eq('stripe_account_id', stripe_account_id)
-    .eq('stripe_id', stripe_id)
-    .maybeSingle()
-
-  if (error) throw new SupabaseError(error)
-
-  if (data) {
-    const { data: updateData, error: updateError } = await supabase
-      .from('stripe_users')
-      .update(insert)
-      .eq('stripe_account_id', stripe_account_id)
-      .eq('stripe_id', stripe_id)
-      .select()
-      .single()
-
-    if (updateError) throw new SupabaseError(updateError)
-    return updateData
+  let result
+  if (stripeUser) {
+    if (email || name) {
+      result = await db
+        .update(stripeUsers)
+        .set({ name, email })
+        .where(
+          and(
+            eq(stripeUsers.stripeAccountId, stripeAccountId),
+            eq(stripeUsers.stripeId, stripeId),
+          ),
+        )
+        .returning()
+    } else {
+      result = [stripeUser]
+    }
   } else {
-    const { data: insertData, error: insertError } = await supabase
-      .from('stripe_users')
-      .insert(insert)
-      .select()
-      .single()
+    result = await db
+      .insert(stripeUsers)
+      .values({ stripeAccountId, stripeId, email, name })
+      .returning()
 
-    if (insertError) throw new SupabaseError(insertError)
-
-    await track(insertData.id.toString(), 'New user', {
-      email: insertData.email,
-      name: insertData.name,
-      stripe_id: insertData.stripe_id,
+    await track(result[0].id.toString(), 'New user', {
+      email: result[0].email,
+      name: result[0].name,
+      stripe_id: result[0].stripeId,
     })
-    return insertData
   }
+  return result[0]
 }
 
 export const getStripeProduct = async (
-  stripe_account_id: string,
-  stripe_id: string,
+  stripeAccountId: string,
+  stripeId: string,
 ) => {
-  const { data, error } = await supabase
-    .from('stripe_products')
-    .select('*')
-    .eq('stripe_account_id', stripe_account_id)
-    .eq('stripe_id', stripe_id)
-    .maybeSingle()
+  const result = await db
+    .select()
+    .from(stripeProducts)
+    .where(
+      and(
+        eq(stripeProducts.stripeAccountId, stripeAccountId),
+        eq(stripeProducts.stripeId, stripeId),
+      ),
+    )
 
-  if (error) throw error
-  return data
+  if (result.length) {
+    return result[0]
+  }
+
+  return null
 }
 
 export const upsertStripeProduct = async (
-  stripe_account_id: string,
-  stripe_id: string,
-  stripe_json: string,
+  stripeAccountId: string,
+  stripeId: string,
+  stripeJson: string,
 ) => {
-  const { data, error } = await supabase
-    .from('stripe_products')
-    .upsert(
-      {
-        stripe_id,
-        stripe_account_id,
-        stripe_json,
-      },
-      { onConflict: 'stripe_id' },
-    )
-    .select()
+  const stripeProduct = await getStripeProduct(stripeAccountId, stripeId)
 
-  if (error) throw new SupabaseError(error)
-  return data
+  let result
+  if (stripeProduct) {
+    if (stripeJson) {
+      result = await db
+        .update(stripeProducts)
+        .set({ stripeJson })
+        .where(
+          and(
+            eq(stripeProducts.stripeAccountId, stripeAccountId),
+            eq(stripeProducts.stripeId, stripeId),
+          ),
+        )
+        .returning()
+    } else {
+      result = [stripeProduct]
+    }
+  } else {
+    result = await db
+      .insert(stripeProducts)
+      .values({ stripeAccountId, stripeId, stripeJson })
+      .returning()
+  }
+  return result[0]
 }
 
 export const getStripePrice = async (
-  stripe_account_id: string,
-  stripe_id: string,
+  stripeAccountId: string,
+  stripeId: string,
 ) => {
-  const { data, error } = await supabase
-    .from('stripe_prices')
-    .select('*')
-    .eq('stripe_account_id', stripe_account_id)
-    .eq('stripe_id', stripe_id)
-    .maybeSingle()
+  const result = await db
+    .select()
+    .from(stripePrices)
+    .where(
+      and(
+        eq(stripePrices.stripeAccountId, stripeAccountId),
+        eq(stripePrices.stripeId, stripeId),
+      ),
+    )
 
-  if (error) throw new SupabaseError(error)
-  return data
+  if (result.length) {
+    return result[0]
+  }
+
+  return null
 }
 
 export const upsertStripePrice = async (
-  stripe_account_id: string,
-  stripe_id: string,
-  stripe_product_id: string,
-  stripe_json: string,
+  stripeAccountId: string,
+  stripeId: string,
+  stripeProductId: string,
+  stripeJson: string,
 ) => {
-  const { data, error } = await supabase
-    .from('stripe_prices')
-    .upsert(
-      {
-        stripe_id,
-        stripe_account_id,
-        stripe_product_id,
-        stripe_json,
-      },
-      { onConflict: 'stripe_id' },
-    )
-    .select()
-    .maybeSingle()
+  const stripePrice = await getStripePrice(stripeAccountId, stripeId)
 
-  if (error) throw new SupabaseError(error)
-  return data
+  let result
+  if (stripePrice) {
+    result = await db
+      .update(stripePrices)
+      .set({ stripeJson, stripeProductId })
+      .where(
+        and(
+          eq(stripePrices.stripeAccountId, stripeAccountId),
+          eq(stripePrices.stripeId, stripeId),
+        ),
+      )
+      .returning()
+  } else {
+    result = await db
+      .insert(stripePrices)
+      .values({ stripeAccountId, stripeId, stripeProductId, stripeJson })
+      .returning()
+  }
+  return result[0]
 }
 
 export const getStripeCustomer = async (
-  stripe_account_id: string,
-  stripe_id: string,
+  stripeAccountId: string,
+  stripeId: string,
 ) => {
-  const { data, error } = await supabase
-    .from('stripe_customers')
-    .select('*')
-    .eq('stripe_account_id', stripe_account_id)
-    .eq('stripe_id', stripe_id)
-    .maybeSingle()
+  const result = await db
+    .select()
+    .from(stripeCustomers)
+    .where(
+      and(
+        eq(stripeCustomers.stripeAccountId, stripeAccountId),
+        eq(stripeCustomers.stripeId, stripeId),
+      ),
+    )
 
-  if (error) throw new SupabaseError(error)
-  return data
+  if (result.length) {
+    return result[0]
+  }
+
+  return null
 }
 
 export const upsertStripeCustomer = async (
-  stripe_account_id: string,
-  stripe_id: string,
-  stripe_json: string,
+  stripeAccountId: string,
+  stripeId: string,
+  stripeJson: string,
 ) => {
-  const { data, error } = await supabase
-    .from('stripe_customers')
-    .upsert(
-      {
-        stripe_id,
-        stripe_account_id,
-        stripe_json,
-      },
-      { onConflict: 'stripe_id' },
-    )
-    .select()
-    .maybeSingle()
+  const stripeCustomer = await getStripeCustomer(stripeAccountId, stripeId)
 
-  if (error) throw new SupabaseError(error)
-  return data
+  let result
+  if (stripeCustomer) {
+    if (stripeJson) {
+      result = await db
+        .update(stripeCustomers)
+        .set({ stripeJson })
+        .where(
+          and(
+            eq(stripeCustomers.stripeAccountId, stripeAccountId),
+            eq(stripeCustomers.stripeId, stripeId),
+          ),
+        )
+        .returning()
+    } else {
+      result = [stripeCustomer]
+    }
+  } else {
+    result = await db
+      .insert(stripeCustomers)
+      .values({ stripeAccountId, stripeId, stripeJson })
+      .returning()
+  }
+  return result[0]
 }
 
-export const deleteStripeCustomer = async (
-  stripe_account_id: string,
-  stripe_id: string,
+export const getStripeSubscription = async (
+  stripeAccountId: string,
+  stripeId: string,
 ) => {
-  const { data, error } = await supabase
-    .from('stripe_customers')
-    .delete()
-    .eq('stripe_account_id', stripe_account_id)
-    .eq('stripe_id', stripe_id)
+  const result = await db
+    .select()
+    .from(stripeSubscriptions)
+    .where(
+      and(
+        eq(stripeSubscriptions.stripeAccountId, stripeAccountId),
+        eq(stripeSubscriptions.stripeId, stripeId),
+      ),
+    )
 
-  if (error) throw new SupabaseError(error)
-  return data
+  if (result.length) {
+    return result[0]
+  }
+
+  return null
 }
 
 export const upsertStripeSubscription = async (
-  stripe_account_id: string,
-  stripe_id: string,
-  stripe_customer_id: string,
+  stripeAccountId: string,
+  stripeId: string,
+  stripeCustomerId: string,
   status: string,
-  stripe_json: string,
+  stripeJson: string,
 ) => {
-  const { data, error } = await supabase
-    .from('stripe_subscriptions')
-    .upsert(
-      {
-        stripe_id,
-        stripe_account_id,
-        stripe_customer_id,
-        stripe_json,
-        status,
-      },
-      { onConflict: 'stripe_id' },
-    )
-    .select()
-    .maybeSingle()
+  const stripeSubscription = await getStripeSubscription(
+    stripeAccountId,
+    stripeId,
+  )
 
-  if (error) throw new SupabaseError(error)
-  return data
+  let result
+  if (stripeSubscription) {
+    result = await db
+      .update(stripeSubscriptions)
+      .set({ status, stripeJson })
+      .where(
+        and(
+          eq(stripeSubscriptions.stripeAccountId, stripeAccountId),
+          eq(stripeSubscriptions.stripeId, stripeId),
+        ),
+      )
+      .returning()
+  } else {
+    result = await db
+      .insert(stripeSubscriptions)
+      .values({
+        stripeAccountId,
+        stripeId,
+        stripeCustomerId,
+        status,
+        stripeJson,
+      })
+      .returning()
+  }
+  return result[0]
 }
 
 export const deleteStripeSubscription = async (
-  stripe_account_id: string,
-  stripe_id: string,
+  stripeAccountId: string,
+  stripeId: string,
 ) => {
-  const { data, error } = await supabase
-    .from('stripe_subscriptions')
-    .delete()
-    .eq('stripe_account_id', stripe_account_id)
-    .eq('stripe_id', stripe_id)
+  await db
+    .delete(stripeSubscriptions)
+    .where(
+      and(
+        eq(stripeSubscriptions.stripeAccountId, stripeAccountId),
+        eq(stripeSubscriptions.stripeId, stripeId),
+      ),
+    )
+}
 
-  if (error) throw new SupabaseError(error)
-  return data
+export const getStripeSubscriptionItem = async (
+  stripeAccountId: string,
+  stripeId: string,
+) => {
+  const result = await db
+    .select()
+    .from(stripeSubscriptionItems)
+    .where(
+      and(
+        eq(stripeSubscriptionItems.stripeAccountId, stripeAccountId),
+        eq(stripeSubscriptionItems.stripeId, stripeId),
+      ),
+    )
+
+  if (result.length) {
+    return result[0]
+  }
+
+  return null
 }
 
 export const upsertStripeSubscriptionItem = async (
-  stripe_account_id: string,
-  stripe_id: string,
-  stripe_price_id: string,
-  stripe_subscription_id: string,
-  stripe_json: string,
+  stripeAccountId: string,
+  stripeId: string,
+  stripePriceId: string,
+  stripeSubscriptionId: string,
+  stripeJson: string,
 ) => {
-  const { data, error } = await supabase
-    .from('stripe_subscription_items')
-    .upsert(
-      {
-        stripe_id,
-        stripe_account_id,
-        stripe_json,
-        stripe_price_id,
-        stripe_subscription_id,
-      },
-      { onConflict: 'stripe_id' },
-    )
-    .select()
-    .maybeSingle()
+  const stripeSubscriptionItem = await getStripeSubscriptionItem(
+    stripeAccountId,
+    stripeId,
+  )
 
-  if (error) throw new SupabaseError(error)
-  return data
+  let result
+  if (stripeSubscriptionItem) {
+    if (stripeJson) {
+      result = await db
+        .update(stripeSubscriptionItems)
+        .set({ stripeJson })
+        .where(
+          and(
+            eq(stripeSubscriptionItems.stripeAccountId, stripeAccountId),
+            eq(stripeSubscriptionItems.stripeId, stripeId),
+          ),
+        )
+        .returning()
+    } else {
+      result = [stripeSubscriptionItem]
+    }
+  } else {
+    result = await db
+      .insert(stripeSubscriptionItems)
+      .values({
+        stripeAccountId,
+        stripeId,
+        stripePriceId,
+        stripeSubscriptionId,
+        stripeJson,
+      })
+      .returning()
+  }
+  return result[0]
 }

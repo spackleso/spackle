@@ -1,7 +1,8 @@
 import { getCustomerState } from '@/state'
-import supabase, { SupabaseError } from 'spackle-supabase'
 import { DynamoDB } from '@aws-sdk/client-dynamodb'
 import { getQueue } from '@/queue'
+import db, { stripeCustomers } from 'spackle-db'
+import { eq } from 'drizzle-orm'
 
 const {
   DYNAMODB_TABLE_NAME,
@@ -43,14 +44,10 @@ const customerKey = (customerId: string, version: number) => {
 
 export const storeAccountStates = async (stripeAccountId: string) => {
   console.log('Storing account states for', stripeAccountId)
-  const { data, error } = await supabase
-    .from('stripe_customers')
-    .select('stripe_id')
-    .eq('stripe_account_id', stripeAccountId)
-
-  if (error) {
-    throw new SupabaseError(error)
-  }
+  const data = await db
+    .select()
+    .from(stripeCustomers)
+    .where(eq(stripeCustomers.stripeAccountId, stripeAccountId))
 
   const client = getClient()
   for (let chunk of chunkArr(data, 25)) {
@@ -78,7 +75,7 @@ export const storeAccountStates = async (stripeAccountId: string) => {
 
 export const storeAccountStatesAsync = async (stripeAccountId: string) => {
   const q = getQueue()
-  return await q.add('storeAccountStates', { account_id: stripeAccountId })
+  return await q.add('storeAccountStates', { stripeAccountId })
 }
 
 export const storeCustomerState = async (
@@ -105,7 +102,7 @@ export const storeCustomerStateAsync = async (
 ) => {
   const q = getQueue()
   return await q.add('storeCustomerState', {
-    account_id: stripeAccountId,
-    customer_id: stripeCustomerId,
+    stripeAccountId,
+    stripeCustomerId,
   })
 }

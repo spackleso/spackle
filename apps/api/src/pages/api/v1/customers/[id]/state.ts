@@ -1,9 +1,10 @@
 import { NextApiResponse } from 'next'
 import { AuthenticatedNextApiRequest, middleware } from '@/api'
 import { getCustomerState } from '@/state'
-import supabase from 'spackle-supabase'
 import { storeCustomerStateAsync } from '@/store/dynamodb'
 import { syncStripeCustomer, syncStripeSubscriptions } from '@/stripe/sync'
+import db, { stripeCustomers } from 'spackle-db'
+import { and, eq } from 'drizzle-orm'
 
 type Data = {}
 
@@ -33,9 +34,9 @@ const fetchAndSyncNewCustomer = async (
   }
 
   try {
-    await syncStripeSubscriptions(stripeAccountId, customer.stripe_id, 'live')
+    await syncStripeSubscriptions(stripeAccountId, customer.stripeId, 'live')
   } catch (error) {
-    await syncStripeSubscriptions(stripeAccountId, customer.stripe_id, 'test')
+    await syncStripeSubscriptions(stripeAccountId, customer.stripeId, 'test')
   }
 
   return customer
@@ -47,14 +48,20 @@ const handler = async (
 ) => {
   const { id } = req.query
 
-  let { data: customer } = await supabase
-    .from('stripe_customers')
+  const customers = await db
     .select()
-    .eq('stripe_id', id as string)
-    .eq('stripe_account_id', req.stripeAccountId)
-    .maybeSingle()
+    .from(stripeCustomers)
+    .where(
+      and(
+        eq(stripeCustomers.stripeId, id as string),
+        eq(stripeCustomers.stripeAccountId, req.stripeAccountId),
+      ),
+    )
 
-  if (!customer) {
+  let customer
+  if (customers.length) {
+    customer = customers[0]
+  } else {
     customer = await fetchAndSyncNewCustomer(req.stripeAccountId, id as string)
   }
 
@@ -67,6 +74,7 @@ const handler = async (
     await storeCustomerStateAsync(req.stripeAccountId, id as string)
     return res.status(200).json(state)
   } catch (error) {
+    console.log(error)
     return res.status(400).json({ error })
   }
 }

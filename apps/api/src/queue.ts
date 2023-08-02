@@ -3,30 +3,32 @@ import Redis from 'ioredis'
 import { storeAccountStates, storeCustomerState } from '@/store/dynamodb'
 import { syncAllAccountData } from '@/stripe/sync'
 
-const getConnection = () => {
-  return new Redis(process.env.REDIS_URL || 'redis://localhost:6379', {
+export const redis = new Redis(
+  process.env.REDIS_URL || 'redis://localhost:6379',
+  {
     maxRetriesPerRequest: null,
-  })
-}
+  },
+)
 
 export const getQueue = (name = 'default') => {
-  const connection = getConnection()
-  return new Queue(name, { connection })
+  return new Queue(name, { connection: redis })
 }
 
 export const getWorker = (name = 'default') => {
-  const connection = getConnection()
   return new Worker(
     name,
     async (job) => {
       if (job.name === 'syncAllAccountData') {
-        await syncAllAccountData(job.data.account_id)
+        await syncAllAccountData(job.data.stripeAccountId)
       } else if (job.name === 'storeAccountStates') {
-        await storeAccountStates(job.data.account_id)
+        await storeAccountStates(job.data.stripeAccountId)
       } else if (job.name === 'storeCustomerState') {
-        await storeCustomerState(job.data.account_id, job.data.customer_id)
+        await storeCustomerState(
+          job.data.stripeAccountId,
+          job.data.stripeCustomerId,
+        )
       }
     },
-    { connection },
+    { connection: redis },
   )
 }
