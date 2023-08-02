@@ -280,9 +280,7 @@ export const getCustomerSubscriptionsState = async (
     return []
   }
 
-  const subscriptions = subscriptionsData.map((item: any) =>
-    JSON.parse(item.stripe_json),
-  )
+  const subscriptions = subscriptionsData.map((item: any) => item.stripe_json)
 
   const productIds = []
   for (const subscription of subscriptions) {
@@ -301,7 +299,7 @@ export const getCustomerSubscriptionsState = async (
       ),
     )
 
-  const products = productsData.map((item: any) => JSON.parse(item.stripe_json))
+  const products = productsData.map((item: any) => item.stripe_json)
   const productsMap = products.reduce((a, v) => {
     a[v.id] = v
     return a
