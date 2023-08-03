@@ -45,7 +45,9 @@ const customerKey = (customerId: string, version: number) => {
 export const storeAccountStates = async (stripeAccountId: string) => {
   console.log('Storing account states for', stripeAccountId)
   const data = await db
-    .select()
+    .select({
+      stripe_id: stripeCustomers.stripeId,
+    })
     .from(stripeCustomers)
     .where(eq(stripeCustomers.stripeAccountId, stripeAccountId))
 
