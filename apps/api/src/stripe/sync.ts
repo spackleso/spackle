@@ -19,10 +19,13 @@ import db, { stripeAccounts } from 'spackle-db'
 import { eq } from 'drizzle-orm'
 import { liveStripe, testStripe } from '@/stripe'
 
-export const getOrSyncStripeAccount = async (stripeId: string) => {
+export const getOrSyncStripeAccount = async (
+  stripeId: string,
+  name?: string | null,
+) => {
   const account = await getStripeAccount(stripeId)
   if (account) return account
-  return await syncStripeAccount(stripeId)
+  return await syncStripeAccount(stripeId, name)
 }
 
 export const syncStripeAccount = async (

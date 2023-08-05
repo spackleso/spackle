@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { verifySignature } from '@/stripe/signature'
 import * as Sentry from '@sentry/nextjs'
-import { syncStripeAccount, syncStripeUser } from '@/stripe/sync'
+import { getOrSyncStripeAccount, syncStripeUser } from '@/stripe/sync'
 import db, { stripeAccounts } from 'spackle-db'
 import { eq } from 'drizzle-orm'
 
@@ -35,7 +35,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   // TODO: handle all errors
   const { account_id, account_name, user_email, user_name, user_id } = req.body
 
-  await syncStripeAccount(account_id, account_name)
+  await getOrSyncStripeAccount(account_id, account_name)
 
   let account
   try {
