@@ -32,19 +32,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     })
   }
 
-  // TODO: handle all errors
   const { account_id, account_name, user_email, user_name, user_id } = req.body
 
-  await getOrSyncStripeAccount(account_id, account_name)
-
-  let account
-  try {
-    account = await fetchAccount(account_id)
-  } catch (error) {
-    Sentry.captureException(error)
-    return res.status(400).json({ error })
-  }
-
+  const account = await getOrSyncStripeAccount(account_id, account_name)
   if (user_id) {
     try {
       await syncStripeUser(account_id, user_id, user_email, user_name)
@@ -54,7 +44,13 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     }
   }
 
-  res.status(200).json(account)
+  res.status(200).json({
+    has_acknowledged_setup: account.hasAcknowledgedSetup,
+    id: account.id,
+    initial_sync_complete: account.initialSyncComplete,
+    initial_sync_started_at: account.initialSyncStartedAt,
+    stripe_id: account.stripeId,
+  })
 }
 
 export default handler
