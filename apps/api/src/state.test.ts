@@ -5,7 +5,6 @@ import {
   getAccountFeaturesState,
   getCustomerFeaturesState,
   getCustomerSubscriptionsState,
-  getPriceFeaturesState,
   getProductFeaturesState,
 } from './state'
 import {
@@ -20,9 +19,7 @@ import {
 } from '@/tests/helpers'
 import db, {
   customerFeatures,
-  priceFeatures,
   productFeatures,
-  stripePrices,
   stripeProducts,
 } from 'spackle-db'
 
@@ -79,58 +76,6 @@ describe('Features state', () => {
     const state = await getProductFeaturesState(
       account.stripeId,
       product.stripeId,
-    )
-    expect(state).toStrictEqual([
-      {
-        id: feature.id,
-        key: 'feature',
-        name: 'Feature',
-        type: 0,
-        value_flag: true,
-        value_limit: null,
-      },
-    ])
-  })
-
-  test('Get price state should return overridden account features', async () => {
-    const account = await createAccount()
-    const feature = await createFlagFeature(
-      account.stripeId,
-      'Feature',
-      'feature',
-      false,
-    )
-
-    const sProducts = await db
-      .insert(stripeProducts)
-      .values({
-        stripeId: genStripeId('prod'),
-        stripeAccountId: account.stripeId,
-      })
-      .returning()
-    const product = sProducts[0]
-
-    const sPrices = await db
-      .insert(stripePrices)
-      .values({
-        stripeId: genStripeId('price'),
-        stripeAccountId: account.stripeId,
-        stripeProductId: product.stripeId,
-      })
-      .returning()
-    const price = sPrices[0]
-
-    await db.insert(priceFeatures).values({
-      valueFlag: true,
-      stripeAccountId: account.stripeId,
-      stripePriceId: price.stripeId,
-      featureId: feature.id,
-    })
-
-    const state = await getPriceFeaturesState(
-      account.stripeId,
-      product.stripeId,
-      price.stripeId,
     )
     expect(state).toStrictEqual([
       {

@@ -43,7 +43,7 @@ You can find your Spackle api token in the Spackle app [settings page](https://d
 
 ## Basic usage
 
-Spackle allows you to customize feature access at the Product, Price, and Customer level. Sales can negotiate any features or limits within the product, without any engineering time required.
+Spackle allows you to customize feature access at the Product and Customer level. Sales can negotiate any features or limits within the product, without any engineering time required.
 
 ### Set feature access
 

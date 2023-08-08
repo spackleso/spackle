@@ -63,37 +63,6 @@ export const customerFeatures = pgTable(
   },
 )
 
-export const priceFeatures = pgTable(
-  'price_features',
-  {
-    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
-    id: bigserial('id', { mode: 'number' }).primaryKey().notNull(),
-    createdAt: timestamp('created_at', {
-      withTimezone: true,
-      mode: 'string',
-    }).defaultNow(),
-    valueLimit: numeric('value_limit'),
-    valueFlag: boolean('value_flag'),
-    stripeAccountId: text('stripe_account_id')
-      .notNull()
-      .references(() => stripeAccounts.stripeId, { onDelete: 'cascade' }),
-    stripePriceId: text('stripe_price_id')
-      .notNull()
-      .references(() => stripePrices.stripeId, { onDelete: 'cascade' }),
-    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
-    featureId: bigint('feature_id', { mode: 'number' })
-      .notNull()
-      .references(() => features.id, { onDelete: 'cascade' }),
-  },
-  (table) => {
-    return {
-      priceFeaturesStripeAccountIdStripePriceIdFeatureIdKey: unique(
-        'price_features_stripe_account_id_stripe_price_id_feature_id_key',
-      ).on(table.stripeAccountId, table.stripePriceId, table.featureId),
-    }
-  },
-)
-
 export const stripePrices = pgTable(
   'stripe_prices',
   {
