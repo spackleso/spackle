@@ -2,7 +2,6 @@ import { CustomerState } from '@/types'
 import db, {
   customerFeatures,
   features,
-  priceFeatures,
   productFeatures,
   stripePrices,
   stripeProducts,
@@ -74,56 +73,6 @@ export const getProductFeaturesState = async (
   )
 }
 
-export const getPriceFeaturesState = async (
-  stripeAccountId: string,
-  stripeProductId: string,
-  stripePriceId: string,
-): Promise<any[]> => {
-  const productState = await getProductFeaturesState(
-    stripeAccountId,
-    stripeProductId,
-  )
-  const result = await db
-    .select({
-      id: priceFeatures.id,
-      value_flag: priceFeatures.valueFlag,
-      value_limit: priceFeatures.valueLimit,
-      feature_id: priceFeatures.featureId,
-      name: features.name,
-    })
-    .from(priceFeatures)
-    .leftJoin(features, eq(priceFeatures.featureId, features.id))
-    .where(
-      and(
-        eq(priceFeatures.stripeAccountId, stripeAccountId),
-        eq(priceFeatures.stripePriceId, stripePriceId),
-      ),
-    )
-
-  const priceFeaturesMap: { [key: string]: any } =
-    result?.reduce(
-      (a, v) => ({
-        ...a,
-        [v.feature_id]: v,
-      }),
-      {},
-    ) || {}
-
-  return (
-    productState?.map((f) => {
-      const priceFeature = priceFeaturesMap[f.id]
-      if (priceFeature) {
-        return {
-          ...f,
-          value_flag: priceFeature.value_flag,
-          value_limit: priceFeature.value_limit,
-        }
-      }
-      return f
-    }) || []
-  )
-}
-
 export const getSubscriptionFeaturesState = async (
   stripeAccountId: string,
   stripeCustomerId: string,
@@ -163,23 +112,22 @@ export const getSubscriptionFeaturesState = async (
       {},
     ) || {}
 
-  const priceStates = []
+  const productStates = []
   for (const item of items!) {
     if (
       ['active', 'past_due', 'incomplete', 'trialing'].includes(
         (item.stripeSubscriptions as any).status,
       )
     ) {
-      const state = await getPriceFeaturesState(
+      const state = await getProductFeaturesState(
         stripeAccountId,
         item.stripePrices?.stripeProductId!,
-        item.stripePriceId,
       )
-      priceStates.push(state)
+      productStates.push(state)
     }
   }
 
-  const priceMap = priceStates.reduce((a, v) => {
+  const productMap = productStates.reduce((a, v) => {
     for (const feature of v) {
       const stale = a[feature.id]
       if (!stale) {
@@ -206,7 +154,7 @@ export const getSubscriptionFeaturesState = async (
     return a
   }, accountMap)
 
-  return Object.values(priceMap)
+  return Object.values(productMap)
 }
 
 export const getCustomerFeaturesState = async (

@@ -4,7 +4,6 @@ import { createToken } from '@/api'
 import db, {
   customerFeatures,
   features,
-  priceFeatures,
   productFeatures,
   stripeAccounts,
   stripeCustomers,
@@ -229,32 +228,6 @@ export const createProductFeature = async (
       stripeAccountId,
       featureId: feature.id,
       stripeProductId: product.stripeId,
-      valueFlag,
-    })
-    .returning()
-  return result[0]
-}
-
-export const createPriceFeature = async (
-  stripeAccountId: string,
-  name: string,
-  key: string,
-  valueFlag: boolean,
-  price?: any,
-) => {
-  const feature = await createFlagFeature(stripeAccountId, name, key, valueFlag)
-  const product = await createStripeProduct(stripeAccountId)
-
-  if (!price) {
-    price = await createStripePrice(stripeAccountId, product.stripeId)
-  }
-
-  const result = await db
-    .insert(priceFeatures)
-    .values({
-      stripeAccountId,
-      featureId: feature.id,
-      stripePriceId: price.stripeId,
       valueFlag,
     })
     .returning()
