@@ -11,5 +11,8 @@
   },
   "devDependencies": {
     "drizzle-kit": "^0.19.12"
+  },
+  "scripts": {
+    "introspect": "drizzle-kit introspect:pg"
   }
 }

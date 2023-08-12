@@ -4,11 +4,11 @@ import {
   bigserial,
   timestamp,
   text,
+  smallint,
+  boolean,
   unique,
   numeric,
-  boolean,
   json,
-  smallint,
 } from 'drizzle-orm/pg-core'
 
 export const requestStatus = pgEnum('request_status', [
@@ -42,6 +42,9 @@ export const pricingTables = pgTable('pricing_tables', {
     .notNull()
     .references(() => stripeAccounts.stripeId, { onDelete: 'cascade' }),
   name: text('name').default('Default'),
+  mode: smallint('mode').default(1).notNull(),
+  monthlyEnabled: boolean('monthly_enabled').default(false).notNull(),
+  annualEnabled: boolean('annual_enabled').default(false).notNull(),
 })
 
 export const pricingTableProducts = pgTable('pricing_table_products', {
@@ -61,6 +64,14 @@ export const pricingTableProducts = pgTable('pricing_table_products', {
   stripeProductId: text('stripe_product_id')
     .notNull()
     .references(() => stripeProducts.stripeId, { onDelete: 'cascade' }),
+  monthlyStripePriceId: text('monthly_stripe_price_id').references(
+    () => stripePrices.stripeId,
+    { onDelete: 'cascade' },
+  ),
+  annualStripePriceId: text('annual_stripe_price_id').references(
+    () => stripePrices.stripeId,
+    { onDelete: 'cascade' },
+  ),
 })
 
 export const customerFeatures = pgTable(

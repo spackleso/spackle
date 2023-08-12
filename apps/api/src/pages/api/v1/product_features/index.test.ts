@@ -54,9 +54,11 @@ describe('GET', () => {
     for (let i = 0; i < 5; i++) {
       const productFeature = await createProductFeature(
         account.stripeId,
-        `Feature ${i}`,
-        `feature_${i}`,
         false,
+        {
+          name: `Feature ${i}`,
+          key: `feature_${i}`,
+        },
       )
       productFeatures.push(productFeature)
     }
@@ -91,9 +93,11 @@ describe('GET', () => {
       for (let i = 0; i < 11; i++) {
         const productFeature = await createProductFeature(
           account.stripeId,
-          `Feature ${i}`,
-          `feature_${i}`,
           false,
+          {
+            name: `Feature ${i}`,
+            key: `feature_${i}`,
+          },
         )
         productFeatures.push(productFeature)
       }
@@ -127,9 +131,11 @@ describe('GET', () => {
       for (let i = 0; i < 11; i++) {
         const productFeature = await createProductFeature(
           account.stripeId,
-          `Feature ${i}`,
-          `feature_${i}`,
           false,
+          {
+            name: `Feature ${i}`,
+            key: `feature_${i}`,
+          },
         )
         productFeatures.push(productFeature)
       }

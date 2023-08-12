@@ -95,7 +95,10 @@ export const createStripeCustomer = async (stripeAccountId: string) => {
   return result[0]
 }
 
-export const createStripeProduct = async (stripeAccountId: string) => {
+export const createStripeProduct = async (
+  stripeAccountId: string,
+  stripeJson?: any,
+) => {
   const stripeId = genStripeId('prod')
   const result = await db
     .insert(stripeProducts)
@@ -103,6 +106,7 @@ export const createStripeProduct = async (stripeAccountId: string) => {
       stripeAccountId,
       stripeId,
       stripeJson: {
+        ...stripeJson,
         id: stripeId,
       },
     })
@@ -113,6 +117,7 @@ export const createStripeProduct = async (stripeAccountId: string) => {
 export const createStripePrice = async (
   stripeAccountId: string,
   stripeProductId: string,
+  stripeJson?: any,
 ) => {
   const stripeId = genStripeId('price')
   const result = await db
@@ -122,6 +127,7 @@ export const createStripePrice = async (
       stripeProductId,
       stripeId,
       stripeJson: {
+        ...stripeJson,
         id: stripeId,
       },
     })
@@ -211,23 +217,28 @@ export const createLimitFeature = async (
 
 export const createProductFeature = async (
   stripeAccountId: string,
-  name: string,
-  key: string,
   valueFlag: boolean,
-  product?: any,
+  opts: any,
 ) => {
-  const feature = await createFlagFeature(stripeAccountId, name, key, valueFlag)
+  if (!opts.feature) {
+    opts.feature = await createFlagFeature(
+      stripeAccountId,
+      opts.name,
+      opts.key,
+      false,
+    )
+  }
 
-  if (!product) {
-    product = await createStripeProduct(stripeAccountId)
+  if (!opts.product) {
+    opts.product = await createStripeProduct(stripeAccountId)
   }
 
   const result = await db
     .insert(productFeatures)
     .values({
       stripeAccountId,
-      featureId: feature.id,
-      stripeProductId: product.stripeId,
+      featureId: opts.feature.id,
+      stripeProductId: opts.product.stripeId,
       valueFlag,
     })
     .returning()
@@ -241,7 +252,7 @@ export const createCustomerFeature = async (
   valueFlag: boolean,
   customer?: any,
 ) => {
-  const feature = await createFlagFeature(stripeAccountId, name, key, valueFlag)
+  const feature = await createFlagFeature(stripeAccountId, name, key, false)
 
   if (!customer) {
     customer = await createStripeCustomer(stripeAccountId)

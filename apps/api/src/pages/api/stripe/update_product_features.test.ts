@@ -39,19 +39,19 @@ describe('POST', () => {
     )
     const updatedProductFeature = await createProductFeature(
       account.stripeId,
-      'Updated',
-      'updated',
       false,
-      product,
+      {
+        name: 'Updated',
+        key: 'updated',
+        product,
+      },
     )
 
-    await createProductFeature(
-      account.stripeId,
-      'Delete',
-      'delete',
-      false,
+    await createProductFeature(account.stripeId, false, {
+      name: 'Delete',
+      key: 'delete',
       product,
-    )
+    })
 
     const res = await stripeTestHandler(handler, {
       body: {
