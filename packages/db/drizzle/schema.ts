@@ -9,6 +9,7 @@ import {
   unique,
   numeric,
   json,
+  bigint,
 } from 'drizzle-orm/pg-core'
 
 export const requestStatus = pgEnum('request_status', [
