@@ -27,10 +27,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     .where(eq(features.stripeAccountId, account_id))
 
   res.status(200).json({
-    data: data.map((f) => ({
-      ...f,
-      value_limit: f.value_limit ? parseFloat(f.value_limit) : null,
-    })),
+    data,
   })
 }
 

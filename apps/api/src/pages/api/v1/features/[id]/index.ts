@@ -55,10 +55,7 @@ const handleGet = async (
   }
 
   const feature = result[0]
-  return res.status(200).json({
-    ...feature,
-    value_limit: feature.value_limit ? parseFloat(feature.value_limit) : null,
-  })
+  return res.status(200).json(feature)
 }
 
 const handler = async (

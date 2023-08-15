@@ -41,7 +41,7 @@ export const customerFeatures = pgTable(
       withTimezone: true,
       mode: 'string',
     }).defaultNow(),
-    valueLimit: numeric('value_limit'),
+    valueLimit: bigint('value_limit', { mode: 'number' }),
     valueFlag: boolean('value_flag'),
     stripeAccountId: text('stripe_account_id')
       .notNull()
@@ -201,7 +201,7 @@ export const features = pgTable(
     name: text('name').notNull(),
     key: text('key').notNull(),
     type: smallint('type').default(0).notNull(),
-    valueLimit: numeric('value_limit'),
+    valueLimit: bigint('value_limit', { mode: 'number' }),
     valueFlag: boolean('value_flag'),
     stripeAccountId: text('stripe_account_id')
       .notNull()
@@ -249,7 +249,7 @@ export const productFeatures = pgTable(
       withTimezone: true,
       mode: 'string',
     }).defaultNow(),
-    valueLimit: numeric('value_limit'),
+    valueLimit: bigint('value_limit', { mode: 'number' }),
     valueFlag: boolean('value_flag'),
     stripeAccountId: text('stripe_account_id')
       .notNull()

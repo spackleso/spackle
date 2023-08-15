@@ -108,10 +108,7 @@ const handleGet = async (
 
   const hasMore = result.length > 10
   return res.status(200).json({
-    data: result.slice(0, 10).map((f) => ({
-      ...f,
-      value_limit: f.value_limit ? parseFloat(f.value_limit) : null,
-    })),
+    data: result.slice(0, 10),
     has_more: hasMore,
   })
 }
