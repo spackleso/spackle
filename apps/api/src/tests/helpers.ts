@@ -202,7 +202,7 @@ export const createLimitFeature = async (
       name,
       key,
       type: 1,
-      valueLimit: valueLimit.toString(),
+      valueLimit,
       stripeAccountId,
     })
     .returning()

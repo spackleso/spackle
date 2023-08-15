@@ -66,11 +66,7 @@ const handlePost = async (
       stripeCustomerId: validation.data.stripe_customer_id,
       featureId: validation.data.feature_id,
       valueFlag: validation.data.value_flag,
-      valueLimit:
-        validation.data.value_limit === null ||
-        validation.data.value_limit === undefined
-          ? null
-          : validation.data.value_limit.toString(),
+      valueLimit: validation.data.value_limit,
     })
     .returning()
 
@@ -82,9 +78,7 @@ const handlePost = async (
     id: customerFeature.id,
     stripe_customer_id: customerFeature.stripeCustomerId,
     value_flag: customerFeature.valueFlag,
-    value_limit: customerFeature.valueLimit
-      ? parseFloat(customerFeature.valueLimit)
-      : null,
+    value_limit: customerFeature.valueLimit,
   })
 }
 

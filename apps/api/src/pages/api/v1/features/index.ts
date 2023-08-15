@@ -65,11 +65,7 @@ const handlePost = async (
       name: validation.data.name,
       type: validation.data.type,
       valueFlag: validation.data.value_flag,
-      valueLimit:
-        validation.data.value_limit === null ||
-        validation.data.value_limit === undefined
-          ? null
-          : validation.data.value_limit.toString(),
+      valueLimit: validation.data.value_limit,
     })
     .returning()
 
@@ -82,7 +78,7 @@ const handlePost = async (
     name: feature.name,
     type: feature.type,
     value_flag: feature.valueFlag,
-    value_limit: feature.valueLimit ? parseFloat(feature.valueLimit) : null,
+    value_limit: feature.valueLimit,
   })
 }
 

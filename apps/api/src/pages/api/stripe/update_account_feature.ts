@@ -6,22 +6,24 @@ import db, { features } from 'spackle-db'
 import { and, eq } from 'drizzle-orm'
 
 const updateFeature = async (
-  account_id: string,
+  stripeAccountId: string,
   id: number,
   name: string,
-  value_flag: boolean | null,
-  value_limit: number | null,
+  valueFlag: boolean | null,
+  valueLimit: number | null,
 ) => {
   await db
     .update(features)
     .set({
       name,
-      valueFlag: value_flag,
-      valueLimit: value_limit === null ? null : value_limit.toString(),
+      valueFlag,
+      valueLimit,
     })
-    .where(and(eq(features.stripeAccountId, account_id), eq(features.id, id)))
+    .where(
+      and(eq(features.stripeAccountId, stripeAccountId), eq(features.id, id)),
+    )
 
-  await storeAccountStatesAsync(account_id)
+  await storeAccountStatesAsync(stripeAccountId)
 }
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {

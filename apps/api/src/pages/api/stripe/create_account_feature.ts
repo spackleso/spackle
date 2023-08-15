@@ -25,7 +25,7 @@ const createFeature = async (
     key,
     type,
     valueFlag,
-    valueLimit: valueLimit === null ? null : valueLimit.toString(),
+    valueLimit,
   }
   const result = await db.insert(features).values(values).returning()
   await storeAccountStatesAsync(stripeAccountId)
