@@ -1,15 +1,21 @@
 import { Container } from '@/app/Container'
 import PriceBox from '@/app/PriceBox'
 import Link from 'next/link'
-import { cookies } from 'next/headers'
 
-export default function Checkout() {
-  const cookieStore = cookies()
-  console.log(cookieStore.getAll())
-  const user_id = cookieStore.get('user_id')?.value
-  const account_id = cookieStore.get('account_id')?.value
-  const email = cookieStore.get('email')?.value
-  const sig = cookieStore.get('sig')?.value
+export default function Checkout({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | string[] | undefined }
+}) {
+  let data: any = {}
+  if (searchParams.session) {
+    data = JSON.parse(atob(searchParams.session as string))
+  }
+
+  const user_id = data.user_id
+  const account_id = data.account_id
+  const email = data.email
+  const sig = data.sig
 
   if (!user_id || !account_id || !email || !sig) {
     return (
