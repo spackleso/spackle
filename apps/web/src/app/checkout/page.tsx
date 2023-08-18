@@ -1,30 +1,18 @@
+'use client'
+
 import { Container } from '@/app/Container'
 import PriceBox from '@/app/PriceBox'
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 
-export default function Checkout({
-  searchParams,
-}: {
-  searchParams: { [key: string]: string | string[] | undefined }
-}) {
+export default function Checkout() {
+  const searchParams = useSearchParams()
   let data: any = {}
   console.log(searchParams)
-  if (searchParams.session) {
-    data = JSON.parse(atob(searchParams.session as string))
+  if (searchParams.get('session')) {
+    data = JSON.parse(atob(searchParams.get('session') as string))
   }
   console.log(data)
-
-  return (
-    <>
-      <main className="flex flex-grow flex-col items-center justify-center pb-16">
-        <Container className="flex w-full max-w-full flex-col items-center justify-center gap-y-8 py-20 lg:py-32">
-          <h2 className="font-display mx-auto max-w-4xl text-center text-3xl font-medium tracking-tight text-slate-900 dark:text-white sm:text-4xl">
-            Test
-          </h2>
-        </Container>
-      </main>
-    </>
-  )
 
   const user_id = data.user_id
   const account_id = data.account_id
