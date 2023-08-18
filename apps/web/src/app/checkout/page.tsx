@@ -14,6 +14,18 @@ export default function Checkout({
   }
   console.log(data)
 
+  return (
+    <>
+      <main className="flex flex-grow flex-col items-center justify-center pb-16">
+        <Container className="flex w-full max-w-full flex-col items-center justify-center gap-y-8 py-20 lg:py-32">
+          <h2 className="font-display mx-auto max-w-4xl text-center text-3xl font-medium tracking-tight text-slate-900 dark:text-white sm:text-4xl">
+            Test
+          </h2>
+        </Container>
+      </main>
+    </>
+  )
+
   const user_id = data.user_id
   const account_id = data.account_id
   const email = data.email
