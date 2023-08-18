@@ -8,19 +8,17 @@ export default function Checkout({
   searchParams: { [key: string]: string | string[] | undefined }
 }) {
   let data: any = {}
+  console.log(searchParams)
   if (searchParams.session) {
     data = JSON.parse(atob(searchParams.session as string))
   }
+  console.log(data)
 
   const user_id = data.user_id
   const account_id = data.account_id
   const email = data.email
   const sig = data.sig
 
-  console.log('user_id', user_id)
-  console.log('account_id', account_id)
-  console.log('email', email)
-  console.log('sig', sig)
   if (!user_id || !account_id || !email || !sig) {
     return (
       <>
