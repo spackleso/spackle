@@ -17,6 +17,10 @@ export default function Checkout({
   const email = data.email
   const sig = data.sig
 
+  console.log('user_id', user_id)
+  console.log('account_id', account_id)
+  console.log('email', email)
+  console.log('sig', sig)
   if (!user_id || !account_id || !email || !sig) {
     return (
       <>
