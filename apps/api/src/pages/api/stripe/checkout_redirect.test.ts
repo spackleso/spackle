@@ -42,7 +42,11 @@ describe('GET', () => {
       },
     })
     expect(res._getStatusCode()).toBe(302)
-    expect(res._getRedirectUrl()).toBe('https://spackle.so/checkout')
+    expect(res._getRedirectUrl()).toBe(
+      `https://spackle.so/checkout?session=${btoa(
+        JSON.stringify({ ...query, sig }),
+      )}`,
+    )
     expect(res._getHeaders()).toHaveProperty('set-cookie')
     expect(res._getHeaders()['set-cookie']).toHaveLength(4)
     expect(res._getHeaders()['set-cookie']![0]).toBe(

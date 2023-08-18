@@ -38,7 +38,15 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     serialize('email', email, { domain, path: '/' }),
     serialize('sig', req.query.sig as string, { domain, path: '/' }),
   ])
-  return res.redirect(`${process.env.WEB_HOST}/checkout`)
+  const data = btoa(
+    JSON.stringify({
+      user_id,
+      account_id,
+      email,
+      sig: req.query.sig as string,
+    }),
+  )
+  return res.redirect(`${process.env.WEB_HOST}/checkout?session=${data}`)
 }
 
 export default handler
