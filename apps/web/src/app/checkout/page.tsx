@@ -8,11 +8,9 @@ import { useSearchParams } from 'next/navigation'
 export default function Checkout() {
   const searchParams = useSearchParams()
   let data: any = {}
-  console.log(searchParams)
   if (searchParams.get('session')) {
     data = JSON.parse(atob(searchParams.get('session') as string))
   }
-  console.log(data)
 
   const user_id = data.user_id
   const account_id = data.account_id
