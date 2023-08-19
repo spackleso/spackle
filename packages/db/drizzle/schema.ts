@@ -67,11 +67,11 @@ export const pricingTableProducts = pgTable('pricing_table_products', {
     .references(() => stripeProducts.stripeId, { onDelete: 'cascade' }),
   monthlyStripePriceId: text('monthly_stripe_price_id').references(
     () => stripePrices.stripeId,
-    { onDelete: 'cascade' },
+    { onDelete: 'set null' },
   ),
   annualStripePriceId: text('annual_stripe_price_id').references(
     () => stripePrices.stripeId,
-    { onDelete: 'cascade' },
+    { onDelete: 'set null' },
   ),
 })
 
