@@ -1,15 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { verifySignature } from '@/stripe/signature'
-import db, {
-  pricingTableProducts,
-  pricingTables,
-  stripePrices,
-  stripeProducts,
-} from 'spackle-db'
+import db, { pricingTables } from 'spackle-db'
 import { and, eq } from 'drizzle-orm'
-import { getProductFeaturesState } from '@/state'
-import { alias } from 'drizzle-orm/pg-core'
-import Stripe from 'stripe'
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { success } = verifySignature(req)

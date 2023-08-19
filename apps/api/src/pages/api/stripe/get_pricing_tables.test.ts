@@ -4,14 +4,10 @@
 import handler from '@/pages/api/stripe/get_pricing_tables'
 import {
   createAccount,
-  createFlagFeature,
-  createProductFeature,
-  createStripePrice,
-  createStripeProduct,
+  createPricingTable,
   stripeTestHandler,
   testHandler,
 } from '@/tests/helpers'
-import db, { pricingTableProducts, pricingTables } from 'spackle-db'
 
 describe('POST', () => {
   test('Requires a signature', async () => {
@@ -52,23 +48,13 @@ describe('POST', () => {
 
   test('Returns a pricing table', async () => {
     const account = await createAccount()
-    const pricingTable = (
-      await db
-        .insert(pricingTables)
-        .values({
-          name: 'Default',
-          stripeAccountId: account.stripeId,
-          mode: 0,
-          monthlyEnabled: true,
-          annualEnabled: true,
-        })
-        .returning({
-          id: pricingTables.id,
-          name: pricingTables.name,
-          monthlyEnabled: pricingTables.monthlyEnabled,
-          annualEnabled: pricingTables.annualEnabled,
-        })
-    )[0]
+    const pricingTable = await createPricingTable(
+      account.stripeId,
+      'Default',
+      0,
+      true,
+      true,
+    )
     const res = await stripeTestHandler(handler, {
       method: 'POST',
       body: {
@@ -79,6 +65,13 @@ describe('POST', () => {
 
     expect(res._getStatusCode()).toBe(200)
     const data = res._getJSONData()
-    expect(data).toStrictEqual([pricingTable])
+    expect(data).toStrictEqual([
+      {
+        id: pricingTable.id,
+        name: 'Default',
+        monthlyEnabled: true,
+        annualEnabled: true,
+      },
+    ])
   })
 })

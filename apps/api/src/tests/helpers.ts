@@ -4,6 +4,8 @@ import { createToken } from '@/api'
 import db, {
   customerFeatures,
   features,
+  pricingTableProducts,
+  pricingTables,
   productFeatures,
   stripeAccounts,
   stripeCustomers,
@@ -265,6 +267,46 @@ export const createCustomerFeature = async (
       featureId: feature.id,
       stripeCustomerId: customer.stripeId,
       valueFlag,
+    })
+    .returning()
+  return result[0]
+}
+
+export const createPricingTable = async (
+  stripeAccountId: string,
+  name: string,
+  mode: number,
+  monthlyEnabled: boolean,
+  annualEnabled: boolean,
+) => {
+  const result = await db
+    .insert(pricingTables)
+    .values({
+      stripeAccountId,
+      name,
+      mode,
+      annualEnabled,
+      monthlyEnabled,
+    })
+    .returning()
+  return result[0]
+}
+
+export const createPricingTableProduct = async (
+  stripeAccountId: string,
+  pricingTableId: number,
+  stripeProductId: string,
+  monthlyStripePriceId?: string | null,
+  annualStripePriceId?: string | null,
+) => {
+  const result = await db
+    .insert(pricingTableProducts)
+    .values({
+      stripeAccountId,
+      pricingTableId,
+      stripeProductId,
+      monthlyStripePriceId,
+      annualStripePriceId,
     })
     .returning()
   return result[0]
