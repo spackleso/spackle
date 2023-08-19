@@ -57,6 +57,21 @@ describe('POST', () => {
 
     expect(res._getStatusCode()).toBe(200)
     const data = res._getJSONData()
-    expect(data).toStrictEqual([product1, product2])
+    expect(data).toStrictEqual([
+      {
+        id: product1.id,
+        name: null,
+        features: [],
+        monthly_stripe_price: null,
+        annual_stripe_price: null,
+      },
+      {
+        id: product1.id,
+        name: null,
+        features: [],
+        monthly_stripe_price: null,
+        annual_stripe_price: null,
+      },
+    ])
   })
 })

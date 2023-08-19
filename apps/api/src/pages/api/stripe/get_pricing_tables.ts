@@ -17,8 +17,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     .select({
       id: pricingTables.id,
       name: pricingTables.name,
-      monthlyEnabled: pricingTables.monthlyEnabled,
-      annualEnabled: pricingTables.annualEnabled,
+      monthly_enabled: pricingTables.monthlyEnabled,
+      annual_enabled: pricingTables.annualEnabled,
     })
     .from(pricingTables)
     .where(
@@ -40,8 +40,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       .returning({
         id: pricingTables.id,
         name: pricingTables.name,
-        monthlyEnabled: pricingTables.monthlyEnabled,
-        annualEnabled: pricingTables.annualEnabled,
+        monthly_enabled: pricingTables.monthlyEnabled,
+        annual_enabled: pricingTables.annualEnabled,
       })
     pricingTable = createResult[0]
   } else {
