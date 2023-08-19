@@ -2384,17 +2384,24 @@
     "@jridgewell/resolve-uri" "3.1.0"
     "@jridgewell/sourcemap-codec" "1.4.14"
 
-"@markdoc/markdoc@0.2.2", "@markdoc/markdoc@^0.2.2":
+"@markdoc/markdoc@^0.2.2":
   version "0.2.2"
   resolved "https://registry.yarnpkg.com/@markdoc/markdoc/-/markdoc-0.2.2.tgz#cea8b7f0935408dc7180865077c0fb61ba70e51e"
   integrity sha512-0TiD9jmA5h5znN4lxo7HECAu3WieU5g5vUsfByeucrdR/x88hEilpt16EydFyJwJddQ/3w5HQgW7Ovy62r4cyw==
   optionalDependencies:
     "@types/markdown-it" "12.2.3"
 
-"@markdoc/next.js@0.2.2":
-  version "0.2.2"
-  resolved "https://registry.yarnpkg.com/@markdoc/next.js/-/next.js-0.2.2.tgz#7128bd468c3909cae7bb2c3c503fb211cc043be0"
-  integrity sha512-qHCwcTwyHOHrvxmUcueL+RREhHJxef9p6MS45CxHIChV9JHBcWOJt9v++T8HCf4iCbCdnIVCcR9OYzOj3Kq7XQ==
+"@markdoc/markdoc@^0.3.0":
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/@markdoc/markdoc/-/markdoc-0.3.0.tgz#f9b3483d1a3ed694ade4f3bd1d4dd184e4a68c44"
+  integrity sha512-QWCF8krIIw52ulflfnoff0yG1eKl9CCGA3KAiOjHyYtHNzSEouFh8lO52nAaO3qV2Ctj1GTB8TTb2rTfvISQfA==
+  optionalDependencies:
+    "@types/markdown-it" "12.2.3"
+
+"@markdoc/next.js@^0.3.2":
+  version "0.3.2"
+  resolved "https://registry.yarnpkg.com/@markdoc/next.js/-/next.js-0.3.2.tgz#66845d3c51a6cc4dbdff9a8787c53c72add16619"
+  integrity sha512-ixCzhAggApEXptT3cCI3dNbHjHuSyrscHTkNB/A3u8ISwTsvl6do9jYcZNK33Magp5PvrzVzU8Oqji6e0A1rOg==
   dependencies:
     js-yaml "^4.1.0"
 
