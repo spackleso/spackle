@@ -27,7 +27,6 @@ type Feature = {
 type PricingTableProductData = {
   id: number
   name: string
-  features: Feature[]
   monthly_stripe_price?: Stripe.Price
   annual_stripe_price?: Stripe.Price
 }
@@ -74,26 +73,14 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       ),
     )
 
-  const data: PricingTableProductData[] = []
-
-  // TODO: Promise.all the state call
-  for (const pricingTableProduct of pricingTableResult) {
-    data.push({
-      id: pricingTableProduct.id,
-      name:
-        (pricingTableProduct.stripeProductStripeJson as Stripe.Product)?.name ||
-        '',
-      features: await getProductFeaturesState(
-        account_id,
-        pricingTableProduct.stripeProductId,
-      ),
-      monthly_stripe_price:
-        pricingTableProduct.monthlyStripePrice as Stripe.Price,
-      annual_stripe_price:
-        pricingTableProduct.annualStripePrice as Stripe.Price,
-    })
-  }
-  return res.status(200).json(data)
+  return res.status(200).json(
+    pricingTableResult.map((ptp) => ({
+      id: ptp.id,
+      name: (ptp.stripeProductStripeJson as Stripe.Product).name || '',
+      monthly_stripe_price: ptp.monthlyStripePrice as Stripe.Price,
+      annual_stripe_price: ptp.annualStripePrice as Stripe.Price,
+    })),
+  )
 }
 
 export default handler

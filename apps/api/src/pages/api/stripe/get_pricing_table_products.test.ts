@@ -93,32 +93,12 @@ describe('POST', () => {
       {
         id: ptp1.id,
         name: 'Product 1',
-        features: [
-          {
-            id: feature.id,
-            name: 'Feature 1',
-            key: 'feature_1',
-            type: 0,
-            value_flag: true,
-            value_limit: null,
-          },
-        ],
         monthly_stripe_price: p1Monthly.stripeJson,
         annual_stripe_price: p1Annual.stripeJson,
       },
       {
         id: ptp2.id,
         name: 'Product 2',
-        features: [
-          {
-            id: feature.id,
-            name: 'Feature 1',
-            key: 'feature_1',
-            type: 0,
-            value_flag: true,
-            value_limit: null,
-          },
-        ],
         monthly_stripe_price: p2Monthly.stripeJson,
         annual_stripe_price: p2Annual.stripeJson,
       },
