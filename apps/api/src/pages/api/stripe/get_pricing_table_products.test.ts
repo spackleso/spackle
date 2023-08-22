@@ -93,12 +93,14 @@ describe('POST', () => {
       {
         id: ptp1.id,
         name: 'Product 1',
+        product_id: product1.stripeId,
         monthly_stripe_price: p1Monthly.stripeJson,
         annual_stripe_price: p1Annual.stripeJson,
       },
       {
         id: ptp2.id,
         name: 'Product 2',
+        product_id: product2.stripeId,
         monthly_stripe_price: p2Monthly.stripeJson,
         annual_stripe_price: p2Annual.stripeJson,
       },

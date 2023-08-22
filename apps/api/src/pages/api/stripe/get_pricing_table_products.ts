@@ -6,26 +6,12 @@ import db, {
   stripeProducts,
 } from 'spackle-db'
 import { and, eq } from 'drizzle-orm'
-import { getProductFeaturesState } from '@/state'
 import Stripe from 'stripe'
 import { alias } from 'drizzle-orm/pg-core'
 
-enum FeatureType {
-  Flag = 0,
-  Limit = 1,
-}
-
-type Feature = {
-  id: number
-  key: string
-  name: string
-  type: FeatureType
-  value_flag: boolean | null
-  value_limit: number | null
-}
-
 type PricingTableProductData = {
   id: number
+  product_id: string
   name: string
   monthly_stripe_price?: Stripe.Price
   annual_stripe_price?: Stripe.Price
@@ -76,10 +62,11 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   return res.status(200).json(
     pricingTableResult.map((ptp) => ({
       id: ptp.id,
+      product_id: ptp.stripeProductId,
       name: (ptp.stripeProductStripeJson as Stripe.Product).name || '',
       monthly_stripe_price: ptp.monthlyStripePrice as Stripe.Price,
       annual_stripe_price: ptp.annualStripePrice as Stripe.Price,
-    })),
+    })) as PricingTableProductData[],
   )
 }
 
