@@ -4,20 +4,14 @@
 import handler from '@/pages/api/stripe/update_pricing_table'
 import {
   createAccount,
-  createFlagFeature,
   createPricingTable,
-  createProductFeature,
   createStripePrice,
   createStripeProduct,
   stripeTestHandler,
   testHandler,
 } from '@/tests/helpers'
 import { eq } from 'drizzle-orm'
-import db, {
-  pricingTableProducts,
-  pricingTables,
-  productFeatures,
-} from 'spackle-db'
+import db, { pricingTableProducts, pricingTables } from 'spackle-db'
 
 describe('POST', () => {
   test('Requires a signature', async () => {
