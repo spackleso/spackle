@@ -11,8 +11,8 @@ type PricingTableUpdateData = {
   pricing_table_products: {
     id?: number
     product_id: string
-    monthly_stripe_price_id: string
-    annual_stripe_price_id: string
+    monthly_stripe_price_id: string | null
+    annual_stripe_price_id: string | null
   }[]
 }
 
@@ -111,11 +111,10 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     })
   }
 
-  const { account_id, pricing_table_id, ...data } = req.body
+  const { account_id, id, ...data } = req.body
   try {
-    await updatePricingTable(account_id, pricing_table_id, data)
+    await updatePricingTable(account_id, id, data)
   } catch (error: any) {
-    console.error(error.message)
     Sentry.captureException(error)
     return res.status(400).json({
       error: (error as Error).message,
