@@ -17,6 +17,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     .select({
       id: pricingTables.id,
       name: pricingTables.name,
+      mode: pricingTables.mode,
       monthly_enabled: pricingTables.monthlyEnabled,
       annual_enabled: pricingTables.annualEnabled,
     })
@@ -40,6 +41,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       .returning({
         id: pricingTables.id,
         name: pricingTables.name,
+        mode: pricingTables.mode,
         monthly_enabled: pricingTables.monthlyEnabled,
         annual_enabled: pricingTables.annualEnabled,
       })

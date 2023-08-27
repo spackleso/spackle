@@ -41,6 +41,7 @@ describe('POST', () => {
     expect(id).toBeDefined()
     expect(pricingTable).toStrictEqual({
       name: 'Default',
+      mode: 0,
       monthly_enabled: false,
       annual_enabled: false,
     })
@@ -69,6 +70,7 @@ describe('POST', () => {
       {
         id: pricingTable.id,
         name: 'Default',
+        mode: 0,
         monthly_enabled: true,
         annual_enabled: true,
       },
