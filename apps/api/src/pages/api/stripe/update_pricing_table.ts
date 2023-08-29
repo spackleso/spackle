@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import { verifySignature } from '@/stripe/signature'
 import * as Sentry from '@sentry/nextjs'
 import db, { pricingTableProducts, pricingTables } from 'spackle-db'
-import { and, eq } from 'drizzle-orm'
+import { and, eq, inArray } from 'drizzle-orm'
 
 type PricingTableUpdateData = {
   pricing_table_id: number
@@ -39,6 +39,28 @@ const updatePricingTable = async (
     const ptps = data.pricing_table_products
 
     // Update the pricing table products
+
+    // Delete
+    const result = await trx
+      .select()
+      .from(pricingTableProducts)
+      .where(
+        and(
+          eq(pricingTableProducts.stripeAccountId, stripeAccountId),
+          eq(pricingTableProducts.pricingTableId, pricingTableId),
+        ),
+      )
+
+    const ids = ptps.filter((ptp) => !!ptp.id).map((ptp) => ptp.id)
+    const deleted = result.filter((ptp) => !ids.includes(ptp.id))
+    if (deleted.length) {
+      await trx.delete(pricingTableProducts).where(
+        inArray(
+          pricingTableProducts.id,
+          deleted.map((ptp) => ptp.id),
+        ),
+      )
+    }
 
     // Create
     const newPricingTableProducts = ptps
@@ -78,28 +100,6 @@ const updatePricingTable = async (
   //         eq(productFeatures.id, pf.id),
   //       ),
   //     )
-  // }
-
-  // // Delete
-  // const result = await db
-  //   .select()
-  //   .from(productFeatures)
-  //   .where(
-  //     and(
-  //       eq(productFeatures.stripeAccountId, stripeAccountId),
-  //       eq(productFeatures.stripeProductId, stripeProductId),
-  //     ),
-  //   )
-
-  // const featureIds = data.map((pf: any) => pf.feature_id)
-  // const deleted = result.filter((pf) => !featureIds.includes(pf.featureId))
-  // if (deleted.length) {
-  //   await db.delete(productFeatures).where(
-  //     inArray(
-  //       productFeatures.id,
-  //       deleted.map((pf) => pf.id),
-  //     ),
-  //   )
   // }
 }
 
