@@ -166,7 +166,7 @@ describe('POST', () => {
       account.stripeId,
       product.stripeId,
     )
-    createPricingTableProduct(
+    await createPricingTableProduct(
       account.stripeId,
       pricingTable.id,
       product.stripeId,
@@ -184,7 +184,7 @@ describe('POST', () => {
       .from(pricingTableProducts)
       .where(eq(pricingTableProducts.pricingTableId, pricingTable.id))
 
-    expect(ptps.length).toBe(0)
+    expect(ptps).toHaveLength(1)
 
     const res = await stripeTestHandler(handler, {
       body: {
@@ -209,5 +209,76 @@ describe('POST', () => {
       .where(eq(pricingTableProducts.pricingTableId, pricingTable.id))
 
     expect(ptps.length).toBe(0)
+  })
+
+  test('Update pricing table products based on state', async () => {
+    const account = await createAccount()
+    const pricingTable = await createPricingTable(
+      account.stripeId,
+      'Default',
+      0,
+      false,
+      false,
+    )
+    const product = await createStripeProduct(account.stripeId)
+    const monthlyPrice = await createStripePrice(
+      account.stripeId,
+      product.stripeId,
+    )
+    const monthlyPrice2 = await createStripePrice(
+      account.stripeId,
+      product.stripeId,
+    )
+    const annualPrice = await createStripePrice(
+      account.stripeId,
+      product.stripeId,
+    )
+    const annualPrice2 = await createStripePrice(
+      account.stripeId,
+      product.stripeId,
+    )
+    const ptp = await createPricingTableProduct(
+      account.stripeId,
+      pricingTable.id,
+      product.stripeId,
+      monthlyPrice.stripeId,
+      annualPrice.stripeId,
+    )
+
+    const res = await stripeTestHandler(handler, {
+      body: {
+        account_id: account.stripeId,
+        annual_enabled: true,
+        monthly_enabled: true,
+        id: pricingTable.id,
+        pricing_table_products: [
+          {
+            id: ptp.id,
+            product_id: product.stripeId,
+            monthly_stripe_price_id: monthlyPrice2.stripeId,
+            annual_stripe_price_id: annualPrice2.stripeId,
+          },
+        ],
+      },
+    })
+
+    expect(res._getStatusCode()).toBe(200)
+
+    const ptps = await db
+      .select({
+        id: pricingTableProducts.id,
+        stripeProductId: pricingTableProducts.stripeProductId,
+        monthlyStripePriceId: pricingTableProducts.monthlyStripePriceId,
+        annualStripePriceId: pricingTableProducts.annualStripePriceId,
+      })
+      .from(pricingTableProducts)
+      .where(eq(pricingTableProducts.pricingTableId, pricingTable.id))
+
+    expect(ptps[0]).toStrictEqual({
+      id: ptp.id,
+      stripeProductId: product.stripeId,
+      monthlyStripePriceId: monthlyPrice2.stripeId,
+      annualStripePriceId: annualPrice2.stripeId,
+    })
   })
 })
