@@ -2,14 +2,16 @@ import { NextApiResponse } from 'next'
 import { AuthenticatedNextApiRequest, middleware } from '@/api'
 import { getProductFeaturesState } from '@/state'
 import db, {
+  decodePk,
   pricingTableProducts,
   pricingTables,
   stripePrices,
   stripeProducts,
 } from 'spackle-db'
-import { and, eq } from 'drizzle-orm'
+import { and, eq, sql } from 'drizzle-orm'
 import Stripe from 'stripe'
 import { alias } from 'drizzle-orm/pg-core'
+import { decode } from 'punycode'
 
 type Data = {}
 
@@ -29,7 +31,7 @@ const handler = async (
     .from(pricingTables)
     .where(
       and(
-        eq(pricingTables.id, parseInt(id as string, 10)),
+        decodePk(pricingTables.id, id as string),
         eq(pricingTables.stripeAccountId, req.stripeAccountId),
       ),
     )

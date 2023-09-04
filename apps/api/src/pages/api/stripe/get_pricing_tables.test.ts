@@ -9,7 +9,7 @@ import {
   testHandler,
 } from '@/tests/helpers'
 import { eq } from 'drizzle-orm'
-import db, { pricingTables, selectPk } from 'spackle-db'
+import db, { pricingTables, encodePk } from 'spackle-db'
 
 describe('POST', () => {
   test('Requires a signature', async () => {
@@ -57,7 +57,7 @@ describe('POST', () => {
     const pricingTable = (
       await db
         .select({
-          id: selectPk(pricingTables.id),
+          id: encodePk(pricingTables.id),
           name: pricingTables.name,
           mode: pricingTables.mode,
           monthly_enabled: pricingTables.monthlyEnabled,

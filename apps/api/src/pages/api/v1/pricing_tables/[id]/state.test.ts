@@ -12,7 +12,7 @@ import {
   stripeTestHandler,
   testHandler,
 } from '@/tests/helpers'
-import db, { pricingTableProducts, pricingTables } from 'spackle-db'
+import db, { pricingTableProducts, pricingTables, encodePk } from 'spackle-db'
 
 test('Requires an API token', async () => {
   const res = await testHandler(handler, {
@@ -68,7 +68,14 @@ test('Returns a pricing table state', async () => {
         monthlyEnabled: true,
         annualEnabled: true,
       })
-      .returning()
+      .returning({
+        id: pricingTables.id,
+        encodedId: encodePk(pricingTables.id),
+        name: pricingTables.name,
+        mode: pricingTables.mode,
+        monthlyEnabled: pricingTables.monthlyEnabled,
+        annualEnabled: pricingTables.annualEnabled,
+      })
   )[0]
   const basicFeature = await createFlagFeature(
     account.stripeId,
@@ -199,7 +206,7 @@ test('Returns a pricing table state', async () => {
       Authorization: `Bearer ${token.token}`,
     },
     query: {
-      id: pricingTable.id,
+      id: pricingTable.encodedId,
     },
   })
   expect(res._getStatusCode()).toBe(200)
