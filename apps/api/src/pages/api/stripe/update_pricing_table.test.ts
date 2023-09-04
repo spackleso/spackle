@@ -11,7 +11,7 @@ import {
   stripeTestHandler,
   testHandler,
 } from '@/tests/helpers'
-import { and, eq } from 'drizzle-orm'
+import { eq } from 'drizzle-orm'
 import db, { pricingTableProducts, pricingTables } from 'spackle-db'
 
 describe('POST', () => {
@@ -280,5 +280,61 @@ describe('POST', () => {
       monthlyStripePriceId: monthlyPrice2.stripeId,
       annualStripePriceId: annualPrice2.stripeId,
     })
+  })
+
+  test('Validates pricing table products', async () => {
+    const account = await createAccount()
+    const pricingTable = await createPricingTable(
+      account.stripeId,
+      'Default',
+      0,
+      false,
+      false,
+    )
+    const product = await createStripeProduct(account.stripeId)
+    const monthlyPrice = await createStripePrice(
+      account.stripeId,
+      product.stripeId,
+    )
+    let res = await stripeTestHandler(handler, {
+      body: {
+        account_id: account.stripeId,
+        annual_enabled: true,
+        monthly_enabled: true,
+        id: pricingTable.id,
+        pricing_table_products: [
+          {
+            product_id: product.stripeId,
+          },
+        ],
+      },
+    })
+    expect(res._getStatusCode()).toBe(400)
+    expect(res._getData()).toBe(
+      JSON.stringify({
+        error: 'All products must have a monthly price',
+      }),
+    )
+
+    res = await stripeTestHandler(handler, {
+      body: {
+        account_id: account.stripeId,
+        annual_enabled: true,
+        monthly_enabled: true,
+        id: pricingTable.id,
+        pricing_table_products: [
+          {
+            product_id: product.stripeId,
+            monthly_stripe_price_id: monthlyPrice.stripeId,
+          },
+        ],
+      },
+    })
+    expect(res._getStatusCode()).toBe(400)
+    expect(res._getData()).toBe(
+      JSON.stringify({
+        error: 'All products must have an annual price',
+      }),
+    )
   })
 })

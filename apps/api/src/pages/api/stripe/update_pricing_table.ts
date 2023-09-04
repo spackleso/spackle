@@ -16,11 +16,31 @@ type PricingTableUpdateData = {
   }[]
 }
 
+const validateConfig = async (data: PricingTableUpdateData) => {
+  if (data.monthly_enabled) {
+    if (
+      !data.pricing_table_products.every((ptp) => !!ptp.monthly_stripe_price_id)
+    ) {
+      throw new Error('All products must have a monthly price')
+    }
+  }
+
+  if (data.annual_enabled) {
+    if (
+      !data.pricing_table_products.every((ptp) => !!ptp.annual_stripe_price_id)
+    ) {
+      throw new Error('All products must have an annual price')
+    }
+  }
+}
+
 const updatePricingTable = async (
   stripeAccountId: string,
   pricingTableId: number,
   data: PricingTableUpdateData,
 ) => {
+  await validateConfig(data)
+
   await db.transaction(async (trx) => {
     // Update the pricing table
     await trx
@@ -40,7 +60,7 @@ const updatePricingTable = async (
 
     // Update the pricing table products
 
-    // Delete
+    // Delete any that are no longer in the list
     const result = await trx
       .select()
       .from(pricingTableProducts)
@@ -62,7 +82,7 @@ const updatePricingTable = async (
       )
     }
 
-    // Create
+    // Create any new ones
     const newPricingTableProducts = ptps
       .filter((ptp: any) => !ptp.hasOwnProperty('id'))
       .map((ptp: any) => ({
@@ -76,31 +96,30 @@ const updatePricingTable = async (
     if (newPricingTableProducts.length) {
       await trx.insert(pricingTableProducts).values(newPricingTableProducts)
     }
+    // Update
+    const updatedPricingTableProducts = ptps
+      .filter((ptp: any) => ptp.hasOwnProperty('id'))
+      .map((ptp: any) => ({
+        id: ptp.id,
+        stripeAccountId,
+        pricingTableId,
+        stripeProductId: ptp.product_id,
+        monthlyStripePriceId: ptp.monthly_stripe_price_id,
+        annualStripePriceId: ptp.annual_stripe_price_id,
+      }))
+
+    for (const ptp of updatedPricingTableProducts) {
+      await trx
+        .update(pricingTableProducts)
+        .set(ptp)
+        .where(
+          and(
+            eq(pricingTableProducts.stripeAccountId, ptp.stripeAccountId),
+            eq(pricingTableProducts.id, ptp.id),
+          ),
+        )
+    }
   })
-
-  // // Update
-  // const updatedProductFeatures = data
-  //   .filter((pf: any) => pf.hasOwnProperty('id'))
-  //   .map((pf: any) => ({
-  //     featureId: pf.feature_id,
-  //     id: pf.id,
-  //     stripeAccountId,
-  //     stripeProductId,
-  //     valueFlag: pf.value_flag,
-  //     valueLimit: pf.value_limit,
-  //   }))
-
-  // for (const pf of updatedProductFeatures) {
-  //   await db
-  //     .update(productFeatures)
-  //     .set(pf)
-  //     .where(
-  //       and(
-  //         eq(productFeatures.stripeAccountId, pf.stripeAccountId),
-  //         eq(productFeatures.id, pf.id),
-  //       ),
-  //     )
-  // }
 }
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
