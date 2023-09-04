@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { verifySignature } from '@/stripe/signature'
-import db, { pricingTables } from 'spackle-db'
-import { and, eq } from 'drizzle-orm'
+import db, { pricingTables, selectPk } from 'spackle-db'
+import { and, eq, sql } from 'drizzle-orm'
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { success } = verifySignature(req)
@@ -15,7 +15,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const pricingTableResult = await db
     .select({
-      id: pricingTables.id,
+      id: selectPk(pricingTables.id),
       name: pricingTables.name,
       mode: pricingTables.mode,
       monthly_enabled: pricingTables.monthlyEnabled,

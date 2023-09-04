@@ -1,10 +1,10 @@
 import dotenv from 'dotenv';
-import { sql } from 'spackle-db';
+import { conn } from 'spackle-db';
 import { redis } from '@/queue'
 
 dotenv.config({ path: './.env.test' });
 
 afterAll(async () => {
-  await sql.end();
+  await conn.end();
   await redis.quit();
 });

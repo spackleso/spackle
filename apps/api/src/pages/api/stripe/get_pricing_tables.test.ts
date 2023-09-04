@@ -8,6 +8,8 @@ import {
   stripeTestHandler,
   testHandler,
 } from '@/tests/helpers'
+import { eq } from 'drizzle-orm'
+import db, { pricingTables, selectPk } from 'spackle-db'
 
 describe('POST', () => {
   test('Requires a signature', async () => {
@@ -49,13 +51,21 @@ describe('POST', () => {
 
   test('Returns a pricing table', async () => {
     const account = await createAccount()
-    const pricingTable = await createPricingTable(
-      account.stripeId,
-      'Default',
-      0,
-      true,
-      true,
-    )
+    const pricingTableId = (
+      await createPricingTable(account.stripeId, 'Default', 0, true, true)
+    ).id
+    const pricingTable = (
+      await db
+        .select({
+          id: selectPk(pricingTables.id),
+          name: pricingTables.name,
+          mode: pricingTables.mode,
+          monthly_enabled: pricingTables.monthlyEnabled,
+          annual_enabled: pricingTables.annualEnabled,
+        })
+        .from(pricingTables)
+        .where(eq(pricingTables.id, pricingTableId))
+    )[0]
     const res = await stripeTestHandler(handler, {
       method: 'POST',
       body: {

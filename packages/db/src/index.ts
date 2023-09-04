@@ -1,12 +1,20 @@
 import { drizzle } from 'drizzle-orm/postgres-js'
 import postgres from 'postgres'
 import * as schema from '../drizzle/schema'
+import { sql } from 'drizzle-orm'
+import { PgBigSerial53 } from 'drizzle-orm/pg-core'
 
-export const sql = postgres(
+export const conn = postgres(
   process.env.DATABASE_URL ??
     'postgresql://postgres:postgres@localhost:54322/postgres',
 )
-const db = drizzle(sql, { schema })
+const db = drizzle(conn, { schema })
+
+export const DB_PK_SALT = process.env.DB_PK_SALT ?? 'db_pk_salt'
+
+export const selectPk = (id: PgBigSerial53<any>) => {
+  return sql`id_encode(${id}, ${DB_PK_SALT}, 8)`
+}
 
 export * from '../drizzle/schema'
 
