@@ -12,6 +12,8 @@ import {
   stripeTestHandler,
   testHandler,
 } from '@/tests/helpers'
+import { eq } from 'drizzle-orm'
+import db, { encodePk, pricingTables } from 'spackle-db'
 
 describe('POST', () => {
   test('Requires a signature', async () => {
@@ -30,12 +32,7 @@ describe('POST', () => {
 
   test("Returns a pricing table's products", async () => {
     const account = await createAccount()
-    const feature = await createFlagFeature(
-      account.stripeId,
-      'Feature 1',
-      'feature_1',
-      true,
-    )
+    await createFlagFeature(account.stripeId, 'Feature 1', 'feature_1', true)
     const pricingTable = await createPricingTable(
       account.stripeId,
       'Default',
@@ -83,7 +80,7 @@ describe('POST', () => {
       method: 'POST',
       body: {
         account_id: account.stripeId,
-        pricing_table_id: pricingTable.id,
+        pricing_table_id: pricingTable.encodedId,
       },
     })
 

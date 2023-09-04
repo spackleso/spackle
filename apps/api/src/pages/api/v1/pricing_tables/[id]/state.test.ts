@@ -6,6 +6,7 @@ import {
   createAccount,
   createAccountWithToken,
   createFlagFeature,
+  createPricingTable,
   createProductFeature,
   createStripePrice,
   createStripeProduct,
@@ -58,25 +59,13 @@ test('Returns a 404 if the pricing table does not exist', async () => {
 
 test('Returns a pricing table state', async () => {
   const { token, account } = await createAccountWithToken()
-  const pricingTable = (
-    await db
-      .insert(pricingTables)
-      .values({
-        name: 'Default',
-        stripeAccountId: account.stripeId,
-        mode: 0,
-        monthlyEnabled: true,
-        annualEnabled: true,
-      })
-      .returning({
-        id: pricingTables.id,
-        encodedId: encodePk(pricingTables.id),
-        name: pricingTables.name,
-        mode: pricingTables.mode,
-        monthlyEnabled: pricingTables.monthlyEnabled,
-        annualEnabled: pricingTables.annualEnabled,
-      })
-  )[0]
+  const pricingTable = await createPricingTable(
+    account.stripeId,
+    'Default',
+    0,
+    true,
+    true,
+  )
   const basicFeature = await createFlagFeature(
     account.stripeId,
     'Basic Feature',

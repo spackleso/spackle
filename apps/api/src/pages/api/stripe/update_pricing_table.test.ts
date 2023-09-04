@@ -43,7 +43,7 @@ describe('POST', () => {
         account_id: account.stripeId,
         annual_enabled: false,
         monthly_enabled: false,
-        id: pricingTable.id,
+        id: pricingTable.encodedId,
         pricing_table_products: [],
       },
     })
@@ -96,7 +96,7 @@ describe('POST', () => {
         account_id: account.stripeId,
         annual_enabled: true,
         monthly_enabled: true,
-        id: pricingTable.id,
+        id: pricingTable.encodedId,
         pricing_table_products: [
           {
             product_id: product.stripeId,
@@ -191,7 +191,7 @@ describe('POST', () => {
         account_id: account.stripeId,
         annual_enabled: true,
         monthly_enabled: true,
-        id: pricingTable.id,
+        id: pricingTable.encodedId,
         pricing_table_products: [],
       },
     })
@@ -250,7 +250,7 @@ describe('POST', () => {
         account_id: account.stripeId,
         annual_enabled: true,
         monthly_enabled: true,
-        id: pricingTable.id,
+        id: pricingTable.encodedId,
         pricing_table_products: [
           {
             id: ptp.id,
@@ -301,7 +301,7 @@ describe('POST', () => {
         account_id: account.stripeId,
         annual_enabled: true,
         monthly_enabled: true,
-        id: pricingTable.id,
+        id: pricingTable.encodedId,
         pricing_table_products: [
           {
             product_id: product.stripeId,
@@ -321,7 +321,7 @@ describe('POST', () => {
         account_id: account.stripeId,
         annual_enabled: true,
         monthly_enabled: true,
-        id: pricingTable.id,
+        id: pricingTable.encodedId,
         pricing_table_products: [
           {
             product_id: product.stripeId,

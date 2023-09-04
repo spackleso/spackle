@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { verifySignature } from '@/stripe/signature'
 import db, {
+  decodePk,
   pricingTableProducts,
   stripePrices,
   stripeProducts,
@@ -55,7 +56,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     .where(
       and(
         eq(pricingTableProducts.stripeAccountId, account_id),
-        eq(pricingTableProducts.pricingTableId, pricing_table_id),
+        decodePk(pricingTableProducts.pricingTableId, pricing_table_id),
       ),
     )
 

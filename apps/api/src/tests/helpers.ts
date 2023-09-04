@@ -3,6 +3,7 @@ import { execSync } from 'child_process'
 import { createToken } from '@/api'
 import db, {
   customerFeatures,
+  encodePk,
   features,
   pricingTableProducts,
   pricingTables,
@@ -288,7 +289,14 @@ export const createPricingTable = async (
       annualEnabled,
       monthlyEnabled,
     })
-    .returning()
+    .returning({
+      id: pricingTables.id,
+      encodedId: encodePk(pricingTables.id),
+      name: pricingTables.name,
+      mode: pricingTables.mode,
+      monthlyEnabled: pricingTables.monthlyEnabled,
+      annualEnabled: pricingTables.annualEnabled,
+    })
   return result[0]
 }
 

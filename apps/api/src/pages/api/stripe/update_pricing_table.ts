@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { verifySignature } from '@/stripe/signature'
 import * as Sentry from '@sentry/nextjs'
-import db, { pricingTableProducts, pricingTables } from 'spackle-db'
+import db, { decodePk, pricingTableProducts, pricingTables } from 'spackle-db'
 import { and, eq, inArray } from 'drizzle-orm'
 
 type PricingTableUpdateData = {
@@ -36,7 +36,7 @@ const validateConfig = async (data: PricingTableUpdateData) => {
 
 const updatePricingTable = async (
   stripeAccountId: string,
-  pricingTableId: number,
+  pricingTable: { id: number },
   data: PricingTableUpdateData,
 ) => {
   await validateConfig(data)
@@ -52,7 +52,7 @@ const updatePricingTable = async (
       .where(
         and(
           eq(pricingTables.stripeAccountId, stripeAccountId),
-          eq(pricingTables.id, pricingTableId),
+          eq(pricingTables.id, pricingTable.id),
         ),
       )
 
@@ -67,7 +67,7 @@ const updatePricingTable = async (
       .where(
         and(
           eq(pricingTableProducts.stripeAccountId, stripeAccountId),
-          eq(pricingTableProducts.pricingTableId, pricingTableId),
+          eq(pricingTableProducts.pricingTableId, pricingTable.id),
         ),
       )
 
@@ -87,7 +87,7 @@ const updatePricingTable = async (
       .filter((ptp: any) => !ptp.hasOwnProperty('id'))
       .map((ptp: any) => ({
         stripeAccountId,
-        pricingTableId,
+        pricingTableId: pricingTable.id,
         stripeProductId: ptp.product_id,
         monthlyStripePriceId: ptp.monthly_stripe_price_id,
         annualStripePriceId: ptp.annual_stripe_price_id,
@@ -102,7 +102,7 @@ const updatePricingTable = async (
       .map((ptp: any) => ({
         id: ptp.id,
         stripeAccountId,
-        pricingTableId,
+        pricingTableId: pricingTable.id,
         stripeProductId: ptp.product_id,
         monthlyStripePriceId: ptp.monthly_stripe_price_id,
         annualStripePriceId: ptp.annual_stripe_price_id,
@@ -131,8 +131,25 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 
   const { account_id, id, ...data } = req.body
+
+  const result = await db
+    .select()
+    .from(pricingTables)
+    .where(
+      and(
+        eq(pricingTables.stripeAccountId, account_id),
+        decodePk(pricingTables.id, id),
+      ),
+    )
+
+  if (!result.length) {
+    return res.status(404).json({
+      error: 'Not Found',
+    })
+  }
+
   try {
-    await updatePricingTable(account_id, id, data)
+    await updatePricingTable(account_id, result[0], data)
   } catch (error: any) {
     Sentry.captureException(error)
     return res.status(400).json({
