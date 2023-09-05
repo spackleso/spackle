@@ -1,9 +1,8 @@
 /**
  * @jest-environment node
  */
-import handler from '@/pages/api/v1/pricing_tables/[id]/state'
+import handler from '@/pages/api/v1/pricing_tables/[id]'
 import {
-  createAccount,
   createAccountWithToken,
   createFlagFeature,
   createPricingTable,
