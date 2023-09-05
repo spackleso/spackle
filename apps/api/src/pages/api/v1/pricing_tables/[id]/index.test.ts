@@ -12,7 +12,7 @@ import {
   stripeTestHandler,
   testHandler,
 } from '@/tests/helpers'
-import db, { pricingTableProducts, pricingTables, encodePk } from 'spackle-db'
+import db, { pricingTableProducts, pricingTables } from 'spackle-db'
 
 test('Requires an API token', async () => {
   const res = await testHandler(handler, {
@@ -199,7 +199,7 @@ test('Returns a pricing table state', async () => {
   })
   expect(res._getStatusCode()).toBe(200)
   const data = res._getJSONData()
-  const { id, ...table } = data[0]
+  const { id, ...table } = data
   const returnedTable = {
     ...table,
     products: table.products.map((product: any) => {

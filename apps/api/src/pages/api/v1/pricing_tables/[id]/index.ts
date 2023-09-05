@@ -3,6 +3,7 @@ import { AuthenticatedNextApiRequest, middleware } from '@/api'
 import { getProductFeaturesState } from '@/state'
 import db, {
   decodePk,
+  encodePk,
   pricingTableProducts,
   pricingTables,
   stripePrices,
@@ -12,17 +13,48 @@ import { and, eq } from 'drizzle-orm'
 import Stripe from 'stripe'
 import { alias } from 'drizzle-orm/pg-core'
 
-type Data = {}
+type Success = {
+  id: string
+  name: string
+  intervals: string[]
+  products: {
+    id: string
+    features: {
+      id: string
+      name: string
+      key: string
+      type: number
+      value_flag: boolean
+      value_limit: number | null
+    }[]
+    name: string
+    prices: {
+      month?: {
+        unit_amount: number
+        currency: string
+      }
+      year?: {
+        unit_amount: number
+        currency: string
+      }
+    }
+  }[]
+}
+
+type Error = {
+  error: string
+}
 
 const handler = async (
   req: AuthenticatedNextApiRequest,
-  res: NextApiResponse<Data>,
+  res: NextApiResponse<Success | Error>,
 ) => {
   const { id } = req.query
 
   const pricingTablesResult = await db
     .select({
       id: pricingTables.id,
+      encodedId: encodePk(pricingTables.id),
       name: pricingTables.name,
       monthlyEnabled: pricingTables.monthlyEnabled,
       annualEnabled: pricingTables.annualEnabled,
@@ -92,34 +124,34 @@ const handler = async (
     intervals.push('year')
   }
 
-  res.status(200).json([
-    {
-      id: pricingTable.id,
-      name: pricingTable.name,
-      intervals,
-      products: ptProducts.map((ptp) => {
-        const prices: any = {}
-        if (ptp.monthlyStripePrice) {
-          prices.month = {
-            unit_amount: (ptp.monthlyStripePrice as Stripe.Price).unit_amount,
-            currency: (ptp.monthlyStripePrice as Stripe.Price).currency,
-          }
-        }
-        if (ptp.annualStripePrice) {
-          prices.year = {
-            unit_amount: (ptp.annualStripePrice as Stripe.Price).unit_amount,
-            currency: (ptp.annualStripePrice as Stripe.Price).currency,
-          }
-        }
-        return {
-          id: ptp.id,
-          features: states[ptp.stripeProductId],
-          name: (ptp.stripeJson as any).name,
-          prices,
-        }
-      }),
-    },
-  ])
+  const products = ptProducts.map((ptp) => {
+    const prices: any = {}
+    if (ptp.monthlyStripePrice) {
+      prices.month = {
+        unit_amount: (ptp.monthlyStripePrice as Stripe.Price).unit_amount,
+        currency: (ptp.monthlyStripePrice as Stripe.Price).currency,
+      }
+    }
+    if (ptp.annualStripePrice) {
+      prices.year = {
+        unit_amount: (ptp.annualStripePrice as Stripe.Price).unit_amount,
+        currency: (ptp.annualStripePrice as Stripe.Price).currency,
+      }
+    }
+    return {
+      id: ptp.stripeProductId,
+      features: states[ptp.stripeProductId],
+      name: (ptp.stripeJson as Stripe.Product).name,
+      prices,
+    }
+  })
+
+  return res.status(200).json({
+    id: pricingTable.encodedId as string,
+    name: pricingTable.name ?? '',
+    intervals,
+    products,
+  })
 }
 
 export default middleware(handler, ['GET'])
