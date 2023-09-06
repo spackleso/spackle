@@ -1,15 +1,15 @@
 import {
   pgTable,
   pgEnum,
-  unique,
-  bigint,
-  timestamp,
-  numeric,
-  boolean,
-  text,
-  json,
-  smallint,
   bigserial,
+  timestamp,
+  text,
+  smallint,
+  boolean,
+  unique,
+  numeric,
+  json,
+  bigint,
 } from 'drizzle-orm/pg-core'
 
 export const requestStatus = pgEnum('request_status', [
@@ -32,6 +32,49 @@ export const codeChallengeMethod = pgEnum('code_challenge_method', [
 export const factorStatus = pgEnum('factor_status', ['verified', 'unverified'])
 export const factorType = pgEnum('factor_type', ['webauthn', 'totp'])
 
+export const pricingTables = pgTable('pricing_tables', {
+  // You can use { mode: "bigint" } if numbers are exceeding js number limitations
+  id: bigserial('id', { mode: 'number' }).primaryKey().notNull(),
+  createdAt: timestamp('created_at', {
+    withTimezone: true,
+    mode: 'string',
+  }).defaultNow(),
+  stripeAccountId: text('stripe_account_id')
+    .notNull()
+    .references(() => stripeAccounts.stripeId, { onDelete: 'cascade' }),
+  name: text('name').default('Default'),
+  mode: smallint('mode').default(1).notNull(),
+  monthlyEnabled: boolean('monthly_enabled').default(false).notNull(),
+  annualEnabled: boolean('annual_enabled').default(false).notNull(),
+})
+
+export const pricingTableProducts = pgTable('pricing_table_products', {
+  // You can use { mode: "bigint" } if numbers are exceeding js number limitations
+  id: bigserial('id', { mode: 'number' }).primaryKey().notNull(),
+  createdAt: timestamp('created_at', {
+    withTimezone: true,
+    mode: 'string',
+  }).defaultNow(),
+  stripeAccountId: text('stripe_account_id')
+    .notNull()
+    .references(() => stripeAccounts.stripeId, { onDelete: 'cascade' }),
+  // You can use { mode: "bigint" } if numbers are exceeding js number limitations
+  pricingTableId: bigserial('pricing_table_id', { mode: 'number' })
+    .notNull()
+    .references(() => pricingTables.id, { onDelete: 'cascade' }),
+  stripeProductId: text('stripe_product_id')
+    .notNull()
+    .references(() => stripeProducts.stripeId, { onDelete: 'cascade' }),
+  monthlyStripePriceId: text('monthly_stripe_price_id').references(
+    () => stripePrices.stripeId,
+    { onDelete: 'set null' },
+  ),
+  annualStripePriceId: text('annual_stripe_price_id').references(
+    () => stripePrices.stripeId,
+    { onDelete: 'set null' },
+  ),
+})
+
 export const customerFeatures = pgTable(
   'customer_features',
   {
@@ -50,7 +93,7 @@ export const customerFeatures = pgTable(
       .notNull()
       .references(() => stripeCustomers.stripeId, { onDelete: 'cascade' }),
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
-    featureId: bigint('feature_id', { mode: 'number' })
+    featureId: bigserial('feature_id', { mode: 'number' })
       .notNull()
       .references(() => features.id, { onDelete: 'cascade' }),
   },
@@ -258,7 +301,7 @@ export const productFeatures = pgTable(
       .notNull()
       .references(() => stripeProducts.stripeId, { onDelete: 'cascade' }),
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
-    featureId: bigint('feature_id', { mode: 'number' })
+    featureId: bigserial('feature_id', { mode: 'number' })
       .notNull()
       .references(() => features.id, { onDelete: 'cascade' }),
   },

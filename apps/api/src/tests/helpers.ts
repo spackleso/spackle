@@ -3,7 +3,10 @@ import { execSync } from 'child_process'
 import { createToken } from '@/api'
 import db, {
   customerFeatures,
+  encodePk,
   features,
+  pricingTableProducts,
+  pricingTables,
   productFeatures,
   stripeAccounts,
   stripeCustomers,
@@ -95,7 +98,10 @@ export const createStripeCustomer = async (stripeAccountId: string) => {
   return result[0]
 }
 
-export const createStripeProduct = async (stripeAccountId: string) => {
+export const createStripeProduct = async (
+  stripeAccountId: string,
+  stripeJson?: any,
+) => {
   const stripeId = genStripeId('prod')
   const result = await db
     .insert(stripeProducts)
@@ -103,6 +109,7 @@ export const createStripeProduct = async (stripeAccountId: string) => {
       stripeAccountId,
       stripeId,
       stripeJson: {
+        ...stripeJson,
         id: stripeId,
       },
     })
@@ -113,6 +120,7 @@ export const createStripeProduct = async (stripeAccountId: string) => {
 export const createStripePrice = async (
   stripeAccountId: string,
   stripeProductId: string,
+  stripeJson?: any,
 ) => {
   const stripeId = genStripeId('price')
   const result = await db
@@ -122,6 +130,7 @@ export const createStripePrice = async (
       stripeProductId,
       stripeId,
       stripeJson: {
+        ...stripeJson,
         id: stripeId,
       },
     })
@@ -211,23 +220,28 @@ export const createLimitFeature = async (
 
 export const createProductFeature = async (
   stripeAccountId: string,
-  name: string,
-  key: string,
   valueFlag: boolean,
-  product?: any,
+  opts: any,
 ) => {
-  const feature = await createFlagFeature(stripeAccountId, name, key, valueFlag)
+  if (!opts.feature) {
+    opts.feature = await createFlagFeature(
+      stripeAccountId,
+      opts.name,
+      opts.key,
+      false,
+    )
+  }
 
-  if (!product) {
-    product = await createStripeProduct(stripeAccountId)
+  if (!opts.product) {
+    opts.product = await createStripeProduct(stripeAccountId)
   }
 
   const result = await db
     .insert(productFeatures)
     .values({
       stripeAccountId,
-      featureId: feature.id,
-      stripeProductId: product.stripeId,
+      featureId: opts.feature.id,
+      stripeProductId: opts.product.stripeId,
       valueFlag,
     })
     .returning()
@@ -241,7 +255,7 @@ export const createCustomerFeature = async (
   valueFlag: boolean,
   customer?: any,
 ) => {
-  const feature = await createFlagFeature(stripeAccountId, name, key, valueFlag)
+  const feature = await createFlagFeature(stripeAccountId, name, key, false)
 
   if (!customer) {
     customer = await createStripeCustomer(stripeAccountId)
@@ -254,6 +268,53 @@ export const createCustomerFeature = async (
       featureId: feature.id,
       stripeCustomerId: customer.stripeId,
       valueFlag,
+    })
+    .returning()
+  return result[0]
+}
+
+export const createPricingTable = async (
+  stripeAccountId: string,
+  name: string,
+  mode: number,
+  monthlyEnabled: boolean,
+  annualEnabled: boolean,
+) => {
+  const result = await db
+    .insert(pricingTables)
+    .values({
+      stripeAccountId,
+      name,
+      mode,
+      annualEnabled,
+      monthlyEnabled,
+    })
+    .returning({
+      id: pricingTables.id,
+      encodedId: encodePk(pricingTables.id),
+      name: pricingTables.name,
+      mode: pricingTables.mode,
+      monthlyEnabled: pricingTables.monthlyEnabled,
+      annualEnabled: pricingTables.annualEnabled,
+    })
+  return result[0]
+}
+
+export const createPricingTableProduct = async (
+  stripeAccountId: string,
+  pricingTableId: number,
+  stripeProductId: string,
+  monthlyStripePriceId?: string | null,
+  annualStripePriceId?: string | null,
+) => {
+  const result = await db
+    .insert(pricingTableProducts)
+    .values({
+      stripeAccountId,
+      pricingTableId,
+      stripeProductId,
+      monthlyStripePriceId,
+      annualStripePriceId,
     })
     .returning()
   return result[0]

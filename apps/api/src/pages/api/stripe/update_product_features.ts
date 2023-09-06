@@ -22,7 +22,7 @@ const updateProductFeatures = async (
       valueFlag: pf.value_flag,
     }))
 
-  if (newProductFeatures) {
+  if (newProductFeatures.length) {
     await db.insert(productFeatures).values(newProductFeatures)
   }
 

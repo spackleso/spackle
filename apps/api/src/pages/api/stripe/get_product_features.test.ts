@@ -27,24 +27,23 @@ describe('POST', () => {
 
   test('Returns product features', async () => {
     const decoy = await createAccount()
-    await createProductFeature(decoy.stripeId, 'Decoy', 'decoy', true)
+    await createProductFeature(decoy.stripeId, true, {
+      name: 'Decoy',
+      key: 'decoy',
+    })
 
     const account = await createAccount()
     const product = await createStripeProduct(account.stripeId)
-    const pf1 = await createProductFeature(
-      account.stripeId,
-      'Feature',
-      'feature',
-      true,
+    const pf1 = await createProductFeature(account.stripeId, true, {
+      name: 'Feature',
+      key: 'feature',
       product,
-    )
-    const pf2 = await createProductFeature(
-      account.stripeId,
-      'Feature 2',
-      'feature_2',
-      false,
+    })
+    const pf2 = await createProductFeature(account.stripeId, false, {
+      name: 'Feature 2',
+      key: 'feature_2',
       product,
-    )
+    })
 
     const res = await stripeTestHandler(handler, {
       body: {
