@@ -14,7 +14,20 @@ const navigation = [
   {
     title: 'Introduction',
     links: [
-      { title: 'Getting started', href: '/' },
+      { title: 'Installation', href: '/' },
+      { title: 'Getting Started', href: '/getting-started' },
+    ],
+  },
+  {
+    title: 'Concepts',
+    links: [
+      { title: 'Pricing Tables', href: '/pricing-tables' },
+      { title: 'Entitlements', href: '/entitlements' },
+    ],
+  },
+  {
+    title: 'SDKs',
+    links: [
       { title: 'Node.js', href: '/node' },
       { title: 'PHP', href: '/php' },
       { title: 'Python', href: '/python' },

@@ -43,7 +43,48 @@ Spackle.bootstrap()
 
 ## Usage
 
-### Fetch a customer
+### Pricing tables
+
+#### Fetch a pricing table
+
+```ruby
+pricing_table = Spackle::PricingTable.retrieve("abcde123")
+```
+
+#### Pricing table object
+```ts
+{
+  id: string
+  name: string
+  intervals: string[]
+  products: {
+    id: string
+    features: {
+      id: string
+      name: string
+      key: string
+      type: number
+      value_flag: boolean
+      value_limit: number | null
+    }[]
+    name: string
+    prices: {
+      month?: {
+        unit_amount: number
+        currency: string
+      }
+      year?: {
+        unit_amount: number
+        currency: string
+      }
+    }
+  }[]
+}
+```
+
+### Entitlements
+
+#### Fetch a customer
 
 Spackle uses stripe ids as references to customer features.
 
@@ -51,19 +92,19 @@ Spackle uses stripe ids as references to customer features.
 customer = Spackle::Customer.retrieve("cus_00000000")
 ```
 
-### Verify feature access
+#### Verify feature access
 
 ```ruby
 customer.enabled("feature_key")
 ```
 
-### Fetch a feature limit
+#### Fetch a feature limit
 
 ```ruby
 customer.limit("feature_key")
 ```
 
-### Examine a customer's subscriptions
+#### Examine a customer's subscriptions
 
 A customer's current subscriptions are available on the `subscriptions` property. These are valid `Stripe::Subscription` objects as defined in the [Stripe Ruby library](https://stripe.com/docs/api/subscriptions/object?lang=ruby).
 
@@ -71,7 +112,7 @@ A customer's current subscriptions are available on the `subscriptions` property
 customer.subscriptions
 ```
 
-## Waiters
+#### Waiters
 
 There is a brief delay between when an action takes place in Stripe and when it is reflected in Spackle. To account for this, Spackle provides a `Waiters` module that can be used to wait for a Stripe object to be updated and replicated.
 
@@ -90,22 +131,7 @@ There is a brief delay between when an action takes place in Stripe and when it 
 
 These will block until Spackle is updated with the latest information from Stripe or until a timeout occurs.
 
-## Logging
-The Spackle Ruby library emits logs as it performs various internal tasks. You can control the verbosity of Spackle's logging a few different ways:
-
-1. Set the environment variable SPACKLE_LOG to the value `debug`, `info`, `warn` or `error`
-
-   ```sh
-   $ export SPACKLE_LOG=debug
-   ```
-
-2. Set Spackle.log_level:
-
-   ```ruby
-   Spackle.log_level = 'debug'
-   ```
-
-## Usage in development environments
+#### Usage in development environments
 In production, Spackle requires a valid Stripe customer. However, that is not development environments where state needs to be controlled. As an alternative, you can use a file store to test your application with seed data.
 
 ```json
@@ -142,7 +168,7 @@ Then configure the file store in your application:
 Spackle.store = Spackle::FileStore.new('/app/spackle.json')
 ```
 
-## Usage in test environments
+#### Usage in test environments
 
 In production, Spackle requires a valid Stripe customer. However, that is not ideal in testing or some development environments. As an alternative, you can use an in-memory store to test your application with seed data.
 
@@ -172,3 +198,18 @@ Spackle.store.set_customer_data("cus_000000000", {
 ```
 
 **Note:** The in-memory store is not thread-safe and state will reset on each application restart.
+
+## Logging
+The Spackle Ruby library emits logs as it performs various internal tasks. You can control the verbosity of Spackle's logging a few different ways:
+
+1. Set the environment variable SPACKLE_LOG to the value `debug`, `info`, `warn` or `error`
+
+   ```sh
+   $ export SPACKLE_LOG=debug
+   ```
+
+2. Set Spackle.log_level:
+
+   ```ruby
+   Spackle.log_level = 'debug'
+   ```

@@ -26,7 +26,48 @@ spackle.api_key = "<api key>"
 
 ## Usage
 
-### Fetch a customer
+### Pricing tables
+
+#### Fetch a pricing table
+
+```python
+pricing_table = spackle.PricingTable.retrieve("abcde123")
+```
+
+#### Pricing table object
+```ts
+{
+  id: string
+  name: string
+  intervals: string[]
+  products: {
+    id: string
+    features: {
+      id: string
+      name: string
+      key: string
+      type: number
+      value_flag: boolean
+      value_limit: number | null
+    }[]
+    name: string
+    prices: {
+      month?: {
+        unit_amount: number
+        currency: string
+      }
+      year?: {
+        unit_amount: number
+        currency: string
+      }
+    }
+  }[]
+}
+```
+
+### Entitlements
+
+#### Fetch a customer
 
 Spackle uses stripe ids as references to customer features.
 
@@ -34,19 +75,19 @@ Spackle uses stripe ids as references to customer features.
 customer = spackle.Customer.retrieve("cus_00000000")
 ```
 
-### Verify feature access
+#### Verify feature access
 
 ```python
 customer.enabled("feature_key")
 ```
 
-### Fetch a feature limit
+#### Fetch a feature limit
 
 ```python
 customer.limit("feature_key")
 ```
 
-### Examine a customer's subscriptions
+#### Examine a customer's subscriptions
 
 A customer's current subscriptions are available on the `subscriptions` property. These are valid `stripe.Subscription` objects as defined in the [Stripe Python library](https://stripe.com/docs/api/subscriptions/object?lang=python).
 
@@ -54,7 +95,7 @@ A customer's current subscriptions are available on the `subscriptions` property
 customer.subscriptions
 ```
 
-## Waiters
+#### Waiters
 
 There is a brief delay between when an action takes place in Stripe and when it is reflected in Spackle. To account for this, Spackle provides a `waiters` module that can be used to wait for a Stripe object to be updated and replicated.
 
@@ -73,33 +114,7 @@ There is a brief delay between when an action takes place in Stripe and when it 
 
 These will block until Spackle is updated with the latest information from Stripe or until a timeout occurs.
 
-
-## Logging
-The Spackle Python library emits logs as it performs various internal tasks. You can control the verbosity of Spackle's logging a few different ways:
-
-1. Set the environment variable SPACKLE_LOG to the value `debug`, `info`, or `warn`
-
-   ```sh
-   $ export SPACKLE_LOG=debug
-   ```
-
-2. Set spackle.log:
-
-   ```python
-   import spackle
-   spackle.log = 'debug'
-   ```
-
-3. Enable it through Python's logging module:
-
-   ```python
-   import logging
-   logging.basicConfig()
-   logging.getLogger('spackle').setLevel(logging.DEBUG)
-   ```
-
-
-## Usage in development environments
+#### Usage in development environments
 
 In production, Spackle requires a valid Stripe customer. However, that is not development environments where state needs to be controlled. As an alternative, you can use a file store to test your application with seed data.
 
@@ -168,3 +183,27 @@ spackle.get_store().set_customer_data("cus_000000000", {
 ```
 
 **Note:** The in-memory store is not thread-safe and state will reset on each application restart.
+
+## Logging
+The Spackle Python library emits logs as it performs various internal tasks. You can control the verbosity of Spackle's logging a few different ways:
+
+1. Set the environment variable SPACKLE_LOG to the value `debug`, `info`, or `warn`
+
+   ```sh
+   $ export SPACKLE_LOG=debug
+   ```
+
+2. Set spackle.log:
+
+   ```python
+   import spackle
+   spackle.log = 'debug'
+   ```
+
+3. Enable it through Python's logging module:
+
+   ```python
+   import logging
+   logging.basicConfig()
+   logging.getLogger('spackle').setLevel(logging.DEBUG)
+   ```

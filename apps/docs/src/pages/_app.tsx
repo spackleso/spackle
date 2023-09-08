@@ -5,7 +5,6 @@ import { Layout } from '@/components/Layout'
 import 'focus-visible'
 import '@/styles/tailwind.css'
 import PHProvider from '@/components/Posthog'
-import PostInstallBanner from '@/components/PostInstallBanner'
 
 function getNodeText(node: any) {
   let text = ''

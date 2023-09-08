@@ -25,17 +25,51 @@ import Spackle from 'spackle-node';
 const spackle = new Spackle('<api-key>')
 ```
 
-### Bootstrap the client (optional)
-
-The Spackle client requires a single initialization step that includes a network request. To front load this process, you can call the `bootstrap` method in your codebase.
-
-```js
-await spackle.bootstrap()
-```
-
 ## Usage
 
-### Fetch a customer
+### Pricing Tables
+
+#### Fetch a pricing table
+
+```js
+await spackle.pricingTables.retrieve('abcde123')
+```
+
+#### Pricing table object
+
+```ts
+{
+  id: string
+  name: string
+  intervals: string[]
+  products: {
+    id: string
+    features: {
+      id: string
+      name: string
+      key: string
+      type: number
+      value_flag: boolean
+      value_limit: number | null
+    }[]
+    name: string
+    prices: {
+      month?: {
+        unit_amount: number
+        currency: string
+      }
+      year?: {
+        unit_amount: number
+        currency: string
+      }
+    }
+  }[]
+}
+```
+
+### Entitlements
+
+#### Fetch a customer
 
 Spackle uses stripe ids as references to customer features.
 
@@ -43,19 +77,19 @@ Spackle uses stripe ids as references to customer features.
 customer = await spackle.customers.retrieve('cus_000000000')
 ```
 
-### Verify feature access
+#### Verify feature access
 
 ```js
 customer.enabled("feature_key")
 ```
 
-### Fetch a feature limit
+#### Fetch a feature limit
 
 ```js
 customer.limit("feature_key")
 ```
 
-### Examine a customer's subscriptions
+#### Examine a customer's subscriptions
 
 A customer's current subscriptions are available on the `subscriptions` property. These are valid `stripe.Subscription` objects as defined in the [Stripe Node library](https://stripe.com/docs/api/subscriptions/object?lang=node).
 
@@ -63,7 +97,7 @@ A customer's current subscriptions are available on the `subscriptions` property
 customer.subscriptions
 ```
 
-## Waiters
+#### Waiters
 
 There is a brief delay between when an action takes place in Stripe and when it is reflected in Spackle. To account for this, Spackle provides a `waiters` resource that can be used to wait for a Stripe object to be updated and replicated.
 
@@ -83,7 +117,7 @@ There is a brief delay between when an action takes place in Stripe and when it 
 These will block until Spackle is updated with the latest information from Stripe or until a timeout occurs.
 
 
-## Usage in development environments
+#### Usage in development environments
 
 In production, Spackle requires a valid Stripe customer. However, that is not development environments where state needs to be controlled. As an alternative, you can use a file store to test your application with seed data.
 
@@ -123,7 +157,7 @@ const store = new FileStore("/app/spackle.json")
 const spackle = new Spackle("<api-key>", store)
 ```
 
-## Usage in testing environments
+#### Usage in testing environments
 
 In production, Spackle requires a valid Stripe customer. However, that is not ideal in testing or some development environments. As an alternative, you can use an in-memory store to test your application with seed data.
 
