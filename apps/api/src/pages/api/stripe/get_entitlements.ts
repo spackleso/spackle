@@ -6,7 +6,7 @@ import db, { stripeAccounts } from 'spackle-db'
 import { eq } from 'drizzle-orm'
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { success, error } = verifySignature(req)
+  const { success } = verifySignature(req)
   if (!success) {
     return res.status(403).json({
       error: 'Unauthorized',

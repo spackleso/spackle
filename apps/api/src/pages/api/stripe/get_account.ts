@@ -5,21 +5,6 @@ import { syncStripeAccount, syncStripeUser } from '@/stripe/sync'
 import db, { stripeAccounts } from 'spackle-db'
 import { eq } from 'drizzle-orm'
 
-const fetchAccount = async (stripeAccountId: string) => {
-  const result = await db
-    .select({
-      has_acknowledged_setup: stripeAccounts.hasAcknowledgedSetup,
-      id: stripeAccounts.id,
-      initial_sync_complete: stripeAccounts.initialSyncComplete,
-      initial_sync_started_at: stripeAccounts.initialSyncStartedAt,
-      stripe_id: stripeAccounts.stripeId,
-    })
-    .from(stripeAccounts)
-    .where(eq(stripeAccounts.stripeId, stripeAccountId))
-
-  return result[0]
-}
-
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === 'HEAD') {
     return res.status(200).end()
