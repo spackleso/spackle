@@ -192,4 +192,4 @@ const handler = async (
   })
 }
 
-export default middleware(handler, ['GET'])
+export default middleware(handler, ['GET'], true)
