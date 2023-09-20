@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { verifySignature } from '@/stripe/signature'
-import db, { features } from 'spackle-db'
+import db, { features } from '@/db'
 import { eq } from 'drizzle-orm'
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {

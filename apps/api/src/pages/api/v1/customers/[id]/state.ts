@@ -3,7 +3,7 @@ import { AuthenticatedNextApiRequest, middleware } from '@/api'
 import { getCustomerState } from '@/state'
 import { storeCustomerStateAsync } from '@/store/dynamodb'
 import { syncStripeCustomer, syncStripeSubscriptions } from '@/stripe/sync'
-import db, { stripeCustomers } from 'spackle-db'
+import db, { stripeCustomers } from '@/db'
 import { and, eq } from 'drizzle-orm'
 
 type Data = {}

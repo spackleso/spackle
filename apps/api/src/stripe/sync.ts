@@ -15,7 +15,7 @@ import {
 import { Mode } from '@/types'
 import { storeAccountStatesAsync, storeCustomerState } from '@/store/dynamodb'
 import { getQueue } from '@/queue'
-import db, { stripeAccounts } from 'spackle-db'
+import db, { stripeAccounts } from '@/db'
 import { eq } from 'drizzle-orm'
 import { liveStripe, testStripe } from '@/stripe'
 

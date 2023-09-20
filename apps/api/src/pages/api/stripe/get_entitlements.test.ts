@@ -10,7 +10,7 @@ import {
   testHandler,
 } from '@/tests/helpers'
 import { eq } from 'drizzle-orm'
-import db, { stripeAccounts } from 'spackle-db'
+import db, { stripeAccounts } from '@/db'
 
 describe('POST', () => {
   test('Requires a signature', async () => {

@@ -2,7 +2,7 @@ import { AuthenticatedNextApiRequest, getPagination, middleware } from '@/api'
 import { storeAccountStatesAsync } from '@/store/dynamodb'
 import { eq } from 'drizzle-orm'
 import { NextApiResponse } from 'next'
-import db, { customerFeatures } from 'spackle-db'
+import db, { customerFeatures } from '@/db'
 import { z } from 'zod'
 
 const createFlagCustomerFeatureSchema = z.object({

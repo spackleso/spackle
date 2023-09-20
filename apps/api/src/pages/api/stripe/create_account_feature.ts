@@ -4,7 +4,7 @@ import * as Sentry from '@sentry/nextjs'
 import { storeAccountStatesAsync } from '@/store/dynamodb'
 import { upsertStripeUser } from '@/stripe/db'
 import { track } from '@/posthog'
-import db, { features } from 'spackle-db'
+import db, { features } from '@/db'
 
 type Data = {
   success?: boolean

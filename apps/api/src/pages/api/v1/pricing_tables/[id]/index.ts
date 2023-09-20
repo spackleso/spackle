@@ -8,7 +8,7 @@ import db, {
   pricingTables,
   stripePrices,
   stripeProducts,
-} from 'spackle-db'
+} from '@/db'
 import { and, eq } from 'drizzle-orm'
 import Stripe from 'stripe'
 import { alias } from 'drizzle-orm/pg-core'

@@ -12,7 +12,7 @@ import {
   stripeTestHandler,
   testHandler,
 } from '@/tests/helpers'
-import db, { pricingTableProducts, pricingTables } from 'spackle-db'
+import db, { pricingTableProducts, pricingTables } from '@/db'
 
 test('Requires an API token', async () => {
   const res = await testHandler(handler, {

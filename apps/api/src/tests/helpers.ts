@@ -15,7 +15,7 @@ import db, {
   stripeSubscriptionItems,
   stripeSubscriptions,
   stripeUsers,
-} from 'spackle-db'
+} from '@/db'
 import { NextApiHandler, NextApiRequest, NextApiResponse } from 'next'
 import { createRequest, createResponse, RequestOptions } from 'node-mocks-http'
 import { liveStripe as stripe } from '@/stripe'

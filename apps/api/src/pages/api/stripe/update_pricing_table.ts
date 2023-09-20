@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { verifySignature } from '@/stripe/signature'
 import * as Sentry from '@sentry/nextjs'
-import db, { decodePk, pricingTableProducts, pricingTables } from 'spackle-db'
+import db, { decodePk, pricingTableProducts, pricingTables } from '@/db'
 import { and, eq, inArray } from 'drizzle-orm'
 
 type PricingTableUpdateData = {

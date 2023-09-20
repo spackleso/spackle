@@ -11,7 +11,7 @@ import {
   testHandler,
 } from '@/tests/helpers'
 import { eq } from 'drizzle-orm'
-import db, { productFeatures } from 'spackle-db'
+import db, { productFeatures } from '@/db'
 
 describe('POST', () => {
   test('Requires a signature', async () => {

@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "test": "yarn jest --forceExit",
-    "coverage": "yarn jest --coverage"
+    "coverage": "yarn jest --coverage",
+    "db:introspect": "drizzle-kit introspect:pg"
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.231.0",
@@ -31,7 +32,6 @@
     "postgres": "^3.3.5",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "spackle-db": "*",
     "stripe": "^10.14.0",
     "ts-node": "^10.9.1",
     "typescript": "4.9.4",
@@ -43,6 +43,7 @@
     "@types/cookie": "^0.5.1",
     "@types/jsonwebtoken": "^9.0.0",
     "dotenv": "^16.0.3",
+    "drizzle-kit": "^0.19.12",
     "jest": "^29.3.1",
     "jest-environment-jsdom": "^29.3.1",
     "node-mocks-http": "^1.12.1"

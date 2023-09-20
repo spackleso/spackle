@@ -3,7 +3,7 @@
  */
 import handler from '@/pages/api/stripe/billing_portal'
 import { createUser, genStripeId, testHandler } from '@/tests/helpers'
-import db, { stripeAccounts } from 'spackle-db'
+import db, { stripeAccounts } from '@/db'
 
 jest.mock('@/stripe', () => {
   const original = jest.requireActual('@/stripe')

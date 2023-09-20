@@ -7,7 +7,7 @@ import db, {
   stripeSubscriptionItems,
   stripeSubscriptions,
   stripeUsers,
-} from 'spackle-db'
+} from '@/db'
 import { and, eq } from 'drizzle-orm'
 
 export const getStripeAccount = async (stripeId: string) => {

@@ -1,7 +1,7 @@
 import { getCustomerState } from '@/state'
 import { DynamoDB } from '@aws-sdk/client-dynamodb'
 import { getQueue } from '@/queue'
-import db, { stripeCustomers } from 'spackle-db'
+import db, { stripeCustomers } from '@/db'
 import { eq } from 'drizzle-orm'
 
 const {

@@ -3,7 +3,7 @@
  */
 import handler from '@/pages/api/stripe/billing_checkout_success'
 import { genStripeId, testHandler } from '@/tests/helpers'
-import db, { stripeAccounts } from 'spackle-db'
+import db, { stripeAccounts } from '@/db'
 
 const stripeAccountId = genStripeId('acct')
 const stripeCustomerId = genStripeId('cus')
