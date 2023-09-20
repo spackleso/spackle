@@ -124,7 +124,10 @@ export const requestToken = async (headers: IncomingHttpHeaders) => {
   }
 }
 
-export const withTokenAuth = (handler: AuthenticatedNextApiHandler) => {
+export const withTokenAuth = (
+  handler: AuthenticatedNextApiHandler,
+  allowPublishable: boolean = false,
+) => {
   return async (req: NextApiRequest, res: NextApiResponse) => {
     let stripeAccountId: string
     let publishable: boolean
@@ -138,7 +141,7 @@ export const withTokenAuth = (handler: AuthenticatedNextApiHandler) => {
       return
     }
 
-    if (publishable) {
+    if (publishable && !allowPublishable) {
       res.status(403).json({ error: 'Forbidden' })
       return
     }
@@ -174,6 +177,7 @@ export const getPagination = (req: NextApiRequest, size: number = 10) => {
 export const middleware = (
   handler: AuthenticatedNextApiHandler,
   methods: RequestMethod[] = [],
+  allowPublishable: boolean = false,
 ) => {
-  return withTokenAuth(withAllowedMethods(handler, methods))
+  return withTokenAuth(withAllowedMethods(handler, methods), allowPublishable)
 }

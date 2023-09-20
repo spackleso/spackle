@@ -29,24 +29,6 @@ test('Requires an API token', async () => {
   )
 })
 
-test('Requires a non-publishable API token', async () => {
-  const { token } = await createAccountWithPublishableToken()
-  const res = await testHandler(handler, {
-    method: 'GET',
-    headers: {
-      Authorization: `Bearer ${token.token}`,
-    },
-    body: {},
-  })
-
-  expect(res._getStatusCode()).toBe(403)
-  expect(res._getData()).toBe(
-    JSON.stringify({
-      error: 'Forbidden',
-    }),
-  )
-})
-
 test('Invalid methods return a 405 error', async () => {
   const { token } = await createAccountWithToken()
   const res = await testHandler(handler, {
@@ -345,5 +327,35 @@ test('Returns a pricing table state', async () => {
         ],
       },
     ],
+  })
+})
+
+test('GET is allowed with a publishable token', async () => {
+  const { token, account } = await createAccountWithPublishableToken()
+  const pricingTable = await createPricingTable(
+    account.stripeId,
+    'Default',
+    0,
+    true,
+    true,
+  )
+  const res = await testHandler(handler, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token.token}`,
+    },
+    query: {
+      id: pricingTable.encodedId,
+    },
+  })
+
+  expect(res._getStatusCode()).toBe(200)
+
+  const data = res._getJSONData()
+  const { id, ...table } = data
+  expect(table).toStrictEqual({
+    name: 'Default',
+    intervals: ['month', 'year'],
+    products: [],
   })
 })
