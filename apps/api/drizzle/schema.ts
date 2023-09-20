@@ -7,10 +7,10 @@ import {
   smallint,
   boolean,
   unique,
-  numeric,
   json,
   bigint,
 } from 'drizzle-orm/pg-core'
+import { type InferSelectModel } from 'drizzle-orm'
 
 export const requestStatus = pgEnum('request_status', [
   'ERROR',
@@ -232,6 +232,8 @@ export const tokens = pgTable('tokens', {
   ),
 })
 
+export type Token = InferSelectModel<typeof tokens>
+
 export const features = pgTable(
   'features',
   {
@@ -368,3 +370,16 @@ export const stripeUsers = pgTable(
     }
   },
 )
+
+export const publishableTokens = pgTable('publishable_tokens', {
+  createdAt: timestamp('created_at', {
+    withTimezone: true,
+    mode: 'string',
+  }).defaultNow(),
+  token: text('token').primaryKey().notNull(),
+  stripeAccountId: text('stripe_account_id').references(
+    () => stripeAccounts.stripeId,
+  ),
+})
+
+export type PublishableToken = InferSelectModel<typeof publishableTokens>

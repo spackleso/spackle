@@ -3735,10 +3735,10 @@ drizzle-kit@^0.19.12:
     minimatch "^7.4.3"
     zod "^3.20.2"
 
-drizzle-orm@^0.27.2:
-  version "0.27.2"
-  resolved "https://registry.yarnpkg.com/drizzle-orm/-/drizzle-orm-0.27.2.tgz#bff4b9bb3dc53aa9f12ad2804bc8229f4c757cf8"
-  integrity sha512-ZvBvceff+JlgP7FxHKe0zOU9CkZ4RcOtibumIrqfYzDGuOeF0YUY0F9iMqYpRM7pxnLRfC+oO7rWOUH3T5oFQA==
+drizzle-orm@^0.28.6:
+  version "0.28.6"
+  resolved "https://registry.yarnpkg.com/drizzle-orm/-/drizzle-orm-0.28.6.tgz#9c28ace432e826e3c21ea923530df0d1e76810be"
+  integrity sha512-yBe+F9htrlYER7uXgDJUQsTHFoIrI5yMm5A0bg0GiZ/kY5jNXTWoEy4KQtg35cE27sw1VbgzoMWHAgCckUUUww==
 
 ecdsa-sig-formatter@1.0.11:
   version "1.0.11"
