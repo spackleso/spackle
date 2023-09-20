@@ -2,7 +2,7 @@ import { AuthenticatedNextApiRequest, middleware } from '@/api'
 import { FeatureType } from '@/types'
 import { and, eq } from 'drizzle-orm'
 import { NextApiResponse } from 'next'
-import db, { features } from 'spackle-db'
+import db, { features } from '@/db'
 import { z } from 'zod'
 
 const featureSchema = z.object({

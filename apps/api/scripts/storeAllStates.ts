@@ -1,4 +1,4 @@
-import db, { stripeAccounts } from 'spackle-db'
+import db, { stripeAccounts } from '@/db'
 import { storeAccountStates } from '../src/store/dynamodb'
 
 async function main() {

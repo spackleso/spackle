@@ -10,7 +10,7 @@ import {
   stripeTestHandler,
   testHandler,
 } from '@/tests/helpers'
-import db, { customerFeatures } from 'spackle-db'
+import db, { customerFeatures } from '@/db'
 import { eq } from 'drizzle-orm'
 
 jest.mock('@/store/dynamodb', () => {

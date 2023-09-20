@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-import { conn } from 'spackle-db';
+import { conn } from '@/db';
 import { redis } from '@/queue'
 
 dotenv.config({ path: './.env.test' });

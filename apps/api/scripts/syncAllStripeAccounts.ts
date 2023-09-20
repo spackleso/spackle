@@ -1,4 +1,4 @@
-import db, { stripeAccounts } from 'spackle-db'
+import db, { stripeAccounts } from '@/db'
 import { syncAllAccountData } from '../src/stripe/sync'
 
 async function main() {

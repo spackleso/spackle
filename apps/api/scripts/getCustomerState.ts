@@ -1,6 +1,6 @@
 import { program } from 'commander'
 import { getCustomerState } from '@/state'
-import db, { stripeCustomers } from 'spackle-db'
+import db, { stripeCustomers } from '@/db'
 import { eq } from 'drizzle-orm'
 
 program.argument('<customer_id>', 'The stripe customer to sync')

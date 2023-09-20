@@ -3,7 +3,7 @@ import { verifySignature } from '@/stripe/signature'
 import * as Sentry from '@sentry/nextjs'
 import { getOrSyncStripeAccount, getOrSyncStripeProduct } from '@/stripe/sync'
 import { storeAccountStatesAsync } from '@/store/dynamodb'
-import db, { productFeatures } from 'spackle-db'
+import db, { productFeatures } from '@/db'
 import { and, eq, inArray } from 'drizzle-orm'
 
 const updateProductFeatures = async (

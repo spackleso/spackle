@@ -9,7 +9,7 @@ import {
   testHandler,
 } from '@/tests/helpers'
 import { eq } from 'drizzle-orm'
-import db, { features } from 'spackle-db'
+import db, { features } from '@/db'
 
 describe('POST', () => {
   test('Requires a signature', async () => {

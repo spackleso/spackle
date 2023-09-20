@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { verifySignature } from '@/stripe/signature'
 import { getOrSyncStripeCustomer } from '@/stripe/sync'
-import db, { customerFeatures, features } from 'spackle-db'
+import db, { customerFeatures, features } from '@/db'
 import { and, eq } from 'drizzle-orm'
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {

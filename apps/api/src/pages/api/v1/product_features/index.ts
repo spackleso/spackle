@@ -1,7 +1,7 @@
 import { AuthenticatedNextApiRequest, getPagination, middleware } from '@/api'
 import { storeAccountStatesAsync } from '@/store/dynamodb'
 import { NextApiResponse } from 'next'
-import db, { productFeatures } from 'spackle-db'
+import db, { productFeatures } from '@/db'
 import { z } from 'zod'
 import { eq } from 'drizzle-orm'
 

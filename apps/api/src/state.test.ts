@@ -17,11 +17,7 @@ import {
   createStripePrice,
   createStripeSubscription,
 } from '@/tests/helpers'
-import db, {
-  customerFeatures,
-  productFeatures,
-  stripeProducts,
-} from 'spackle-db'
+import db, { customerFeatures, productFeatures, stripeProducts } from '@/db'
 
 describe('Features state', () => {
   test('Get accounts state should return all account features', async () => {

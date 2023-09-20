@@ -3,7 +3,7 @@
  */
 import handler from '@/pages/api/stripe/checkout_redirect'
 import { createUser, genStripeId, testHandler } from '@/tests/helpers'
-import db, { stripeAccounts } from 'spackle-db'
+import db, { stripeAccounts } from '@/db'
 import { liveStripe as stripe } from '@/stripe'
 
 describe('GET', () => {

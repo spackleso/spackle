@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import { liveStripe, testStripe } from '@/stripe'
 import { SpackleProduct } from '@/types'
-import db, { stripeAccounts } from 'spackle-db'
+import db, { stripeAccounts } from '@/db'
 import { eq } from 'drizzle-orm'
 
 const isDev = process.env.NODE_ENV === 'development'

@@ -3,7 +3,7 @@ import { storeAccountStatesAsync } from '@/store/dynamodb'
 import { FeatureType } from '@/types'
 import { eq } from 'drizzle-orm'
 import { NextApiResponse } from 'next'
-import db, { features } from 'spackle-db'
+import db, { features } from '@/db'
 import { z } from 'zod'
 
 const createFeatureSchema = z.discriminatedUnion('type', [

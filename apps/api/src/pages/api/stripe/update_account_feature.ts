@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import { verifySignature } from '@/stripe/signature'
 import * as Sentry from '@sentry/nextjs'
 import { storeAccountStatesAsync } from '@/store/dynamodb'
-import db, { features } from 'spackle-db'
+import db, { features } from '@/db'
 import { and, eq } from 'drizzle-orm'
 
 const updateFeature = async (

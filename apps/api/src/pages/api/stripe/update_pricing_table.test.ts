@@ -12,7 +12,7 @@ import {
   testHandler,
 } from '@/tests/helpers'
 import { eq } from 'drizzle-orm'
-import db, { pricingTableProducts, pricingTables } from 'spackle-db'
+import db, { pricingTableProducts, pricingTables } from '@/db'
 
 describe('POST', () => {
   test('Requires a signature', async () => {
