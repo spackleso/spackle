@@ -1,6 +1,6 @@
 import crypto from 'crypto'
 import { execSync } from 'child_process'
-import { createToken } from '@/api'
+import { createPublishableToken, createToken } from '@/api'
 import db, {
   customerFeatures,
   encodePk,
@@ -141,6 +141,16 @@ export const createStripePrice = async (
 export const createAccountWithToken = async () => {
   const account = await createAccount()
   const token = await createToken(account.stripeId)
+
+  return {
+    account,
+    token,
+  }
+}
+
+export const createAccountWithPublishableToken = async () => {
+  const account = await createAccount()
+  const token = await createPublishableToken(account.stripeId)
 
   return {
     account,

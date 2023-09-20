@@ -2,7 +2,7 @@ import { IncomingHttpHeaders } from 'http'
 import * as Sentry from '@sentry/nextjs'
 import jwt from 'jsonwebtoken'
 import { NextApiRequest, NextApiResponse } from 'next'
-import db, { tokens } from '@/db'
+import db, { publishableTokens, tokens } from '@/db'
 import { eq } from 'drizzle-orm'
 
 const { SUPABASE_JWT_SECRET } = process.env
@@ -11,10 +11,17 @@ type RequestMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
 
 export type AuthenticatedNextApiRequest = NextApiRequest & {
   stripeAccountId: string
+  publishable: boolean
 }
 
 export type AuthenticatedNextApiHandler = {
   (req: AuthenticatedNextApiRequest, res: NextApiResponse): Promise<void>
+}
+
+type TokenPayload = {
+  sub: string
+  iat: number
+  publishable?: boolean
 }
 
 export const getToken = async (stripeAccountId: string) => {
@@ -50,38 +57,95 @@ export const createToken = async (stripeAccountId: string) => {
   return result[0]
 }
 
-export const requestToken = (headers: IncomingHttpHeaders) => {
+export const createPublishableToken = async (stripeAccountId: string) => {
+  if (!SUPABASE_JWT_SECRET) {
+    throw new Error('Signing key not set')
+  }
+
+  const token = jwt.sign(
+    {
+      sub: stripeAccountId,
+      iat: Math.floor(Date.now() / 1000),
+      publishable: true,
+    },
+    SUPABASE_JWT_SECRET,
+  )
+
+  const result = await db
+    .insert(publishableTokens)
+    .values({
+      stripeAccountId,
+      token,
+    })
+    .returning()
+
+  return result[0]
+}
+
+export const requestToken = async (headers: IncomingHttpHeaders) => {
   if (!SUPABASE_JWT_SECRET) {
     throw new Error('Signing key not set')
   }
 
   const authorization = headers['authorization'] || 'Bearer '
-  const token = authorization.split(' ')[1]
-  const payload = jwt.verify(token, SUPABASE_JWT_SECRET)
+  const tokenStr = authorization.split(' ')[1]
+  const payload = jwt.verify(tokenStr, SUPABASE_JWT_SECRET)
 
   if (!payload.sub) {
     throw new Error('Invalid jwt')
   }
 
+  const sub = payload.sub as string
+  const publishable = !!(payload as TokenPayload).publishable
+
+  if (publishable) {
+    const response = await db
+      .select()
+      .from(publishableTokens)
+      .where(eq(publishableTokens.token, tokenStr))
+
+    if (!response.length) {
+      throw new Error('Invalid jwt')
+    }
+  } else {
+    const response = await db
+      .select()
+      .from(tokens)
+      .where(eq(tokens.token, tokenStr))
+
+    if (!response.length) {
+      throw new Error('Invalid jwt')
+    }
+  }
+
   return {
-    sub: payload.sub as string,
+    sub,
+    publishable,
   }
 }
 
 export const withTokenAuth = (handler: AuthenticatedNextApiHandler) => {
   return async (req: NextApiRequest, res: NextApiResponse) => {
     let stripeAccountId: string
+    let publishable: boolean
     try {
-      const payload = requestToken(req.headers)
+      const payload = await requestToken(req.headers)
       stripeAccountId = payload.sub
+      publishable = payload.publishable
     } catch (error) {
       Sentry.captureException(error)
-      res.status(403).json({ error: 'Unauthorized' })
+      res.status(401).json({ error: 'Unauthorized' })
+      return
+    }
+
+    if (publishable) {
+      res.status(403).json({ error: 'Forbidden' })
       return
     }
 
     const authenticatedReq = req as AuthenticatedNextApiRequest
     authenticatedReq.stripeAccountId = stripeAccountId
+    authenticatedReq.publishable = publishable
     return handler(authenticatedReq, res)
   }
 }

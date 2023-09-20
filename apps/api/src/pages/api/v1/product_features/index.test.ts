@@ -3,6 +3,7 @@
  */
 import handler from '@/pages/api/v1/product_features/index'
 import {
+  createAccountWithPublishableToken,
   createAccountWithToken,
   createFlagFeature,
   createLimitFeature,
@@ -25,10 +26,28 @@ test('Requires an API token', async () => {
     body: {},
   })
 
-  expect(res._getStatusCode()).toBe(403)
+  expect(res._getStatusCode()).toBe(401)
   expect(res._getData()).toBe(
     JSON.stringify({
       error: 'Unauthorized',
+    }),
+  )
+})
+
+test('Requires a non-publishable API token', async () => {
+  const { token } = await createAccountWithPublishableToken()
+  const res = await testHandler(handler, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token.token}`,
+    },
+    body: {},
+  })
+
+  expect(res._getStatusCode()).toBe(403)
+  expect(res._getData()).toBe(
+    JSON.stringify({
+      error: 'Forbidden',
     }),
   )
 })
