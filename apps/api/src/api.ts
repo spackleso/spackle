@@ -33,6 +33,15 @@ export const getToken = async (stripeAccountId: string) => {
   return result.length ? result[0] : null
 }
 
+export const getPublishableToken = async (stripeAccountId: string) => {
+  const result = await db
+    .select()
+    .from(publishableTokens)
+    .where(eq(publishableTokens.stripeAccountId, stripeAccountId))
+
+  return result.length ? result[0] : null
+}
+
 export const createToken = async (stripeAccountId: string) => {
   if (!SUPABASE_JWT_SECRET) {
     throw new Error('Signing key not set')

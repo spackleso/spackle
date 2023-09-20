@@ -17,7 +17,7 @@ npm install spackle-node
 ```
 
 ### Configure your environment
-In order to use Spackle, create a new `Spackle` client with your API key. You can find your API key in Spackle app [settings page](https://dashboard.stripe.com/settings/apps/so.spackle.stripe).
+In order to use Spackle, create a new `Spackle` client with your secret key. You can find your secret key in Spackle app [settings page](https://dashboard.stripe.com/settings/apps/so.spackle.stripe).
 
 ```js
 import Spackle from 'spackle-node';

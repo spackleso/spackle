@@ -17,7 +17,7 @@ pip install -U spackle-python
 ```
 
 ### Configure your environment
-In order to use Spackle, you need to configure your API key on the `spackle` module. You can find your API key in Spackle app [settings page](https://dashboard.stripe.com/settings/apps/so.spackle.stripe).
+In order to use Spackle, you need to configure your secret key on the `spackle` module. You can find your secret key in Spackle app [settings page](https://dashboard.stripe.com/settings/apps/so.spackle.stripe).
 
 ```python
 import spackle
