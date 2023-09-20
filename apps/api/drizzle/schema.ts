@@ -10,7 +10,6 @@ import {
   json,
   bigint,
 } from 'drizzle-orm/pg-core'
-import { type InferSelectModel } from 'drizzle-orm'
 
 export const requestStatus = pgEnum('request_status', [
   'ERROR',
@@ -232,8 +231,6 @@ export const tokens = pgTable('tokens', {
   ),
 })
 
-export type Token = InferSelectModel<typeof tokens>
-
 export const features = pgTable(
   'features',
   {
@@ -381,5 +378,3 @@ export const publishableTokens = pgTable('publishable_tokens', {
     () => stripeAccounts.stripeId,
   ),
 })
-
-export type PublishableToken = InferSelectModel<typeof publishableTokens>

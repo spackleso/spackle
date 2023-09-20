@@ -2,7 +2,7 @@ import { IncomingHttpHeaders } from 'http'
 import * as Sentry from '@sentry/nextjs'
 import jwt from 'jsonwebtoken'
 import { NextApiRequest, NextApiResponse } from 'next'
-import db, { PublishableToken, publishableTokens, Token, tokens } from '@/db'
+import db, { publishableTokens, tokens } from '@/db'
 import { eq } from 'drizzle-orm'
 
 const { SUPABASE_JWT_SECRET } = process.env
