@@ -11,66 +11,68 @@ const updateProductFeatures = async (
   stripeProductId: string,
   data: any[],
 ) => {
-  // Create
-  const newProductFeatures = data
-    .filter((pf: any) => !pf.hasOwnProperty('id'))
-    .map((pf: any) => ({
-      stripeAccountId,
-      stripeProductId,
-      featureId: pf.feature_id,
-      valueLimit: pf.value_limit,
-      valueFlag: pf.value_flag,
-    }))
+  await db.transaction(async (trx) => {
+    // Create
+    const newProductFeatures = data
+      .filter((pf: any) => !pf.hasOwnProperty('id'))
+      .map((pf: any) => ({
+        stripeAccountId,
+        stripeProductId,
+        featureId: pf.feature_id,
+        valueLimit: pf.value_limit,
+        valueFlag: pf.value_flag,
+      }))
 
-  if (newProductFeatures.length) {
-    await db.insert(productFeatures).values(newProductFeatures)
-  }
+    if (newProductFeatures.length) {
+      await trx.insert(productFeatures).values(newProductFeatures)
+    }
 
-  // Update
-  const updatedProductFeatures = data
-    .filter((pf: any) => pf.hasOwnProperty('id'))
-    .map((pf: any) => ({
-      featureId: pf.feature_id,
-      id: pf.id,
-      stripeAccountId,
-      stripeProductId,
-      valueFlag: pf.value_flag,
-      valueLimit: pf.value_limit,
-    }))
+    // Update
+    const updatedProductFeatures = data
+      .filter((pf: any) => pf.hasOwnProperty('id'))
+      .map((pf: any) => ({
+        featureId: pf.feature_id,
+        id: pf.id,
+        stripeAccountId,
+        stripeProductId,
+        valueFlag: pf.value_flag,
+        valueLimit: pf.value_limit,
+      }))
 
-  for (const pf of updatedProductFeatures) {
-    await db
-      .update(productFeatures)
-      .set(pf)
+    for (const pf of updatedProductFeatures) {
+      await trx
+        .update(productFeatures)
+        .set(pf)
+        .where(
+          and(
+            eq(productFeatures.stripeAccountId, pf.stripeAccountId),
+            eq(productFeatures.id, pf.id),
+          ),
+        )
+    }
+
+    // Delete
+    const result = await trx
+      .select()
+      .from(productFeatures)
       .where(
         and(
-          eq(productFeatures.stripeAccountId, pf.stripeAccountId),
-          eq(productFeatures.id, pf.id),
+          eq(productFeatures.stripeAccountId, stripeAccountId),
+          eq(productFeatures.stripeProductId, stripeProductId),
         ),
       )
-  }
 
-  // Delete
-  const result = await db
-    .select()
-    .from(productFeatures)
-    .where(
-      and(
-        eq(productFeatures.stripeAccountId, stripeAccountId),
-        eq(productFeatures.stripeProductId, stripeProductId),
-      ),
-    )
-
-  const featureIds = data.map((pf: any) => pf.feature_id)
-  const deleted = result.filter((pf) => !featureIds.includes(pf.featureId))
-  if (deleted.length) {
-    await db.delete(productFeatures).where(
-      inArray(
-        productFeatures.id,
-        deleted.map((pf) => pf.id),
-      ),
-    )
-  }
+    const featureIds = data.map((pf: any) => pf.feature_id)
+    const deleted = result.filter((pf) => !featureIds.includes(pf.featureId))
+    if (deleted.length) {
+      await trx.delete(productFeatures).where(
+        inArray(
+          productFeatures.id,
+          deleted.map((pf) => pf.id),
+        ),
+      )
+    }
+  })
 
   await storeAccountStatesAsync(stripeAccountId)
 }
