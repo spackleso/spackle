@@ -47,6 +47,37 @@ fetch('https://api.spackle.so/v1/pricing_tables/<id>', {
 })
 ```
 
+The data returned from the pricing table looks like this:
+
+```ts
+{
+  id: string
+  name: string
+  intervals: string[]
+  products: {
+    id: string
+    features: {
+      id: string
+      name: string
+      key: string
+      type: number
+      value_flag: boolean
+      value_limit: number | null
+    }[]
+    name: string
+    prices: {
+      month?: {
+        unit_amount: number
+        currency: string
+      }
+      year?: {
+        unit_amount: number
+        currency: string
+      }
+    }
+  }[]
+}
+```
 
 #### Server integration
 
