@@ -51,6 +51,10 @@ const moduleExports = {
             key: 'Access-Control-Allow-Methods',
             value: 'GET'
           },
+          {
+            key: 'Access-Control-Allow-Headers',
+            value: 'Content-Type,Authorization'
+          },
         ]
       }
     ]
