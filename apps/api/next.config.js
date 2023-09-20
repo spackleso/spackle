@@ -39,6 +39,19 @@ const moduleExports = {
             value: 'Content-Type,Stripe-Signature'
           },
         ]
+      },
+      {
+        source: '/:version/pricing_tables/:path*',
+        headers: [
+          {
+            key: 'Access-Control-Allow-Origin',
+            value: '*'
+          },
+          {
+            key: 'Access-Control-Allow-Methods',
+            value: 'GET'
+          },
+        ]
       }
     ]
   }

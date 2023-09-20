@@ -30,9 +30,29 @@ You can add any number of supported products to your pricing table. For example,
 
 ### Integrate with your product
 
-To integrate with your codebase, check out the language specific libraries below. Pricing tables are meant to be headless. So depending on your stack, you'll fetch data from the Spackle API and render the pricing table in your application.
 
-#### Libraries
+#### Embed your pricing table
+
+Once you've configured your pricing table, you can embed it in your application. First, retrieve your public key from the "Settings" tab of your Spackle viewport.
+
+{% image src="/pricing-table-5.png" alt="Pricing table public key" width=3248 height=2112 /%}
+
+Then, add the following script tag to your application. Be sure to replace `<key>` with your public key and `<id>` with your pricing table id.
+
+```js
+fetch('https://api.spackle.so/v1/pricing_tables/<id>', {
+    headers: {
+        Authorization: 'Bearer <key>',
+    }
+})
+```
+
+
+#### Server integration
+
+To integrate with your server codebase, check out the language specific libraries below. Pricing tables are meant to be headless. So depending on your stack, you'll fetch data from the Spackle API and render the pricing table in your application.
+
+##### Libraries
 
 * [Node.js](/node)
 * [PHP](/php)
