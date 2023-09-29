@@ -222,10 +222,12 @@ test('Returns a pricing table state', async () => {
         name: 'Basic',
         prices: {
           month: {
+            id: basicMonthly.stripeId,
             unit_amount: 1000,
             currency: 'usd',
           },
           year: {
+            id: basicAnnual.stripeId,
             unit_amount: 10000,
             currency: 'usd',
           },
@@ -258,10 +260,12 @@ test('Returns a pricing table state', async () => {
         name: 'Pro',
         prices: {
           month: {
+            id: proMonthly.stripeId,
             unit_amount: 2000,
             currency: 'usd',
           },
           year: {
+            id: proAnnual.stripeId,
             unit_amount: 20000,
             currency: 'usd',
           },
@@ -294,10 +298,12 @@ test('Returns a pricing table state', async () => {
         name: 'Enterprise',
         prices: {
           month: {
+            id: enterpriseMonthly.stripeId,
             unit_amount: 3000,
             currency: 'usd',
           },
           year: {
+            id: enterpriseAnnual.stripeId,
             unit_amount: 30000,
             currency: 'usd',
           },

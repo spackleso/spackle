@@ -67,10 +67,12 @@ The data returned from the pricing table looks like this:
     name: string
     prices: {
       month?: {
+        id: string
         unit_amount: number
         currency: string
       }
       year?: {
+        id: string
         unit_amount: number
         currency: string
       }

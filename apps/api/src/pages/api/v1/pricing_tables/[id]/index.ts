@@ -130,12 +130,14 @@ const handler = async (
       const prices: any = {}
       if (ptp.monthlyStripePrice) {
         prices.month = {
+          id: (ptp.monthlyStripePrice as Stripe.Price).id,
           unit_amount: (ptp.monthlyStripePrice as Stripe.Price).unit_amount,
           currency: (ptp.monthlyStripePrice as Stripe.Price).currency,
         }
       }
       if (ptp.annualStripePrice) {
         prices.year = {
+          id: (ptp.annualStripePrice as Stripe.Price).id,
           unit_amount: (ptp.annualStripePrice as Stripe.Price).unit_amount,
           currency: (ptp.annualStripePrice as Stripe.Price).currency,
         }
