@@ -53,10 +53,12 @@ pricing_table = spackle.PricingTable.retrieve("abcde123")
     name: string
     prices: {
       month?: {
+        id: string
         unit_amount: number
         currency: string
       }
       year?: {
+        id: string
         unit_amount: number
         currency: string
       }

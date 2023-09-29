@@ -59,10 +59,12 @@ In order to use Spackle, you need to configure your secret key on the `Spackle` 
     name: string
     prices: {
       month?: {
+        id: string
         unit_amount: number
         currency: string
       }
       year?: {
+        id: string
         unit_amount: number
         currency: string
       }
