@@ -6,7 +6,7 @@ import {
   createAccountWithToken,
   createFlagFeature,
   createLimitFeature,
-  createCustomerFeature,
+  createCustomerFlagFeature,
   createStripeCustomer,
   testHandler,
   createAccountWithPublishableToken,
@@ -71,7 +71,7 @@ describe('GET', () => {
 
     const customerFeatures = []
     for (let i = 0; i < 5; i++) {
-      const customerFeature = await createCustomerFeature(
+      const customerFeature = await createCustomerFlagFeature(
         account.stripeId,
         `Feature ${i}`,
         `feature_${i}`,
@@ -108,7 +108,7 @@ describe('GET', () => {
 
       const customerFeatures = []
       for (let i = 0; i < 11; i++) {
-        const customerFeature = await createCustomerFeature(
+        const customerFeature = await createCustomerFlagFeature(
           account.stripeId,
           `Feature ${i}`,
           `feature_${i}`,
@@ -144,7 +144,7 @@ describe('GET', () => {
 
       const customerFeatures = []
       for (let i = 0; i < 11; i++) {
-        const customerFeature = await createCustomerFeature(
+        const customerFeature = await createCustomerFlagFeature(
           account.stripeId,
           `Feature ${i}`,
           `feature_${i}`,

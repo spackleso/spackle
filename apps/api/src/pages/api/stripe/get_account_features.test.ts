@@ -4,7 +4,7 @@
 import handler from '@/pages/api/stripe/get_account_features'
 import {
   createAccount,
-  createCustomerFeature,
+  createCustomerFlagFeature,
   createFlagFeature,
   createStripeCustomer,
   stripeTestHandler,

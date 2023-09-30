@@ -12,43 +12,43 @@ const updateCustomerFeatures = async (
   data: any[],
 ) => {
   await db.transaction(async (trx) => {
-    // Create new features
-    const newCustomerFeatures = data
-      .filter((pf: any) => !pf.hasOwnProperty('id'))
-      .map((pf: any) => ({
+    // Update
+    const updatedCustomerFeatures = data
+      .filter((cf: any) => cf.hasOwnProperty('id'))
+      .map((cf: any) => ({
+        featureId: cf.feature_id,
+        id: cf.id,
         stripeAccountId,
         stripeCustomerId,
-        featureId: pf.feature_id,
-        valueLimit: pf.value_limit,
-        valueFlag: pf.value_flag,
+        valueFlag: cf.value_flag,
+        valueLimit: cf.value_limit,
+      }))
+
+    for (const cf of updatedCustomerFeatures) {
+      await trx
+        .update(customerFeatures)
+        .set(cf)
+        .where(
+          and(
+            eq(customerFeatures.stripeAccountId, cf.stripeAccountId),
+            eq(customerFeatures.id, cf.id),
+          ),
+        )
+    }
+
+    // Create new features
+    const newCustomerFeatures = data
+      .filter((cf: any) => !cf.hasOwnProperty('id'))
+      .map((cf: any) => ({
+        stripeAccountId,
+        stripeCustomerId,
+        featureId: cf.feature_id,
+        valueLimit: cf.value_limit,
+        valueFlag: cf.value_flag,
       }))
 
     if (newCustomerFeatures.length > 0) {
       await trx.insert(customerFeatures).values(newCustomerFeatures)
-    }
-
-    // Update
-    const updatedCustomerFeatures = data
-      .filter((pf: any) => pf.hasOwnProperty('id'))
-      .map((pf: any) => ({
-        featureId: pf.feature_id,
-        id: pf.id,
-        stripeAccountId,
-        stripeCustomerId,
-        valueFlag: pf.value_flag,
-        valueLimit: pf.value_limit,
-      }))
-
-    for (const pf of updatedCustomerFeatures) {
-      await trx
-        .update(customerFeatures)
-        .set(pf)
-        .where(
-          and(
-            eq(customerFeatures.stripeAccountId, pf.stripeAccountId),
-            eq(customerFeatures.id, pf.id),
-          ),
-        )
     }
 
     // Delete
@@ -62,13 +62,13 @@ const updateCustomerFeatures = async (
         ),
       )
 
-    const featureIds = data.map((pf: any) => pf.feature_id)
-    const deleted = result.filter((pf) => !featureIds.includes(pf.featureId))
+    const featureIds = data.map((cf: any) => cf.feature_id)
+    const deleted = result.filter((cf) => !featureIds.includes(cf.featureId))
     if (deleted.length) {
       await trx.delete(customerFeatures).where(
         inArray(
           customerFeatures.id,
-          deleted.map((pf) => pf.id),
+          deleted.map((cf) => cf.id),
         ),
       )
     }

@@ -258,7 +258,7 @@ export const createProductFeature = async (
   return result[0]
 }
 
-export const createCustomerFeature = async (
+export const createCustomerFlagFeature = async (
   stripeAccountId: string,
   name: string,
   key: string,
@@ -278,6 +278,31 @@ export const createCustomerFeature = async (
       featureId: feature.id,
       stripeCustomerId: customer.stripeId,
       valueFlag,
+    })
+    .returning()
+  return result[0]
+}
+
+export const createCustomerLimitFeature = async (
+  stripeAccountId: string,
+  name: string,
+  key: string,
+  valueLimit: number,
+  customer?: any,
+) => {
+  const feature = await createFlagFeature(stripeAccountId, name, key, false)
+
+  if (!customer) {
+    customer = await createStripeCustomer(stripeAccountId)
+  }
+
+  const result = await db
+    .insert(customerFeatures)
+    .values({
+      stripeAccountId,
+      featureId: feature.id,
+      stripeCustomerId: customer.stripeId,
+      valueLimit,
     })
     .returning()
   return result[0]

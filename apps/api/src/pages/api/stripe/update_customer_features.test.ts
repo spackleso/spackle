@@ -5,10 +5,11 @@ import handler from '@/pages/api/stripe/update_customer_features'
 import {
   createAccount,
   createFlagFeature,
-  createCustomerFeature,
+  createCustomerFlagFeature,
   createStripeCustomer,
   stripeTestHandler,
   testHandler,
+  createCustomerLimitFeature,
 } from '@/tests/helpers'
 import db, { customerFeatures } from '@/db'
 import { eq } from 'drizzle-orm'
@@ -44,15 +45,22 @@ describe('POST', () => {
       'created',
       false,
     )
-    const updatedCustomerFeature = await createCustomerFeature(
+    const updatedCustomerFlagFeature = await createCustomerFlagFeature(
       account.stripeId,
-      'Updated',
-      'updated',
+      'Updated Flag',
+      'updated_flag',
       false,
       customer,
     )
+    const updatedCustomerLimitFeature = await createCustomerLimitFeature(
+      account.stripeId,
+      'Updated Limit',
+      'updated_limit',
+      10,
+      customer,
+    )
 
-    await createCustomerFeature(
+    await createCustomerFlagFeature(
       account.stripeId,
       'Delete',
       'delete',
@@ -71,10 +79,16 @@ describe('POST', () => {
             value_flag: true,
           },
           {
-            id: updatedCustomerFeature.id,
-            feature_id: updatedCustomerFeature.featureId,
+            id: updatedCustomerFlagFeature.id,
+            feature_id: updatedCustomerFlagFeature.featureId,
             value_limit: null,
             value_flag: true,
+          },
+          {
+            id: updatedCustomerLimitFeature.id,
+            feature_id: updatedCustomerLimitFeature.featureId,
+            value_limit: 100,
+            value_flag: null,
           },
         ],
       },
@@ -88,21 +102,32 @@ describe('POST', () => {
       .where(eq(customerFeatures.stripeAccountId, account.stripeId))
       .orderBy(customerFeatures.id)
 
-    expect(pfs.length).toBe(2)
+    expect(pfs.length).toBe(3)
+
     expect(pfs[0]).toStrictEqual({
-      createdAt: updatedCustomerFeature.createdAt,
-      featureId: updatedCustomerFeature.featureId,
-      id: updatedCustomerFeature.id,
+      createdAt: updatedCustomerFlagFeature.createdAt,
+      featureId: updatedCustomerFlagFeature.featureId,
+      id: updatedCustomerFlagFeature.id,
       stripeAccountId: account.stripeId,
       stripeCustomerId: customer.stripeId,
       valueFlag: true,
       valueLimit: null,
     })
 
-    expect(pfs[1].featureId).toBe(createdFeature.id)
-    expect(pfs[1].stripeAccountId).toBe(account.stripeId)
-    expect(pfs[1].stripeCustomerId).toBe(customer.stripeId)
-    expect(pfs[1].valueFlag).toBe(true)
-    expect(pfs[1].valueLimit).toBe(null)
+    expect(pfs[1]).toStrictEqual({
+      createdAt: updatedCustomerLimitFeature.createdAt,
+      featureId: updatedCustomerLimitFeature.featureId,
+      id: updatedCustomerLimitFeature.id,
+      stripeAccountId: account.stripeId,
+      stripeCustomerId: customer.stripeId,
+      valueFlag: null,
+      valueLimit: 100,
+    })
+
+    expect(pfs[2].featureId).toBe(createdFeature.id)
+    expect(pfs[2].stripeAccountId).toBe(account.stripeId)
+    expect(pfs[2].stripeCustomerId).toBe(customer.stripeId)
+    expect(pfs[2].valueFlag).toBe(true)
+    expect(pfs[2].valueLimit).toBe(null)
   })
 })

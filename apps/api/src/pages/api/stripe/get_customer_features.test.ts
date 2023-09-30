@@ -4,7 +4,7 @@
 import handler from '@/pages/api/stripe/get_customer_features'
 import {
   createAccount,
-  createCustomerFeature,
+  createCustomerFlagFeature,
   createStripeCustomer,
   stripeTestHandler,
   testHandler,
@@ -27,18 +27,18 @@ describe('POST', () => {
 
   test('Returns customer features', async () => {
     const decoy = await createAccount()
-    await createCustomerFeature(decoy.stripeId, 'Decoy', 'decoy', true)
+    await createCustomerFlagFeature(decoy.stripeId, 'Decoy', 'decoy', true)
 
     const account = await createAccount()
     const customer = await createStripeCustomer(account.stripeId)
-    const cf1 = await createCustomerFeature(
+    const cf1 = await createCustomerFlagFeature(
       account.stripeId,
       'Feature',
       'feature',
       true,
       customer,
     )
-    const cf2 = await createCustomerFeature(
+    const cf2 = await createCustomerFlagFeature(
       account.stripeId,
       'Feature 2',
       'feature_2',
