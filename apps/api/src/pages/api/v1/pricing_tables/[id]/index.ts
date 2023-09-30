@@ -151,12 +151,7 @@ const handler = async (
     })
     .sort((a, b) => {
       if (pricingTable.monthlyEnabled) {
-        if (
-          a.prices.month &&
-          a.prices.month.unit_amount &&
-          b.prices.month &&
-          b.prices.month.unit_amount
-        ) {
+        if (a.prices.month && b.prices.month) {
           return (
             (a.prices.month.unit_amount as number) -
             (b.prices.month.unit_amount as number)
@@ -167,12 +162,7 @@ const handler = async (
           return 1
         }
       } else if (pricingTable.annualEnabled) {
-        if (
-          a.prices.year &&
-          a.prices.year.unit_amount &&
-          b.prices.year &&
-          b.prices.year.unit_amount
-        ) {
+        if (a.prices.year && b.prices.year) {
           return (
             (a.prices.year.unit_amount as number) -
             (b.prices.year.unit_amount as number)
