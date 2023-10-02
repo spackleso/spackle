@@ -146,6 +146,7 @@ const handler = async (
         id: ptp.stripeProductId,
         features: states[ptp.stripeProductId],
         name: (ptp.stripeJson as Stripe.Product).name,
+        description: (ptp.stripeJson as Stripe.Product).description,
         prices,
       }
     })

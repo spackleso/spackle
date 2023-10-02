@@ -56,6 +56,8 @@ The data returned from the pricing table looks like this:
   intervals: string[]
   products: {
     id: string
+    name: string
+    description: string
     features: {
       id: string
       name: string
@@ -64,7 +66,6 @@ The data returned from the pricing table looks like this:
       value_flag: boolean
       value_limit: number | null
     }[]
-    name: string
     prices: {
       month?: {
         id: string
