@@ -12,21 +12,6 @@ const updateProductFeatures = async (
   data: any[],
 ) => {
   await db.transaction(async (trx) => {
-    // Create
-    const newProductFeatures = data
-      .filter((pf: any) => !pf.hasOwnProperty('id'))
-      .map((pf: any) => ({
-        stripeAccountId,
-        stripeProductId,
-        featureId: pf.feature_id,
-        valueLimit: pf.value_limit,
-        valueFlag: pf.value_flag,
-      }))
-
-    if (newProductFeatures.length) {
-      await trx.insert(productFeatures).values(newProductFeatures)
-    }
-
     // Update
     const updatedProductFeatures = data
       .filter((pf: any) => pf.hasOwnProperty('id'))
@@ -49,6 +34,21 @@ const updateProductFeatures = async (
             eq(productFeatures.id, pf.id),
           ),
         )
+    }
+
+    // Create
+    const newProductFeatures = data
+      .filter((pf: any) => !pf.hasOwnProperty('id'))
+      .map((pf: any) => ({
+        stripeAccountId,
+        stripeProductId,
+        featureId: pf.feature_id,
+        valueLimit: pf.value_limit,
+        valueFlag: pf.value_flag,
+      }))
+
+    if (newProductFeatures.length) {
+      await trx.insert(productFeatures).values(newProductFeatures)
     }
 
     // Delete
