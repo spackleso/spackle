@@ -5,6 +5,7 @@ import { getOrSyncStripeAccount, getOrSyncStripeCustomer } from '@/stripe/sync'
 import { storeCustomerState } from '@/store/dynamodb'
 import db, { customerFeatures } from '@/db'
 import { and, eq, inArray } from 'drizzle-orm'
+import { log } from '@logtail/next'
 
 const updateCustomerFeatures = async (
   stripeAccountId: string,
@@ -24,7 +25,6 @@ const updateCustomerFeatures = async (
         valueLimit: cf.value_limit,
       }))
 
-    console.log('updatedCustomerFeatures', updatedCustomerFeatures)
     for (const cf of updatedCustomerFeatures) {
       await trx
         .update(customerFeatures)
@@ -48,7 +48,6 @@ const updateCustomerFeatures = async (
         valueFlag: cf.value_flag,
       }))
 
-    console.log('newCustomerFeatures', newCustomerFeatures)
     if (newCustomerFeatures.length > 0) {
       await trx.insert(customerFeatures).values(newCustomerFeatures)
     }
@@ -68,7 +67,6 @@ const updateCustomerFeatures = async (
     const deletedCustomerFeatures = result.filter(
       (cf) => !featureIds.includes(cf.featureId),
     )
-    console.log('deleted', deletedCustomerFeatures)
     if (deletedCustomerFeatures.length) {
       await trx.delete(customerFeatures).where(
         inArray(
@@ -78,7 +76,7 @@ const updateCustomerFeatures = async (
       )
     }
 
-    console.log('updateCustomerFeatures', {
+    log.info('updateCustomerFeatures', {
       stripeAccountId,
       stripeCustomerId,
       data,

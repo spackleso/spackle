@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.231.0",
+    "@logtail/next": "^0.1.0",
     "@sentry/nextjs": "^7.35.0",
     "@sentry/node": "^7.60.0",
     "@slack/web-api": "^6.8.1",

@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const { withSentryConfig } = require('@sentry/nextjs');
+const { withLogtail } = require('@logtail/next');
 
 const moduleExports = {
   reactStrictMode: true,
@@ -62,6 +63,6 @@ const moduleExports = {
 };
 
 
-module.exports = withSentryConfig(moduleExports, { silent: true }, {
+module.exports = withSentryConfig(withLogtail(moduleExports), { silent: true }, {
   hideSourceMaps: true,
 });
