@@ -68,7 +68,7 @@ const updateCustomerFeatures = async (
       (cf) => !featureIds.includes(cf.featureId),
     )
     for (const cf of deletedCustomerFeatures) {
-      await trx
+      const response = await trx
         .delete(customerFeatures)
         .where(
           and(
@@ -76,6 +76,11 @@ const updateCustomerFeatures = async (
             eq(customerFeatures.id, cf.id),
           ),
         )
+        .returning({ id: customerFeatures.id })
+      log.info('deletedCustomerFeature', {
+        response,
+        cf,
+      })
     }
 
     log.info('updateCustomerFeatures', {
