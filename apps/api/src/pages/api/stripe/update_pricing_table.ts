@@ -41,85 +41,83 @@ const updatePricingTable = async (
 ) => {
   await validateConfig(data)
 
-  await db.transaction(async (trx) => {
-    // Update the pricing table
-    await trx
-      .update(pricingTables)
-      .set({
-        monthlyEnabled: data.monthly_enabled,
-        annualEnabled: data.annual_enabled,
-      })
+  // Update the pricing table
+  await db
+    .update(pricingTables)
+    .set({
+      monthlyEnabled: data.monthly_enabled,
+      annualEnabled: data.annual_enabled,
+    })
+    .where(
+      and(
+        eq(pricingTables.stripeAccountId, stripeAccountId),
+        eq(pricingTables.id, pricingTable.id),
+      ),
+    )
+
+  const ptps = data.pricing_table_products
+
+  // Update the pricing table products
+
+  // Delete any that are no longer in the list
+  const result = await db
+    .select()
+    .from(pricingTableProducts)
+    .where(
+      and(
+        eq(pricingTableProducts.stripeAccountId, stripeAccountId),
+        eq(pricingTableProducts.pricingTableId, pricingTable.id),
+      ),
+    )
+
+  const ids = ptps.filter((ptp) => !!ptp.id).map((ptp) => ptp.id)
+  const deleted = result.filter((ptp) => !ids.includes(ptp.id))
+  if (deleted.length) {
+    await db.delete(pricingTableProducts).where(
+      inArray(
+        pricingTableProducts.id,
+        deleted.map((ptp) => ptp.id),
+      ),
+    )
+  }
+
+  // Create any new ones
+  const newPricingTableProducts = ptps
+    .filter((ptp: any) => !ptp.hasOwnProperty('id'))
+    .map((ptp: any) => ({
+      stripeAccountId,
+      pricingTableId: pricingTable.id,
+      stripeProductId: ptp.product_id,
+      monthlyStripePriceId: ptp.monthly_stripe_price_id,
+      annualStripePriceId: ptp.annual_stripe_price_id,
+    }))
+
+  if (newPricingTableProducts.length) {
+    await db.insert(pricingTableProducts).values(newPricingTableProducts)
+  }
+  // Update
+  const updatedPricingTableProducts = ptps
+    .filter((ptp: any) => ptp.hasOwnProperty('id'))
+    .map((ptp: any) => ({
+      id: ptp.id,
+      stripeAccountId,
+      pricingTableId: pricingTable.id,
+      stripeProductId: ptp.product_id,
+      monthlyStripePriceId: ptp.monthly_stripe_price_id,
+      annualStripePriceId: ptp.annual_stripe_price_id,
+    }))
+
+  for (const ptp of updatedPricingTableProducts) {
+    await db
+      .update(pricingTableProducts)
+      .set(ptp)
       .where(
         and(
-          eq(pricingTables.stripeAccountId, stripeAccountId),
-          eq(pricingTables.id, pricingTable.id),
+          eq(pricingTableProducts.stripeAccountId, ptp.stripeAccountId),
+          eq(pricingTableProducts.id, ptp.id),
         ),
       )
-
-    const ptps = data.pricing_table_products
-
-    // Update the pricing table products
-
-    // Delete any that are no longer in the list
-    const result = await trx
-      .select()
-      .from(pricingTableProducts)
-      .where(
-        and(
-          eq(pricingTableProducts.stripeAccountId, stripeAccountId),
-          eq(pricingTableProducts.pricingTableId, pricingTable.id),
-        ),
-      )
-
-    const ids = ptps.filter((ptp) => !!ptp.id).map((ptp) => ptp.id)
-    const deleted = result.filter((ptp) => !ids.includes(ptp.id))
-    if (deleted.length) {
-      await trx.delete(pricingTableProducts).where(
-        inArray(
-          pricingTableProducts.id,
-          deleted.map((ptp) => ptp.id),
-        ),
-      )
-    }
-
-    // Create any new ones
-    const newPricingTableProducts = ptps
-      .filter((ptp: any) => !ptp.hasOwnProperty('id'))
-      .map((ptp: any) => ({
-        stripeAccountId,
-        pricingTableId: pricingTable.id,
-        stripeProductId: ptp.product_id,
-        monthlyStripePriceId: ptp.monthly_stripe_price_id,
-        annualStripePriceId: ptp.annual_stripe_price_id,
-      }))
-
-    if (newPricingTableProducts.length) {
-      await trx.insert(pricingTableProducts).values(newPricingTableProducts)
-    }
-    // Update
-    const updatedPricingTableProducts = ptps
-      .filter((ptp: any) => ptp.hasOwnProperty('id'))
-      .map((ptp: any) => ({
-        id: ptp.id,
-        stripeAccountId,
-        pricingTableId: pricingTable.id,
-        stripeProductId: ptp.product_id,
-        monthlyStripePriceId: ptp.monthly_stripe_price_id,
-        annualStripePriceId: ptp.annual_stripe_price_id,
-      }))
-
-    for (const ptp of updatedPricingTableProducts) {
-      await trx
-        .update(pricingTableProducts)
-        .set(ptp)
-        .where(
-          and(
-            eq(pricingTableProducts.stripeAccountId, ptp.stripeAccountId),
-            eq(pricingTableProducts.id, ptp.id),
-          ),
-        )
-    }
-  })
+  }
 }
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {

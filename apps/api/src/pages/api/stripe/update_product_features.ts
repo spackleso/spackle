@@ -11,68 +11,68 @@ const updateProductFeatures = async (
   stripeProductId: string,
   data: any[],
 ) => {
-  await db.transaction(async (trx) => {
-    // Update
-    const updatedProductFeatures = data
-      .filter((pf: any) => pf.hasOwnProperty('id'))
-      .map((pf: any) => ({
-        featureId: pf.feature_id,
-        id: pf.id,
-        stripeAccountId,
-        stripeProductId,
-        valueFlag: pf.value_flag,
-        valueLimit: pf.value_limit,
-      }))
+  // Update
+  const updatedProductFeatures = data
+    .filter((pf: any) => pf.hasOwnProperty('id'))
+    .map((pf: any) => ({
+      featureId: pf.feature_id,
+      id: pf.id,
+      stripeAccountId,
+      stripeProductId,
+      valueFlag: pf.value_flag,
+      valueLimit: pf.value_limit,
+    }))
 
-    for (const pf of updatedProductFeatures) {
-      await trx
-        .update(productFeatures)
-        .set(pf)
-        .where(
-          and(
-            eq(productFeatures.stripeAccountId, pf.stripeAccountId),
-            eq(productFeatures.id, pf.id),
-          ),
-        )
-    }
+  for (const pf of updatedProductFeatures) {
+    await db
+      .update(productFeatures)
+      .set(pf)
+      .where(
+        and(
+          eq(productFeatures.stripeAccountId, pf.stripeAccountId),
+          eq(productFeatures.id, pf.id),
+        ),
+      )
+  }
 
-    // Create
-    const newProductFeatures = data
-      .filter((pf: any) => !pf.hasOwnProperty('id'))
-      .map((pf: any) => ({
-        stripeAccountId,
-        stripeProductId,
-        featureId: pf.feature_id,
-        valueLimit: pf.value_limit,
-        valueFlag: pf.value_flag,
-      }))
+  // Create
+  const newProductFeatures = data
+    .filter((pf: any) => !pf.hasOwnProperty('id'))
+    .map((pf: any) => ({
+      stripeAccountId,
+      stripeProductId,
+      featureId: pf.feature_id,
+      valueLimit: pf.value_limit,
+      valueFlag: pf.value_flag,
+    }))
 
-    if (newProductFeatures.length) {
-      await trx.insert(productFeatures).values(newProductFeatures)
-    }
+  if (newProductFeatures.length) {
+    await db.insert(productFeatures).values(newProductFeatures)
+  }
 
-    // Delete
-    const result = await trx
-      .select()
-      .from(productFeatures)
+  // Delete
+  const result = await db
+    .select()
+    .from(productFeatures)
+    .where(
+      and(
+        eq(productFeatures.stripeAccountId, stripeAccountId),
+        eq(productFeatures.stripeProductId, stripeProductId),
+      ),
+    )
+
+  const featureIds = data.map((pf: any) => pf.feature_id)
+  const deleted = result.filter((pf) => !featureIds.includes(pf.featureId))
+  for (const pf of deleted) {
+    await db
+      .delete(productFeatures)
       .where(
         and(
           eq(productFeatures.stripeAccountId, stripeAccountId),
-          eq(productFeatures.stripeProductId, stripeProductId),
+          eq(productFeatures.id, pf.id),
         ),
       )
-
-    const featureIds = data.map((pf: any) => pf.feature_id)
-    const deleted = result.filter((pf) => !featureIds.includes(pf.featureId))
-    if (deleted.length) {
-      await trx.delete(productFeatures).where(
-        inArray(
-          productFeatures.id,
-          deleted.map((pf) => pf.id),
-        ),
-      )
-    }
-  })
+  }
 
   await storeAccountStatesAsync(stripeAccountId)
 }

@@ -75,7 +75,6 @@ const updateCustomerFeatures = async (
           eq(customerFeatures.id, cf.id),
         ),
       )
-      .returning({ id: customerFeatures.id })
   }
 
   log.info('updateCustomerFeatures', {
