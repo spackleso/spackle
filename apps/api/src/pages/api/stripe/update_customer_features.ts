@@ -67,13 +67,15 @@ const updateCustomerFeatures = async (
     const deletedCustomerFeatures = result.filter(
       (cf) => !featureIds.includes(cf.featureId),
     )
-    if (deletedCustomerFeatures.length) {
-      await trx.delete(customerFeatures).where(
-        inArray(
-          customerFeatures.id,
-          deletedCustomerFeatures.map((cf) => cf.id),
-        ),
-      )
+    for (const cf of deletedCustomerFeatures) {
+      await trx
+        .delete(customerFeatures)
+        .where(
+          and(
+            eq(customerFeatures.stripeAccountId, cf.stripeAccountId),
+            eq(customerFeatures.id, cf.id),
+          ),
+        )
     }
 
     log.info('updateCustomerFeatures', {
