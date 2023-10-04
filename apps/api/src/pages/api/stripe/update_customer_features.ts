@@ -67,7 +67,7 @@ const updateCustomerFeatures = async (
     (cf) => !featureIds.includes(cf.featureId),
   )
   for (const cf of deletedCustomerFeatures) {
-    const response = await db
+    await db
       .delete(customerFeatures)
       .where(
         and(
