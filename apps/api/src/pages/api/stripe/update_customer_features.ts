@@ -24,6 +24,7 @@ const updateCustomerFeatures = async (
         valueLimit: cf.value_limit,
       }))
 
+    console.log('updatedCustomerFeatures', updatedCustomerFeatures)
     for (const cf of updatedCustomerFeatures) {
       await trx
         .update(customerFeatures)
@@ -47,6 +48,7 @@ const updateCustomerFeatures = async (
         valueFlag: cf.value_flag,
       }))
 
+    console.log('newCustomerFeatures', newCustomerFeatures)
     if (newCustomerFeatures.length > 0) {
       await trx.insert(customerFeatures).values(newCustomerFeatures)
     }
@@ -63,15 +65,27 @@ const updateCustomerFeatures = async (
       )
 
     const featureIds = data.map((cf: any) => cf.feature_id)
-    const deleted = result.filter((cf) => !featureIds.includes(cf.featureId))
-    if (deleted.length) {
+    const deletedCustomerFeatures = result.filter(
+      (cf) => !featureIds.includes(cf.featureId),
+    )
+    console.log('deleted', deletedCustomerFeatures)
+    if (deletedCustomerFeatures.length) {
       await trx.delete(customerFeatures).where(
         inArray(
           customerFeatures.id,
-          deleted.map((cf) => cf.id),
+          deletedCustomerFeatures.map((cf) => cf.id),
         ),
       )
     }
+
+    console.log('updateCustomerFeatures', {
+      stripeAccountId,
+      stripeCustomerId,
+      data,
+      updatedCustomerFeatures,
+      newCustomerFeatures,
+      deletedCustomerFeatures,
+    })
   })
 
   await storeCustomerState(stripeAccountId, stripeCustomerId)
