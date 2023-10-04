@@ -5,7 +5,7 @@ import { getOrSyncStripeAccount, getOrSyncStripeCustomer } from '@/stripe/sync'
 import { storeCustomerState } from '@/store/dynamodb'
 import db, { customerFeatures } from '@/db'
 import { and, eq, inArray } from 'drizzle-orm'
-import { log } from '@logtail/next'
+import { withLogtail, log } from '@logtail/next'
 
 const updateCustomerFeatures = async (
   stripeAccountId: string,
@@ -116,4 +116,4 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   })
 }
 
-export default handler
+export default withLogtail(handler)
