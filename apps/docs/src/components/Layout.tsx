@@ -26,6 +26,12 @@ const navigation = [
     ],
   },
   {
+    title: 'Guides',
+    links: [
+      { title: 'Django', href: '/django' },
+    ]
+  },
+  {
     title: 'SDKs',
     links: [
       { title: 'Node.js', href: '/node' },
