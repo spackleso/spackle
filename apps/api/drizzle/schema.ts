@@ -408,3 +408,33 @@ export const stripeInvoices = pgTable(
     }
   },
 )
+
+export const stripeInvoiceLineItems = pgTable(
+  'stripe_invoice_line_items',
+  {
+    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
+    id: bigserial('id', { mode: 'number' }).primaryKey().notNull(),
+    createdAt: timestamp('created_at', {
+      withTimezone: true,
+      mode: 'string',
+    }).defaultNow(),
+    stripeId: text('stripe_id').notNull(),
+    stripeAccountId: text('stripe_account_id')
+      .notNull()
+      .references(() => stripeAccounts.stripeId),
+    stripeJson: json('stripe_json'),
+    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
+    amount: bigint('amount', { mode: 'number' }).notNull(),
+    type: text('type').notNull(),
+    stripeInvoiceId: text('stripe_invoice_id')
+      .notNull()
+      .references(() => stripeInvoices.stripeId, { onDelete: 'cascade' }),
+  },
+  (table) => {
+    return {
+      stripeInvoiceLineItemsStripeIdKey: unique(
+        'stripe_invoice_line_items_stripe_id_key',
+      ).on(table.stripeId),
+    }
+  },
+)

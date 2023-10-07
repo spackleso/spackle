@@ -2,6 +2,7 @@ import { track } from '@/posthog'
 import db, {
   stripeAccounts,
   stripeCustomers,
+  stripeInvoiceLineItems,
   stripeInvoices,
   stripePrices,
   stripeProducts,
@@ -424,6 +425,27 @@ export const getStripeInvoice = async (
   return null
 }
 
+export const getStripeInvoiceLineItem = async (
+  stripeAccountId: string,
+  stripeId: string,
+) => {
+  const result = await db
+    .select()
+    .from(stripeInvoiceLineItems)
+    .where(
+      and(
+        eq(stripeInvoiceLineItems.stripeAccountId, stripeAccountId),
+        eq(stripeInvoiceLineItems.stripeId, stripeId),
+      ),
+    )
+
+  if (result.length) {
+    return result[0]
+  }
+
+  return null
+}
+
 export const upsertStripeInvoice = async (
   stripeAccountId: string,
   stripeId: string,
@@ -456,6 +478,44 @@ export const upsertStripeInvoice = async (
         status,
         stripeJson,
         total,
+      })
+      .returning()
+  }
+  return result[0]
+}
+
+export const upsertStripeInvoiceLineItem = async (
+  stripeAccountId: string,
+  stripeId: string,
+  stripeInvoiceId: string,
+  amount: number,
+  stripeJson: any,
+  type: string,
+) => {
+  const lineItem = await getStripeInvoiceLineItem(stripeAccountId, stripeId)
+
+  let result
+  if (lineItem) {
+    result = await db
+      .update(stripeInvoiceLineItems)
+      .set({ amount, stripeJson, type })
+      .where(
+        and(
+          eq(stripeInvoiceLineItems.stripeAccountId, stripeAccountId),
+          eq(stripeInvoiceLineItems.stripeId, stripeId),
+        ),
+      )
+      .returning()
+  } else {
+    result = await db
+      .insert(stripeInvoiceLineItems)
+      .values({
+        stripeAccountId,
+        stripeId,
+        stripeInvoiceId,
+        amount,
+        stripeJson,
+        type,
       })
       .returning()
   }

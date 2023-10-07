@@ -2,11 +2,13 @@ import * as Sentry from '@sentry/node'
 import {
   getStripeAccount,
   getStripeCustomer,
+  getStripeInvoice,
   getStripePrice,
   getStripeProduct,
   upsertStripeAccount,
   upsertStripeCustomer,
   upsertStripeInvoice,
+  upsertStripeInvoiceLineItem,
   upsertStripePrice,
   upsertStripeProduct,
   upsertStripeSubscription,
@@ -19,6 +21,7 @@ import { getQueue } from '@/queue'
 import db, { stripeAccounts } from '@/db'
 import { eq } from 'drizzle-orm'
 import { liveStripe, testStripe } from '@/stripe'
+import Stripe from 'stripe'
 
 export const getOrSyncStripeAccount = async (
   stripeId: string,
@@ -115,6 +118,16 @@ export const getOrSyncStripeCustomer = async (
   return await syncStripeCustomer(stripeAccountId, stripeId, mode)
 }
 
+export const getOrSyncStripeInvoice = async (
+  stripeAccountId: string,
+  stripeId: string,
+  mode: Mode,
+) => {
+  const customer = await getStripeInvoice(stripeAccountId, stripeId)
+  if (customer) return customer
+  return await syncStripeInvoice(stripeAccountId, stripeId, mode)
+}
+
 export const syncStripeCustomer = async (
   stripeAccountId: string,
   stripeId: string,
@@ -204,7 +217,29 @@ export const syncStripeInvoice = async (
     stripeJson,
     stripeInvoice.total,
   )
+  await syncStripeInvoiceLineItems(stripeAccountId, stripeId, mode)
   return invoice
+}
+
+export const syncStripeInvoiceLineItems = async (
+  stripeAccountId: string,
+  stripeInvoiceId: string,
+  mode: Mode,
+) => {
+  const stripe = mode === 'live' ? liveStripe : testStripe
+  for await (const stripeInvoiceLineItem of stripe.invoices.listLineItems(
+    stripeInvoiceId,
+  )) {
+    await getOrSyncStripeInvoice(stripeAccountId, stripeInvoiceId, mode)
+    await upsertStripeInvoiceLineItem(
+      stripeAccountId,
+      stripeInvoiceLineItem.id,
+      stripeInvoiceId,
+      stripeInvoiceLineItem.amount,
+      JSON.parse(JSON.stringify(stripeInvoiceLineItem)),
+      stripeInvoiceLineItem.type,
+    )
+  }
 }
 
 export const syncAllAccountDataAsync = async (stripeAccountId: string) => {
@@ -354,6 +389,17 @@ export const syncAllAccountModeData = async (
         stripeInvoice.customer as string,
         JSON.parse(JSON.stringify(stripeInvoice)),
         stripeInvoice.total,
+      )
+    } catch (error) {
+      console.error(error)
+      Sentry.captureException(error)
+    }
+
+    try {
+      await syncStripeInvoiceLineItems(
+        stripeAccountId,
+        stripeInvoice.id as string,
+        mode,
       )
     } catch (error) {
       console.error(error)
