@@ -2,6 +2,7 @@ import type { NextApiRequest } from 'next'
 import {
   syncStripeAccount,
   syncStripeCustomer,
+  syncStripeInvoice,
   syncStripePrice,
   syncStripeProduct,
   syncStripeSubscriptions,
@@ -84,6 +85,12 @@ export const handleWebhook = async (account: string, event: any) => {
     await syncStripeProduct(
       account!,
       (event.data.object as any).id,
+      event.livemode ? 'live' : 'test',
+    )
+  } else if (event.type.startsWith('invoice.')) {
+    await syncStripeInvoice(
+      account!,
+      (event.data.data.object as any).id,
       event.livemode ? 'live' : 'test',
     )
   } else {

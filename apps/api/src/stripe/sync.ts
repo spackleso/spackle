@@ -186,6 +186,27 @@ export const syncStripeSubscriptionItems = async (
   }
 }
 
+export const syncStripeInvoice = async (
+  stripeAccountId: string,
+  stripeId: string,
+  mode: Mode,
+) => {
+  const stripe = mode === 'live' ? liveStripe : testStripe
+  const stripeInvoice = await stripe.invoices.retrieve(stripeId, {
+    stripeAccount: stripeAccountId,
+  })
+  const stripeJson = JSON.parse(JSON.stringify(stripeInvoice))
+  const invoice = await upsertStripeInvoice(
+    stripeAccountId,
+    stripeId,
+    stripeInvoice.status as string,
+    stripeInvoice.customer as string,
+    stripeJson,
+    stripeInvoice.total,
+  )
+  return invoice
+}
+
 export const syncAllAccountDataAsync = async (stripeAccountId: string) => {
   const q = getQueue()
   return await q.add('syncAllAccountData', { stripeAccountId })
