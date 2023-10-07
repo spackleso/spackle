@@ -436,9 +436,6 @@ export const stripeCharges = pgTable(
       stripeChargesStripeIdKey: unique('stripe_charges_stripe_id_key').on(
         table.stripeId,
       ),
-      stripeChargesStripeInvoiceIdKey: unique(
-        'stripe_charges_stripe_invoice_id_key',
-      ).on(table.stripeInvoiceId),
     }
   },
 )
