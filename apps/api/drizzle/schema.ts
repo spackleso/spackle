@@ -378,3 +378,33 @@ export const publishableTokens = pgTable('publishable_tokens', {
     () => stripeAccounts.stripeId,
   ),
 })
+
+export const stripeInvoices = pgTable(
+  'stripe_invoices',
+  {
+    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
+    id: bigserial('id', { mode: 'number' }).primaryKey().notNull(),
+    createdAt: timestamp('created_at', {
+      withTimezone: true,
+      mode: 'string',
+    }).defaultNow(),
+    stripeId: text('stripe_id').notNull(),
+    stripeAccountId: text('stripe_account_id')
+      .notNull()
+      .references(() => stripeAccounts.stripeId),
+    stripeJson: json('stripe_json'),
+    status: text('status').notNull(),
+    stripeCustomerId: text('stripe_customer_id')
+      .notNull()
+      .references(() => stripeCustomers.stripeId),
+    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
+    total: bigint('total', { mode: 'number' }).notNull(),
+  },
+  (table) => {
+    return {
+      stripeInvoicesStripeIdKey: unique('stripe_invoices_stripe_id_key').on(
+        table.stripeId,
+      ),
+    }
+  },
+)

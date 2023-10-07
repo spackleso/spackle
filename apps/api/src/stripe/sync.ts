@@ -6,6 +6,7 @@ import {
   getStripeProduct,
   upsertStripeAccount,
   upsertStripeCustomer,
+  upsertStripeInvoice,
   upsertStripePrice,
   upsertStripeProduct,
   upsertStripeSubscription,
@@ -312,6 +313,26 @@ export const syncAllAccountModeData = async (
         stripeAccountId,
         stripeSubscription.id,
         mode,
+      )
+    } catch (error) {
+      console.error(error)
+      Sentry.captureException(error)
+    }
+  }
+
+  // Invoices
+  for await (const stripeInvoice of stripe.invoices.list({
+    stripeAccount: stripeAccountId,
+  })) {
+    console.info(`Syncing invoice ${stripeInvoice.id}`)
+    try {
+      await upsertStripeInvoice(
+        stripeAccountId,
+        stripeInvoice.id as string,
+        stripeInvoice.status as string,
+        stripeInvoice.customer as string,
+        JSON.parse(JSON.stringify(stripeInvoice)),
+        stripeInvoice.total,
       )
     } catch (error) {
       console.error(error)

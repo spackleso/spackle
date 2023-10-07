@@ -2,6 +2,7 @@ import { track } from '@/posthog'
 import db, {
   stripeAccounts,
   stripeCustomers,
+  stripeInvoices,
   stripePrices,
   stripeProducts,
   stripeSubscriptionItems,
@@ -396,6 +397,65 @@ export const upsertStripeSubscriptionItem = async (
         stripePriceId,
         stripeSubscriptionId,
         stripeJson,
+      })
+      .returning()
+  }
+  return result[0]
+}
+
+export const getStripeInvoice = async (
+  stripeAccountId: string,
+  stripeId: string,
+) => {
+  const result = await db
+    .select()
+    .from(stripeInvoices)
+    .where(
+      and(
+        eq(stripeInvoices.stripeAccountId, stripeAccountId),
+        eq(stripeInvoices.stripeId, stripeId),
+      ),
+    )
+
+  if (result.length) {
+    return result[0]
+  }
+
+  return null
+}
+
+export const upsertStripeInvoice = async (
+  stripeAccountId: string,
+  stripeId: string,
+  status: string,
+  stripeCustomerId: string,
+  stripeJson: any,
+  total: number,
+) => {
+  const stripeInvoice = await getStripeInvoice(stripeAccountId, stripeId)
+
+  let result
+  if (stripeInvoice) {
+    result = await db
+      .update(stripeInvoices)
+      .set({ status, stripeJson, total })
+      .where(
+        and(
+          eq(stripeInvoices.stripeAccountId, stripeAccountId),
+          eq(stripeInvoices.stripeId, stripeId),
+        ),
+      )
+      .returning()
+  } else {
+    result = await db
+      .insert(stripeInvoices)
+      .values({
+        stripeAccountId,
+        stripeId,
+        stripeCustomerId,
+        status,
+        stripeJson,
+        total,
       })
       .returning()
   }
