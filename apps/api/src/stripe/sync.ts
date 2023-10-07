@@ -1,14 +1,15 @@
 import * as Sentry from '@sentry/node'
 import {
   getStripeAccount,
+  getStripeCharge,
   getStripeCustomer,
   getStripeInvoice,
   getStripePrice,
   getStripeProduct,
   upsertStripeAccount,
+  upsertStripeCharge,
   upsertStripeCustomer,
   upsertStripeInvoice,
-  upsertStripeInvoiceLineItem,
   upsertStripePrice,
   upsertStripeProduct,
   upsertStripeSubscription,
@@ -21,7 +22,6 @@ import { getQueue } from '@/queue'
 import db, { stripeAccounts } from '@/db'
 import { eq } from 'drizzle-orm'
 import { liveStripe, testStripe } from '@/stripe'
-import Stripe from 'stripe'
 
 export const getOrSyncStripeAccount = async (
   stripeId: string,
@@ -118,13 +118,23 @@ export const getOrSyncStripeCustomer = async (
   return await syncStripeCustomer(stripeAccountId, stripeId, mode)
 }
 
+export const getOrSyncStripeCharge = async (
+  stripeAccountId: string,
+  stripeId: string,
+  mode: Mode,
+) => {
+  const charge = await getStripeCharge(stripeAccountId, stripeId)
+  if (charge) return charge
+  return await syncStripeCharge(stripeAccountId, stripeId, mode)
+}
+
 export const getOrSyncStripeInvoice = async (
   stripeAccountId: string,
   stripeId: string,
   mode: Mode,
 ) => {
-  const customer = await getStripeInvoice(stripeAccountId, stripeId)
-  if (customer) return customer
+  const invoice = await getStripeInvoice(stripeAccountId, stripeId)
+  if (invoice) return invoice
   return await syncStripeInvoice(stripeAccountId, stripeId, mode)
 }
 
@@ -212,34 +222,37 @@ export const syncStripeInvoice = async (
   const invoice = await upsertStripeInvoice(
     stripeAccountId,
     stripeId,
-    stripeInvoice.status as string,
-    stripeInvoice.customer as string,
     stripeJson,
-    stripeInvoice.total,
+    stripeInvoice.subscription as string | null,
   )
-  await syncStripeInvoiceLineItems(stripeAccountId, stripeId, mode)
   return invoice
 }
 
-export const syncStripeInvoiceLineItems = async (
+export const syncStripeCharge = async (
   stripeAccountId: string,
-  stripeInvoiceId: string,
+  stripeId: string,
   mode: Mode,
 ) => {
   const stripe = mode === 'live' ? liveStripe : testStripe
-  for await (const stripeInvoiceLineItem of stripe.invoices.listLineItems(
-    stripeInvoiceId,
-  )) {
-    await getOrSyncStripeInvoice(stripeAccountId, stripeInvoiceId, mode)
-    await upsertStripeInvoiceLineItem(
-      stripeAccountId,
-      stripeInvoiceLineItem.id,
-      stripeInvoiceId,
-      stripeInvoiceLineItem.amount,
-      JSON.parse(JSON.stringify(stripeInvoiceLineItem)),
-      stripeInvoiceLineItem.type,
-    )
+  const stripeCharge = await stripe.charges.retrieve(stripeId, {
+    stripeAccount: stripeAccountId,
+  })
+  const stripeJson = JSON.parse(JSON.stringify(stripeCharge))
+  const stripeInvoiceId = stripeCharge.invoice as string | null
+  if (stripeInvoiceId) {
+    await syncStripeInvoice(stripeAccountId, stripeInvoiceId, mode)
   }
+  const charge = await upsertStripeCharge(
+    stripeAccountId,
+    stripeId,
+    stripeCharge.amount,
+    mode,
+    stripeCharge.status,
+    stripeCharge.created,
+    stripeInvoiceId,
+    stripeJson,
+  )
+  return charge
 }
 
 export const syncAllAccountDataAsync = async (stripeAccountId: string) => {
@@ -385,21 +398,34 @@ export const syncAllAccountModeData = async (
       await upsertStripeInvoice(
         stripeAccountId,
         stripeInvoice.id as string,
-        stripeInvoice.status as string,
-        stripeInvoice.customer as string,
         JSON.parse(JSON.stringify(stripeInvoice)),
-        stripeInvoice.total,
+        stripeInvoice.subscription as string | null,
       )
     } catch (error) {
       console.error(error)
       Sentry.captureException(error)
     }
+  }
 
+  // Charges
+  for await (const stripeCharge of stripe.charges.list({
+    stripeAccount: stripeAccountId,
+  })) {
+    console.info(`Syncing charge ${stripeCharge.id}`)
     try {
-      await syncStripeInvoiceLineItems(
+      const stripeInvoiceId = stripeCharge.invoice as string | null
+      if (stripeInvoiceId) {
+        await getOrSyncStripeInvoice(stripeAccountId, stripeInvoiceId, mode)
+      }
+      await upsertStripeCharge(
         stripeAccountId,
-        stripeInvoice.id as string,
+        stripeCharge.id as string,
+        stripeCharge.amount,
         mode,
+        stripeCharge.status,
+        stripeCharge.created,
+        stripeInvoiceId,
+        JSON.parse(JSON.stringify(stripeCharge)),
       )
     } catch (error) {
       console.error(error)

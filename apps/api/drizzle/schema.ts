@@ -393,12 +393,7 @@ export const stripeInvoices = pgTable(
       .notNull()
       .references(() => stripeAccounts.stripeId),
     stripeJson: json('stripe_json'),
-    status: text('status').notNull(),
-    stripeCustomerId: text('stripe_customer_id')
-      .notNull()
-      .references(() => stripeCustomers.stripeId),
-    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
-    total: bigint('total', { mode: 'number' }).notNull(),
+    stripeSubscriptionId: text('stripe_subscription_id'),
   },
   (table) => {
     return {
@@ -409,8 +404,8 @@ export const stripeInvoices = pgTable(
   },
 )
 
-export const stripeInvoiceLineItems = pgTable(
-  'stripe_invoice_line_items',
+export const stripeCharges = pgTable(
+  'stripe_charges',
   {
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     id: bigserial('id', { mode: 'number' }).primaryKey().notNull(),
@@ -423,18 +418,27 @@ export const stripeInvoiceLineItems = pgTable(
       .notNull()
       .references(() => stripeAccounts.stripeId),
     stripeJson: json('stripe_json'),
+    status: text('status').notNull(),
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     amount: bigint('amount', { mode: 'number' }).notNull(),
-    type: text('type').notNull(),
-    stripeInvoiceId: text('stripe_invoice_id')
-      .notNull()
-      .references(() => stripeInvoices.stripeId, { onDelete: 'cascade' }),
+    stripeCreated: timestamp('stripe_created', {
+      withTimezone: true,
+      mode: 'string',
+    }).notNull(),
+    stripeInvoiceId: text('stripe_invoice_id').references(
+      () => stripeInvoices.stripeId,
+      { onDelete: 'restrict' },
+    ),
+    mode: smallint('mode').notNull(),
   },
   (table) => {
     return {
-      stripeInvoiceLineItemsStripeIdKey: unique(
-        'stripe_invoice_line_items_stripe_id_key',
-      ).on(table.stripeId),
+      stripeChargesStripeIdKey: unique('stripe_charges_stripe_id_key').on(
+        table.stripeId,
+      ),
+      stripeChargesStripeInvoiceIdKey: unique(
+        'stripe_charges_stripe_invoice_id_key',
+      ).on(table.stripeInvoiceId),
     }
   },
 )
