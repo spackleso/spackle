@@ -506,8 +506,8 @@ export const upsertStripeCharge = async (
         })
         .where(
           and(
-            eq(stripeCustomers.stripeAccountId, stripeAccountId),
-            eq(stripeCustomers.stripeId, stripeId),
+            eq(stripeCharges.stripeAccountId, stripeAccountId),
+            eq(stripeCharges.stripeId, stripeId),
           ),
         )
         .returning()
