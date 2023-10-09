@@ -91,13 +91,13 @@ export const handleWebhook = async (account: string, event: any) => {
   } else if (event.type.startsWith('invoice.')) {
     await syncStripeInvoice(
       account!,
-      (event.data.data.object as any).id,
+      (event.data.object as any).id,
       event.livemode ? 'live' : 'test',
     )
   } else if (event.type.startsWith('charge.')) {
     await syncStripeCharge(
       account!,
-      (event.data.data.object as any).id,
+      (event.data.object as any).id,
       event.livemode ? 'live' : 'test',
     )
   } else {
