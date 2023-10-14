@@ -9,7 +9,9 @@ import db, {
   pricingTables,
   productFeatures,
   stripeAccounts,
+  stripeCharges,
   stripeCustomers,
+  stripeInvoices,
   stripePrices,
   stripeProducts,
   stripeSubscriptionItems,
@@ -353,4 +355,81 @@ export const createPricingTableProduct = async (
     })
     .returning()
   return result[0]
+}
+
+export const createStripeInvoice = async (
+  stripeAccountId: string,
+  stripeSubscriptionId: string | null,
+  stripeJson: any,
+  stripeId: string = genStripeId('inv'),
+) => {
+  const result = await db
+    .insert(stripeInvoices)
+    .values({
+      stripeAccountId,
+      stripeId,
+      stripeSubscriptionId,
+      stripeJson,
+    })
+    .returning()
+  return result[0]
+}
+
+export const createStripeCharge = async (
+  stripeAccountId: string,
+  stripeJson: any,
+  status: string,
+  amount: number,
+  stripeCreated: Date,
+  stripeInvoiceId: string | null,
+  mode: number,
+  stripeId: string = genStripeId('ch'),
+) => {
+  const result = await db
+    .insert(stripeCharges)
+    .values({
+      stripeId,
+      stripeAccountId,
+      stripeJson,
+      status,
+      amount,
+      stripeCreated: stripeCreated.toISOString(),
+      stripeInvoiceId,
+      mode,
+    })
+    .returning()
+  return result[0]
+}
+
+export const createsBillableCharge = async (
+  stripeAccountId: string,
+  amount: number,
+  stripeCreatedDate: Date,
+  mode: number,
+  status: string,
+) => {
+  const product = await createStripeProduct(stripeAccountId)
+  const price = await createStripePrice(stripeAccountId, product.stripeId)
+  const customer = await createStripeCustomer(stripeAccountId)
+  const subscription = await createStripeSubscription(
+    stripeAccountId,
+    customer.stripeId,
+    price.stripeId,
+    {},
+  )
+  const invoice = await createStripeInvoice(
+    stripeAccountId,
+    subscription.stripeId,
+    {},
+    genStripeId('inv'),
+  )
+  return await createStripeCharge(
+    stripeAccountId,
+    {},
+    status,
+    amount,
+    stripeCreatedDate,
+    invoice.stripeId,
+    mode,
+  )
 }
