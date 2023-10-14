@@ -64,11 +64,12 @@ app.get('/customers/:id/state', async (req, res) => {
   if (state) {
     res.end(state)
 
-    const end = Date.now()
+    const duration = Date.now() - start
     try {
-      logtail.info('/customers/:id/state', {
+      logtail.info(`GET /customers/${req.params.id}/state: ${duration}ms`, {
         accountId,
-        duration: end - start,
+        customerId: req.params.id,
+        duration,
       })
     } catch (error) {
       console.error(error)
