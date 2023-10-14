@@ -30,9 +30,10 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       await handleWebhook(account, event)
 
       if (event.type === 'customer.subscription.created') {
-        await track('group_event', 'New subscription', {
-          $groups: { company: event.account! },
-        })
+        // TODO: this should pull the stripe account id from the customer's stripe id
+        // await track('group_event', 'New subscription', {
+        //   $groups: { company: event.account! },
+        // })
       }
     } catch (error: any) {
       console.error(error)
