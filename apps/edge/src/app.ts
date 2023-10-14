@@ -29,6 +29,7 @@ Sentry.init({
   tracesSampleRate: 0,
 })
 
+const region = process.env.AWS_REGION ?? ''
 const logtail = new Logtail(process.env.BETTERSTACK_LOGS_TOKEN ?? '')
 
 app.use(Sentry.Handlers.requestHandler())
@@ -66,11 +67,15 @@ app.get('/customers/:id/state', async (req, res) => {
 
     const duration = Date.now() - start
     try {
-      logtail.info(`GET /customers/${req.params.id}/state: ${duration}ms`, {
-        accountId,
-        customerId: req.params.id,
-        duration,
-      })
+      logtail.info(
+        `[${region}] GET /customers/${req.params.id}/state: ${duration}ms`,
+        {
+          accountId,
+          customerId: req.params.id,
+          duration,
+          region,
+        },
+      )
     } catch (error) {
       console.error(error)
     }
