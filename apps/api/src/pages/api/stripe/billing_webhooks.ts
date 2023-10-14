@@ -3,6 +3,8 @@ import { buffer, handleWebhook } from '@/stripe/webhooks'
 import * as Sentry from '@sentry/nextjs'
 import { liveStripe as stripe } from '@/stripe'
 import { track } from '@/posthog'
+import { getStripeAccount, getStripeAccountByBillingId } from '@/stripe/db'
+import Stripe from 'stripe'
 
 export const config = {
   api: {
@@ -30,10 +32,15 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       await handleWebhook(account, event)
 
       if (event.type === 'customer.subscription.created') {
-        // TODO: this should pull the stripe account id from the customer's stripe id
-        // await track('group_event', 'New subscription', {
-        //   $groups: { company: event.account! },
-        // })
+        const account = await getStripeAccountByBillingId(
+          (event.data.object as Stripe.Subscription).customer as string,
+        )
+
+        if (account) {
+          await track('group_event', 'New subscription', {
+            $groups: { company: account.stripeId },
+          })
+        }
       }
     } catch (error: any) {
       console.error(error)
