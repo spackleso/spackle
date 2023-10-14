@@ -1,7 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { verifySignature } from '@/stripe/signature'
-import { identify } from '@/posthog'
+import { identify, groupIdentify } from '@/posthog'
 import { upsertStripeUser } from '@/stripe/db'
+import { group } from 'console'
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { success } = verifySignature(req)
@@ -11,7 +12,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     })
   }
 
-  const { account_id, user_id, user_email, user_name, path } = req.body
+  const { account_id, account_name, user_id, user_email, user_name, path } =
+    req.body
   const user = await upsertStripeUser(
     account_id,
     user_id,
@@ -32,6 +34,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     },
     path,
   )
+  await groupIdentify(account_id, account_name)
 
   res.status(200).json({})
 }

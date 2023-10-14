@@ -25,7 +25,10 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     return res.status(400).send('')
   }
 
-  await track(user.id.toString(), event, properties)
+  await track(user.id.toString(), event, {
+    ...properties,
+    $groups: { company: account_id },
+  })
   res.status(200).json({})
 }
 

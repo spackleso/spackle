@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import { buffer, handleWebhook } from '@/stripe/webhooks'
 import * as Sentry from '@sentry/nextjs'
 import { liveStripe as stripe } from '@/stripe'
+import { track } from '@/posthog'
 
 export const config = {
   api: {
@@ -24,8 +25,18 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         webhookSigningSecret,
       )
 
-      Sentry.setContext('stripeEvent', event)
+      Sentry.setContext('stripeEvent', {
+        id: event.id,
+        account: event.account,
+        type: event.type,
+      })
       await handleWebhook(event.account!, event)
+
+      if (event.type === 'customer.subscription.created') {
+        await track('group_event', 'New subscription', {
+          $groups: { company: event.account! },
+        })
+      }
     } catch (error: any) {
       console.error(error)
       Sentry.captureException(error)

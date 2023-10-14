@@ -46,6 +46,10 @@ export const upsertStripeAccount = async (
       .insert(stripeAccounts)
       .values({ stripeId, name, stripeJson: {} })
       .returning()
+
+    await track('group_event', 'New account', {
+      $groups: { company: stripeId },
+    })
   }
   return result[0]
 }
@@ -105,6 +109,7 @@ export const upsertStripeUser = async (
       email: result[0].email,
       name: result[0].name,
       stripe_id: result[0].stripeId,
+      $groups: { company: stripeAccountId },
     })
   }
   return result[0]

@@ -70,7 +70,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
     )
 
     if (user) {
-      await track(user.id.toString(), 'Created feature', {})
+      await track(user.id.toString(), 'Created feature', {
+        $groups: { company: account_id },
+      })
     }
   }
 

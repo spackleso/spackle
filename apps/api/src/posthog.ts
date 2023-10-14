@@ -23,6 +23,26 @@ export const identify = (
   })
 }
 
+export const groupIdentify = (groupId: string, name: string) => {
+  return fetch(`${host}/capture`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      api_key: key,
+      event: '$groupidentify',
+      properties: {
+        $group_type: 'company',
+        $group_key: groupId,
+        $group_set: {
+          name,
+        },
+      },
+    }),
+  })
+}
+
 export const track = (distinctId: string, event: string, properties: any) => {
   return fetch(`${host}/capture`, {
     method: 'POST',
