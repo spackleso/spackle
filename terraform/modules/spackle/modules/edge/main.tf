@@ -23,6 +23,7 @@ resource "aws_apprunner_service" "edge" {
           start_command = "node apps/edge/dist/index.js"
           runtime_environment_variables = {
             AWS_REGION                    = var.aws_region
+            BETTERSTACK_LOGS_TOKEN        = var.betterstack_logs_token
             DYNAMODB_TABLE_NAME           = var.dynamodb_table_name
             PORT                          = "3003"
             ENVIRONMENT                   = var.environment
@@ -45,7 +46,7 @@ resource "aws_apprunner_service" "edge" {
 }
 
 resource "aws_apprunner_custom_domain_association" "edge" {
-  count = var.environment == "prod" ? 1 : 0
+  count       = var.environment == "prod" ? 1 : 0
   domain_name = "${var.aws_region}.edge.spackle.so"
   service_arn = aws_apprunner_service.edge.arn
 }

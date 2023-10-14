@@ -3,6 +3,7 @@ import * as dotenv from 'dotenv'
 import express from 'express'
 import { requestToken } from './auth'
 import { getCustomerState } from './dynamodb'
+import { Logtail } from '@logtail/node'
 
 try {
   dotenv.config({ path: __dirname + '/.env' })
@@ -28,6 +29,8 @@ Sentry.init({
   tracesSampleRate: 0,
 })
 
+const logtail = new Logtail(process.env.BETTERSTACK_LOGS_TOKEN ?? '')
+
 app.use(Sentry.Handlers.requestHandler())
 app.use(Sentry.Handlers.tracingHandler())
 
@@ -36,7 +39,8 @@ app.get('/', (req, res) => {
 })
 
 app.get('/customers/:id/state', async (req, res) => {
-  console.time('request')
+  const start = Date.now()
+
   let accountId: string = ''
   try {
     const { sub } = requestToken(req.headers)
@@ -47,7 +51,6 @@ app.get('/customers/:id/state', async (req, res) => {
 
   if (!accountId) {
     res.status(401).send('')
-    console.timeEnd('request')
     return
   }
 
@@ -60,10 +63,19 @@ app.get('/customers/:id/state', async (req, res) => {
 
   if (state) {
     res.end(state)
+
+    const end = Date.now()
+    try {
+      logtail.info('/customers/:id/state', {
+        accountId,
+        duration: end - start,
+      })
+    } catch (error) {
+      console.error(error)
+    }
   } else {
     res.status(404).send('')
   }
-  console.timeEnd('request')
 })
 
 app.use(Sentry.Handlers.errorHandler())
