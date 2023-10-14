@@ -19,17 +19,13 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       const buf = await buffer(req)
       const rawBody = buf.toString('utf8')
 
-      let event
-      try {
-        event = stripe.webhooks.constructEvent(
-          rawBody,
-          sig,
-          webhookSigningSecret,
-        )
-      } catch (err: any) {
-        throw err
-      }
+      let event = stripe.webhooks.constructEvent(
+        rawBody,
+        sig,
+        webhookSigningSecret,
+      )
 
+      Sentry.setContext('stripeEvent', event)
       await handleWebhook(account, event)
     } catch (error: any) {
       console.error(error)
