@@ -13,11 +13,11 @@ jest.mock('@/posthog', () => {
   return {
     __esModule: true,
     identify: jest.fn(),
+    groupIdentify: jest.fn(),
   }
 })
 
-import { identify } from '@/posthog'
-import exp from 'constants'
+import { identify, groupIdentify } from '@/posthog'
 
 describe('POST', () => {
   test('Requires a signature', async () => {
@@ -49,5 +49,6 @@ describe('POST', () => {
 
     expect(res._getStatusCode()).toBe(200)
     expect((identify as jest.Mock).mock.calls).toHaveLength(1)
+    expect((groupIdentify as jest.Mock).mock.calls).toHaveLength(1)
   })
 })
