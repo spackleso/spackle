@@ -34,7 +34,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     },
     path,
   )
-  await groupIdentify(account_id, account_name)
+  await groupIdentify(user_id, account_id, account_name)
 
   res.status(200).json({})
 }

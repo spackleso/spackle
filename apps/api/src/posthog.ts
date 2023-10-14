@@ -23,7 +23,11 @@ export const identify = (
   })
 }
 
-export const groupIdentify = (groupId: string, name: string) => {
+export const groupIdentify = (
+  userId: string,
+  groupId: string,
+  name: string,
+) => {
   return fetch(`${host}/capture`, {
     method: 'POST',
     headers: {
@@ -33,6 +37,7 @@ export const groupIdentify = (groupId: string, name: string) => {
       api_key: key,
       event: '$groupidentify',
       properties: {
+        distinct_id: userId,
         $group_type: 'company',
         $group_key: groupId,
         $group_set: {
