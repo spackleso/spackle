@@ -8,7 +8,7 @@ export const conn = postgres(
   process.env.DATABASE_URL ??
     'postgresql://postgres:postgres@localhost:54322/postgres',
 )
-const db = drizzle(conn, { schema })
+export const db = drizzle(conn, { schema })
 
 export const DB_PK_SALT = process.env.DB_PK_SALT ?? 'db_pk_salt'
 

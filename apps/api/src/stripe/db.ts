@@ -25,19 +25,6 @@ export const getStripeAccount = async (stripeId: string) => {
   return null
 }
 
-export const getStripeAccountByBillingId = async (billingId: string) => {
-  const result = await db
-    .select()
-    .from(stripeAccounts)
-    .where(eq(stripeAccounts.billingStripeCustomerId, billingId))
-
-  if (result.length) {
-    return result[0]
-  }
-
-  return null
-}
-
 export const upsertStripeAccount = async (
   stripeId: string,
   name: string | undefined | null,

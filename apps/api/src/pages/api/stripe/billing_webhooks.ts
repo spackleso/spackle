@@ -3,7 +3,7 @@ import { buffer, handleWebhook } from '@/stripe/webhooks'
 import * as Sentry from '@sentry/nextjs'
 import { liveStripe as stripe } from '@/stripe'
 import { track } from '@/posthog'
-import { getStripeAccount, getStripeAccountByBillingId } from '@/stripe/db'
+import { getStripeAccountByBillingId } from '@/billing'
 import Stripe from 'stripe'
 
 export const config = {
