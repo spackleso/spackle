@@ -5,7 +5,7 @@ import {
   stripeInvoices,
   stripeSubscriptions,
 } from '@/db'
-import { and, eq, gte, isNotNull, sql } from 'drizzle-orm'
+import { and, eq, gte, isNotNull, lt, sql } from 'drizzle-orm'
 
 /*
  * Returns the stripe_account based on billingStripeCustomerId.
@@ -63,10 +63,11 @@ export const getMTREstimate = async (
 
 /*
  * This function returns the MTR for the customer within the current billing
- * period. This function only works for customers that have an active
- * subscription.
+ * period based on their current active subscription.
  */
-export const getCurrentPeriodMTR = async (): Promise<number> => {}
+export const getCurrentPeriodMTR = async (
+  stripeAccountId: string,
+): Promise<number> => {}
 
 /*
  * This function returns the usage for the current billing period.  Usage is
@@ -76,4 +77,6 @@ export const getCurrentPeriodMTR = async (): Promise<number> => {}
  *  usage would be 9 (assuming 1,000 MTR is free):
  *    (10,000 - 1,000) / 1,000 = 9
  */
-export const getCurrentPeriodUsage = async (): Promise<number> => {}
+export const getCurrentPeriodUsage = async (
+  stripeAccountId: string,
+): Promise<number> => {}
