@@ -31,6 +31,25 @@ export const codeChallengeMethod = pgEnum('code_challenge_method', [
 export const factorStatus = pgEnum('factor_status', ['verified', 'unverified'])
 export const factorType = pgEnum('factor_type', ['webauthn', 'totp'])
 
+export const signups = pgTable(
+  'signups',
+  {
+    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
+    id: bigserial('id', { mode: 'number' }).primaryKey().notNull(),
+    createdAt: timestamp('created_at', {
+      withTimezone: true,
+      mode: 'string',
+    }).defaultNow(),
+    email: text('email').notNull(),
+  },
+  (table) => {
+    return {
+      signupsEmailKey: unique('signups_email_key').on(table.email),
+    }
+  },
+)
+export type Signup = typeof signups.$inferSelect
+
 export const pricingTables = pgTable('pricing_tables', {
   // You can use { mode: "bigint" } if numbers are exceeding js number limitations
   id: bigserial('id', { mode: 'number' }).primaryKey().notNull(),

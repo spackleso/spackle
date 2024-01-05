@@ -10,7 +10,7 @@ Add Spackle to Stripe{% .lead %}
 
 ## Install the Stripe app
 
-You can find Spackle in the [Stripe App Marketplace](https://marketplace.stripe.com/).
+You can find Spackle in the [Stripe App Marketplace](https://marketplace.stripe.com/apps/spackle).
 
 ---
 
