@@ -5,6 +5,7 @@ import db, { decodePk, pricingTableProducts, pricingTables } from '@/db'
 import { and, eq, inArray } from 'drizzle-orm'
 
 type PricingTableUpdateData = {
+  name: string
   pricing_table_id: number
   monthly_enabled: boolean
   annual_enabled: boolean
@@ -45,6 +46,7 @@ const updatePricingTable = async (
   await db
     .update(pricingTables)
     .set({
+      name: data.name,
       monthlyEnabled: data.monthly_enabled,
       annualEnabled: data.annual_enabled,
     })
