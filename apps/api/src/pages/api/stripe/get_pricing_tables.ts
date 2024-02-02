@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { verifySignature } from '@/stripe/signature'
 import db, { pricingTables, encodePk } from '@/db'
-import { and, eq, sql } from 'drizzle-orm'
+import { and, eq } from 'drizzle-orm'
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { success } = verifySignature(req)
@@ -29,7 +29,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       ),
     )
 
-  let pricingTable
+  let tables
   if (pricingTableResult.length === 0) {
     const createResult = await db
       .insert(pricingTables)
@@ -45,12 +45,12 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         monthly_enabled: pricingTables.monthlyEnabled,
         annual_enabled: pricingTables.annualEnabled,
       })
-    pricingTable = createResult[0]
+    tables = [createResult[0]]
   } else {
-    pricingTable = pricingTableResult[0]
+    tables = pricingTableResult
   }
 
-  return res.status(200).json([pricingTable])
+  return res.status(200).json(tables)
 }
 
 export default handler

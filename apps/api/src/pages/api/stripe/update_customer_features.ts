@@ -77,15 +77,6 @@ const updateCustomerFeatures = async (
       )
   }
 
-  log.info('updateCustomerFeatures', {
-    stripeAccountId,
-    stripeCustomerId,
-    data,
-    updatedCustomerFeatures,
-    newCustomerFeatures,
-    deletedCustomerFeatures,
-  })
-
   await storeCustomerState(stripeAccountId, stripeCustomerId)
 }
 
