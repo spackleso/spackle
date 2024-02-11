@@ -1,7 +1,7 @@
 /**
  * @jest-environment node
  */
-import handler from '@/pages/api/stripe/get_pricing_table'
+import handler from '@/pages/api/stripe/delete_pricing_table'
 import {
   createAccount,
   createPricingTable,
@@ -9,7 +9,7 @@ import {
   testHandler,
 } from '@/tests/helpers'
 import { eq } from 'drizzle-orm'
-import db, { pricingTables, encodePk } from '@/db'
+import db, { encodePk, pricingTables } from '@/db'
 
 describe('POST', () => {
   test('Requires a signature', async () => {
@@ -26,24 +26,16 @@ describe('POST', () => {
     )
   })
 
-  test('Returns a 404 if the pricing table does not exist', async () => {
-    const account = await createAccount()
-    const res = await stripeTestHandler(handler, {
-      method: 'POST',
-      body: {
-        account_id: account.stripeId,
-        mode: 'live',
-        pricing_table_id: '123',
-      },
-    })
-
-    expect(res._getStatusCode()).toBe(404)
-  })
-
-  test('Returns a pricing table', async () => {
+  test('Deletes a pricing table', async () => {
     const account = await createAccount()
     const pricingTableId = (
-      await createPricingTable(account.stripeId, 'Default', 0, true, true)
+      await createPricingTable(
+        account.stripeId,
+        'Pricing Table',
+        0,
+        false,
+        false,
+      )
     ).id
     const pricingTable = (
       await db
@@ -61,19 +53,15 @@ describe('POST', () => {
       method: 'POST',
       body: {
         account_id: account.stripeId,
-        mode: 'live',
-        pricing_table_id: pricingTable.id,
+        id: pricingTable.id,
       },
     })
 
     expect(res._getStatusCode()).toBe(200)
-    const data = res._getJSONData()
-    expect(data).toStrictEqual({
-      id: pricingTable.id,
-      name: 'Default',
-      mode: 0,
-      monthly_enabled: true,
-      annual_enabled: true,
-    })
+    const result = await db
+      .select()
+      .from(pricingTables)
+      .where(eq(pricingTables.id, pricingTableId))
+    expect(result.length).toBe(0)
   })
 })

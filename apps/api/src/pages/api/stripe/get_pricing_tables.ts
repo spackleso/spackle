@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { verifySignature } from '@/stripe/signature'
 import db, { pricingTables, encodePk } from '@/db'
-import { and, eq } from 'drizzle-orm'
+import { and, asc, eq } from 'drizzle-orm'
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { success } = verifySignature(req)
@@ -28,6 +28,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         eq(pricingTables.mode, mode === 'live' ? 0 : 1),
       ),
     )
+    .orderBy(asc(pricingTables.id))
 
   let tables
   if (pricingTableResult.length === 0) {

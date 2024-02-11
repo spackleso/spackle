@@ -1,20 +1,21 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { verifySignature } from '@/stripe/signature'
 import * as Sentry from '@sentry/nextjs'
-import { storeAccountStatesAsync } from '@/store/dynamodb'
-import db, { features } from '@/db'
+import db, { decodePk, pricingTables } from '@/db'
 import { and, eq } from 'drizzle-orm'
 
-const deleteFeature = async (stripeAccountId: string, featureId: number) => {
+const deletePricingTable = async (
+  stripeAccountId: string,
+  pricingTableId: string,
+) => {
   await db
-    .delete(features)
+    .delete(pricingTables)
     .where(
       and(
-        eq(features.stripeAccountId, stripeAccountId),
-        eq(features.id, featureId),
+        eq(pricingTables.stripeAccountId, stripeAccountId),
+        decodePk(pricingTables.id, pricingTableId),
       ),
     )
-  await storeAccountStatesAsync(stripeAccountId)
 }
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
@@ -25,12 +26,11 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     })
   }
 
-  // TODO: handle all errors
-  const { account_id, feature_id } = req.body
+  const { account_id, id } = req.body
 
-  if (feature_id) {
+  if (id) {
     try {
-      await deleteFeature(account_id, feature_id)
+      await deletePricingTable(account_id, id)
     } catch (error) {
       Sentry.captureException(error)
       return res.status(400).json({
