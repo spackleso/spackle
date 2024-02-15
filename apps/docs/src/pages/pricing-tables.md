@@ -12,7 +12,7 @@ Updating your pricing should be as easy as flipping a switch. Spackle allows you
 
 ### Configure your pricing table
 
-On the "Pricing Table" tab of your Spackle viewport, click the "Edit" button.
+In the "Pricing Table" section of Spackle, click the "Configure" button.
 
 {% image src="/pricing-table-2.png" alt="Pricing tables edit" width=3248 height=2112 /%}
 
