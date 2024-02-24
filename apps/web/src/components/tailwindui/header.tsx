@@ -6,7 +6,6 @@ import { Container } from '@/components/tailwindui/container'
 import { Logo } from '@/components/logo'
 import { NavLink } from '@/components/tailwindui/nav-link'
 import { ArrowTopRightOnSquareIcon } from '@heroicons/react/20/solid'
-import { ThemeSelector } from '@/components/tailwindui/theme-selector'
 import { comfortaa } from '@/lib/font'
 
 export function Header() {
@@ -42,7 +41,6 @@ export function Header() {
                 <ArrowTopRightOnSquareIcon className="h-4 w-4" />
               </span>
             </NavLink>
-            <ThemeSelector className="relative z-10" />
           </div>
         </nav>
       </Container>
