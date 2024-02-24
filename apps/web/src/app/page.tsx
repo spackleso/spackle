@@ -25,8 +25,7 @@ export default function Home() {
                 Seamless integration
               </p>
               <h2 className="mx-auto max-w-xl text-xl leading-tight tracking-tight text-slate-600 dark:text-slate-400 sm:text-2xl">
-                Stripe billing in{' '}
-                <span className="underline">3 lines of code</span>
+                Stripe Billing in 3 lines of code
               </h2>
             </div>
             <div className="flex flex-row items-center justify-center gap-8">
@@ -37,15 +36,15 @@ export default function Home() {
                   <li>No code complexity</li>
                 </ul>
               </div>
-              <div className="border-1 rounded-lg border border-slate-600 p-8">
+              <div className="border-1 rounded-lg border border-slate-600 bg-black p-8">
                 <CodeExample />
               </div>
             </div>
           </div>
 
           <GridPattern
-            width={20}
-            height={20}
+            width={32}
+            height={32}
             x={-1}
             y={-1}
             className={cn(
