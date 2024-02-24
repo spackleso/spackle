@@ -22,9 +22,9 @@ export default function Layout({ children }: any) {
       </head>
       <PHProvider>
         <body>
-          <div className="flex h-full min-h-screen flex-col gap-y-16">
+          <div className="flex h-full min-h-screen flex-col gap-y-16 bg-gradient-to-b from-violet-600/10 from-0% to-black to-30%">
             <Header />
-            {children}
+            <div className="py-24">{children}</div>
             <Footer />
           </div>
         </body>
