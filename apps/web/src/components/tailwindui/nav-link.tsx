@@ -1,5 +1,5 @@
+import Link from 'next/link'
 import { ReactNode } from 'react'
-import { Button } from './button'
 
 export function NavLink({
   href,
@@ -9,8 +9,11 @@ export function NavLink({
   children: ReactNode
 }) {
   return (
-    <Button href={href} color="transparent" className="text-sm">
+    <Link
+      href={href}
+      className="flex flex-row items-center gap-1 text-sm font-semibold hover:text-slate-900 dark:hover:text-slate-100"
+    >
       {children}
-    </Button>
+    </Link>
   )
 }
