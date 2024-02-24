@@ -4,7 +4,7 @@ import { Hero } from '@/components/tailwindui/hero'
 export default function Home() {
   return (
     <>
-      <main className="flex flex-grow flex-col items-center justify-center gap-y-32 py-24">
+      <main className="mt-12 flex flex-grow flex-col items-center justify-center gap-y-32 py-24">
         <div className="max-w-4xl">
           <Hero />
         </div>

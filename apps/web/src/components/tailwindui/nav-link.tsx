@@ -9,7 +9,7 @@ export function NavLink({
   children: ReactNode
 }) {
   return (
-    <Button href={href} color="transparent" className="text-xs">
+    <Button href={href} color="transparent" className="text-sm">
       {children}
     </Button>
   )
