@@ -60,7 +60,7 @@ export default function Layout({ children }: any) {
       </head>
       <PHProvider>
         <body className="bg-white dark:bg-black">
-          <div className="flex h-full min-h-screen flex-col gap-y-32">
+          <div className="flex h-full min-h-screen flex-col gap-y-16">
             <Header />
             {children}
             <Footer />
