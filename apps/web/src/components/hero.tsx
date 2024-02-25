@@ -31,10 +31,7 @@ export function Hero() {
         transition={{ duration: 0.3, ease: 'easeOut', delay: 0.2 }}
         className="flex w-full flex-row items-center justify-center gap-4"
       >
-        <Button
-          href="https://marketplace.stripe.com/apps/spackle"
-          color="violet"
-        >
+        <Button href="/signup" color="violet">
           Get Started
         </Button>
         <Button

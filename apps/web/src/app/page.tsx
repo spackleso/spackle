@@ -1,6 +1,6 @@
 import { Bento } from '@/components/bento'
 import Screenshot from '@/components/screenshot'
-import { Hero } from '@/components/tailwindui/hero'
+import { Hero } from '@/components/hero'
 import CodeExample from '@/components/code-example'
 import GridPattern from '@/components/magicui/grid-pattern'
 import RadialGradient from '@/components/magicui/radial-gradient'
@@ -11,7 +11,7 @@ import { cn } from '@/lib/utils'
 export default function Home() {
   return (
     <>
-      <main className="mt-40 flex flex-grow flex-col items-center justify-center gap-y-48 px-4">
+      <main className="mt-40 flex flex-grow flex-col items-center justify-center gap-y-32 px-4">
         <div className="flex max-w-4xl items-center">
           <Hero />
         </div>
