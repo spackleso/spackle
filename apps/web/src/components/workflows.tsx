@@ -67,7 +67,7 @@ export default function Workflows() {
               </dl>
             </div>
           </div>
-          <div className="flex items-start justify-end lg:order-first">
+          <div className="flex items-center justify-center lg:order-first lg:items-start lg:justify-end">
             <Image
               src="/screenshot-closeup.png"
               alt="Spackle screenshot cropped"

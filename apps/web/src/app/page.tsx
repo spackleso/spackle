@@ -3,8 +3,6 @@ import Screenshot from '@/components/screenshot'
 import { Hero } from '@/components/hero'
 import CodeExample from '@/components/code-example'
 import GridPattern from '@/components/magicui/grid-pattern'
-import RadialGradient from '@/components/magicui/radial-gradient'
-import FeaturePreview from '@/components/feature-preview'
 import Workflows from '@/components/workflows'
 import { cn } from '@/lib/utils'
 
@@ -41,7 +39,7 @@ export default function Home() {
                   <li>No code complexity</li>
                 </ul>
               </div>
-              <div className="border-1 flex max-w-md overflow-x-auto rounded-lg border border-slate-600 bg-black p-8 sm:max-w-full">
+              <div className="border-1 flex max-w-xs overflow-x-auto rounded-lg border border-slate-600 bg-black p-8 sm:max-w-full">
                 <CodeExample />
               </div>
             </div>
