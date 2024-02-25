@@ -16,7 +16,7 @@ export function Footer() {
             </h1>
           </div>
         </div>
-        <div className="flex flex-col items-center py-10 sm:flex-row-reverse sm:justify-between">
+        <div className="flex flex-col items-center py-10">
           <p className="mt-6 text-sm text-slate-400 sm:mt-0">
             Copyright &copy; {new Date().getFullYear()} Bolder Research LLC. All
             rights reserved.

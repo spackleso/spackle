@@ -10,7 +10,7 @@ const Screenshot = () => {
       initial={{ opacity: 0, y: -50 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: 'easeOut', delay: 0.5 }}
-      className="relative rounded-lg"
+      className="relative overflow-hidden rounded-lg"
     >
       <Image
         src="/screenshot.png"

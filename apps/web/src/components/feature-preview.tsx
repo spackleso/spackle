@@ -24,9 +24,9 @@ export default function FeaturePreview() {
   }, [enabled, start, end, setEnabled, setStart, setEnd])
 
   return (
-    <div className="mt-8 h-full rounded-lg bg-slate-50 p-16 shadow-xl dark:bg-black/30 md:mt-0">
+    <div className="flex h-full w-full flex-col justify-center space-y-4 rounded-lg bg-slate-50 shadow-xl dark:bg-black/30">
       <div>
-        <p className="flex flex-row text-xl font-semibold text-slate-600 dark:text-slate-500">
+        <p className="flex flex-row text-xl text-slate-600 dark:text-slate-500">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -43,21 +43,21 @@ export default function FeaturePreview() {
           </svg>
           ACME Corp.
         </p>
-        <p className="text-sm font-semibold text-slate-600 dark:text-slate-500">
-          $500/month
-        </p>
+        <p className="text-sm text-slate-600 dark:text-slate-500">$500/month</p>
       </div>
-      <div className="mt-6 flex flex-row space-x-8 font-semibold text-slate-600 dark:text-slate-500">
-        <p>Landing Pages</p>
-        <Toggle enabled={enabled} setEnabled={setEnabled} />
-      </div>
-      <div className="mt-4 flex w-full flex-row space-x-8 font-semibold text-slate-600 dark:text-slate-500">
-        <p className="w-full whitespace-nowrap">Contact Limit</p>
-        <p className="w-full text-right font-extrabold">
-          <CountUp start={start} end={end} duration={0.5}>
-            {({ countUpRef }) => <span ref={countUpRef} />}
-          </CountUp>
-        </p>
+      <div className="flex flex-col space-y-2">
+        <div className="flex flex-row space-x-8 text-slate-600 dark:text-slate-500">
+          <p>Landing Pages</p>
+          <Toggle enabled={enabled} setEnabled={setEnabled} />
+        </div>
+        <div className="flex w-full flex-row space-x-8 text-slate-600 dark:text-slate-500">
+          <p className="w-full whitespace-nowrap">Contact Limit</p>
+          <p className="w-full text-right font-extrabold">
+            <CountUp start={start} end={end} duration={0.5}>
+              {({ countUpRef }) => <span ref={countUpRef} />}
+            </CountUp>
+          </p>
+        </div>
       </div>
     </div>
   )

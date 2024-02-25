@@ -28,7 +28,7 @@ const PriceBox = ({
             /month
           </span>
           <span className="text-xs text-slate-900 dark:text-white">
-            {price.isPro ? 'Per to $1,000 MTR*' : 'Up to $1,000 MTR*'}
+            {price.isPro ? 'Per $1,000 MTR*' : 'Up to $1,000 MTR*'}
           </span>
         </div>
         <div className="mt-8 text-sm font-semibold text-slate-900 dark:text-white">
