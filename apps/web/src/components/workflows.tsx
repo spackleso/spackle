@@ -1,16 +1,9 @@
 import {
-  CloudArrowUpIcon,
-  LockClosedIcon,
-  ServerIcon,
   ArrowPathIcon,
   BuildingOffice2Icon,
   SparklesIcon,
 } from '@heroicons/react/20/solid'
 import Image from 'next/image'
-
-// <li>Iterative Pricing</li>
-// <li>Enterprise Sales</li>
-// <li>One-Off Experiences</li>
 
 const features = [
   {

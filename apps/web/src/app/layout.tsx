@@ -6,9 +6,9 @@ import { Footer } from '@/components/tailwindui/footer'
 import PHProvider from '../components/posthog'
 
 export const metadata = {
-  title: 'Spackle - Product-Market-Pricing Fit Made Easy',
+  title: 'Spackle - Effortless Billing',
   description:
-    'Low-code entitlement management platform that allows you to iterate on your pricing, close more deals, and create custom experiences for all of your customers',
+    'Meet the new billing abstraction loved by engineering and sales, startups and enterprises.',
 }
 
 export default function Layout({ children }: any) {
