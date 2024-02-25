@@ -67,13 +67,13 @@ export default function Workflows() {
               </dl>
             </div>
           </div>
-          <div className="flex items-center justify-center lg:order-first lg:items-start lg:justify-end">
+          <div className="flex items-start justify-end lg:order-first">
             <Image
               src="/screenshot-closeup.png"
               alt="Spackle screenshot cropped"
-              className="w-[32rem] max-w-none rounded-xl shadow-xl ring-1 ring-gray-400/10 sm:mt-8 sm:w-[32rem]"
-              width={2432 / 2}
-              height={1442 / 2}
+              className="w-[24rem] max-w-none rounded-xl shadow-xl ring-1 ring-gray-400/10 sm:mt-8 sm:w-[32rem]"
+              width={1596}
+              height={1715}
             />
           </div>
         </div>
