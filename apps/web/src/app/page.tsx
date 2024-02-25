@@ -26,8 +26,9 @@ export default function Home() {
               <p className="font-display mx-auto text-4xl font-medium tracking-tight text-slate-900 dark:text-white sm:text-5xl">
                 Seamless integration
               </p>
-              <p className="mx-auto max-w-2xl text-xl leading-tight tracking-tight text-slate-600 dark:text-slate-400 sm:text-2xl">
-                Integrate with Stripe Billing in 3 lines of code. <br />
+              <p className="mx-auto max-w-2xl text-lg leading-tight tracking-tight text-slate-600 dark:text-slate-400 md:text-2xl">
+                Integrate Stripe Billing in 3 lines of code.
+                <br />
                 Billing logic doesn&apos;t need to be complex.
               </p>
             </div>
@@ -65,7 +66,7 @@ export default function Home() {
           <p className="font-display mx-auto text-4xl font-medium tracking-tight text-slate-900 dark:text-white sm:text-5xl">
             Features
           </p>
-          <p className="mx-auto max-w-4xl text-center text-xl leading-tight tracking-tight text-slate-600 dark:text-slate-400 sm:text-2xl">
+          <p className="mx-auto max-w-4xl text-center text-lg leading-tight tracking-tight text-slate-600 dark:text-slate-400 md:text-2xl">
             Spackle contains a collection of billing primitives that keeps
             complexity out of your codebase. Focus on your product, not billing.
           </p>
