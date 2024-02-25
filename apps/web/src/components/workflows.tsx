@@ -71,9 +71,9 @@ export default function Workflows() {
             <Image
               src="/screenshot-closeup.png"
               alt="Spackle screenshot cropped"
-              className="w-[36rem] max-w-none rounded-xl shadow-xl ring-1 ring-gray-400/10 sm:w-[36rem]"
-              width={2432}
-              height={1442}
+              className="w-[32rem] max-w-none rounded-xl shadow-xl ring-1 ring-gray-400/10 sm:mt-8 sm:w-[32rem]"
+              width={2432 / 2}
+              height={1442 / 2}
             />
           </div>
         </div>
