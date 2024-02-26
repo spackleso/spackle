@@ -68,6 +68,7 @@ export const createAccount = async () => {
     .insert(stripeAccounts)
     .values({
       stripeId,
+      billingStripeCustomerId: genStripeId('cus'),
     })
     .returning()
   return result[0]
@@ -167,11 +168,17 @@ export const createStripeSubscription = async (
   stripeJson: any,
   stripeId: string = genStripeId('sub'),
   siId: string = genStripeId('si'),
+  status: string = 'active',
 ) => {
+  stripeJson = {
+    id: stripeId,
+    ...stripeJson,
+  }
+
   const subs = await db
     .insert(stripeSubscriptions)
     .values({
-      status: 'active',
+      status,
       stripeAccountId,
       stripeCustomerId,
       stripeId,
@@ -179,7 +186,7 @@ export const createStripeSubscription = async (
     })
     .returning()
 
-  const res = await db
+  await db
     .insert(stripeSubscriptionItems)
     .values({
       stripeAccountId,
@@ -411,6 +418,7 @@ export const createsBillableCharge = async (
   const product = await createStripeProduct(stripeAccountId)
   const price = await createStripePrice(stripeAccountId, product.stripeId)
   const customer = await createStripeCustomer(stripeAccountId)
+
   const subscription = await createStripeSubscription(
     stripeAccountId,
     customer.stripeId,
