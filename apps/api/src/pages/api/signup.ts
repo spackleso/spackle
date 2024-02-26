@@ -57,6 +57,7 @@ const sendSignupEmail = async (email: string) => {
   await client.sendEmail({
     From: 'hunter@spackle.so',
     To: email,
+    Bcc: 'hunter@spackle.so',
     Subject: 'Welcome to Spackle!',
     TextBody: emailText,
     HtmlBody: emailHtml,
