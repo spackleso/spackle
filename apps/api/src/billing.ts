@@ -1,5 +1,5 @@
 import { and, eq, gte, isNotNull, lt, sql, sum } from 'drizzle-orm'
-import db, { stripeCharges, stripeInvoices, stripeSubscriptions } from '@/db'
+import db, { stripeCharges, stripeInvoices } from '@/db'
 import { getStripeAccount } from './stripe/db'
 import { getCustomerState } from './state'
 
