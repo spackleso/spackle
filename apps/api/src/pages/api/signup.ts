@@ -57,11 +57,11 @@ const sendSignupEmail = async (email: string) => {
   await client.sendEmail({
     From: 'hunter@spackle.so',
     To: email,
-    Bcc: 'hunter@spackle.so',
     Subject: 'Welcome to Spackle!',
     TextBody: emailText,
     HtmlBody: emailHtml,
   })
+  // TODO: posthog identify and track event
 }
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
