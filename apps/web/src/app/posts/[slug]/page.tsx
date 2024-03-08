@@ -46,10 +46,10 @@ export default async function PostPage({ params }: any) {
   const post = await getPost(slug)
 
   return (
-    <main className="flex flex-grow flex-col pb-16 dark:text-white">
-      <Container className="flex w-full flex-col items-center pb-16">
+    <main className="flex flex-grow flex-col">
+      <Container className="my-8 flex w-full flex-col items-center gap-y-12">
         <div className="prose lg:prose-xl dark:prose-invert w-full">
-          <Link href={`/posts/${slug}`}>
+          <Link className="no-underline" href={`/posts/${slug}`}>
             <h1>{post.title}</h1>
           </Link>
           <p className="prose prose-slate prose-sm text-slate-500 dark:text-slate-400">

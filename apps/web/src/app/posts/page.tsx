@@ -34,19 +34,19 @@ export default async function BlogPage() {
   const posts = await getPosts()
 
   return (
-    <main className="flex flex-grow flex-col pb-16">
-      <Container className="flex w-full flex-col items-center pb-16">
+    <main className="flex flex-grow flex-col">
+      <Container className="my-8 flex w-full flex-col items-center gap-y-12">
         <div className="prose lg:prose-xl dark:prose-invert w-full">
           <h1>Blog</h1>
         </div>
-        <div className="prose lg:prose-xl dark:prose-invert w-full">
+        <div className="flex flex-col gap-y-8">
           {posts.map((post) => (
             <div
               key={post.slug}
               className="prose dark:prose-invert w-full max-w-none"
             >
-              <Link href={`/posts/${post.slug}`}>
-                <h2>{post.title}</h2>
+              <Link className="no-underline" href={`/posts/${post.slug}`}>
+                <h2 className="text-3xl">{post.title}</h2>
               </Link>
               <p>{post.excerpt}</p>
               <Link href={`/posts/${post.slug}`}>Read more</Link>
