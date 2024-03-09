@@ -30,7 +30,11 @@ Sentry.init({
 })
 
 const region = process.env.AWS_REGION ?? ''
-const logtail = new Logtail(process.env.BETTERSTACK_LOGS_TOKEN ?? '')
+
+let logtail: Logtail | Console = console
+if (process.env.BETTERSTACK_LOGS_TOKEN) {
+  logtail = new Logtail(process.env.BETTERSTACK_LOGS_TOKEN)
+}
 
 app.use(Sentry.Handlers.requestHandler())
 app.use(Sentry.Handlers.tracingHandler())

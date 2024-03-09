@@ -23,7 +23,7 @@ jobs:
         run: redis-cli ping
 
       - name: Install modules
-        run: yarn
+        run: pnpm install
 
       - name: Set up Supabase
         uses: supabase/setup-cli@v1
@@ -33,7 +33,7 @@ jobs:
       - run: supabase start
 
       - name: Run tests
-        run: yarn test
+        run: pnpm turbo test
         env:
           AWS_REGION: us-west-2
           BETTERSTACK_LOGS_TOKEN: super-secret-token
