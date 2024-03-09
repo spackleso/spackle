@@ -6,7 +6,7 @@
     "deploy": "wrangler deploy --minify src/index.ts --env production"
   },
   "dependencies": {
-    "@spackle/db": "workspace:^",
+    "@hono/sentry": "^1.0.1",
     "hono": "^4.0.9"
   },
   "devDependencies": {

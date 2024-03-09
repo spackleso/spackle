@@ -5,6 +5,7 @@ import { TieredCache } from '@/lib/cache/tiered'
 import v1 from './routes/v1'
 import { StatusCode } from 'hono/utils/http-status'
 import { cors } from 'hono/cors'
+import { sentry } from '@hono/sentry'
 
 const cacheMap = new Map()
 
@@ -21,8 +22,9 @@ function init() {
 }
 
 const app = new Hono()
-app.use('*', init())
 app.use('*', cors())
+app.use('*', sentry())
+app.use('*', init())
 
 app.route('/v1', v1)
 app.route('/', v1)
