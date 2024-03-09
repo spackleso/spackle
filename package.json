@@ -14,7 +14,8 @@
     "dev": "turbo run dev"
   },
   "devDependencies": {
-    "turbo": "^1.10.12"
+    "turbo": "^1.10.12",
+    "typescript": "^5.4.2"
   },
   "dependencies": {}
 }

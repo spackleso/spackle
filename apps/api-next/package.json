@@ -1,0 +1,17 @@
+{
+  "name": "api-next",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "wrangler dev src/index.ts",
+    "deploy": "wrangler deploy --minify src/index.ts --env production"
+  },
+  "dependencies": {
+    "@spackle/db": "workspace:^",
+    "hono": "^4.0.9"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20240208.0",
+    "typescript": "^5.4.2",
+    "wrangler": "^3.31.0"
+  }
+}
