@@ -21,7 +21,7 @@ const app = new Hono()
 app.use('*', init())
 
 app.route('/v1', v1)
-
+app.route('/', v1)
 app.get('/', (c: Context) => {
   return c.text('')
 })

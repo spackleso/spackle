@@ -3,7 +3,11 @@ compatibility_date = "2023-12-01"
 
 [env.production]
 vars = {  ENVIRONMENT = "production"}
-route = { pattern = "api-next.spackle.so", custom_domain = true}
+routes = [
+  { pattern = "edge.spackle.so", custom_domain = true },
+  { pattern = "us-east-1.edge.spackle.so", custom_domain = true },
+  { pattern = "us-west-2.edge.spackle.so", custom_domain = true }
+]
 
 # [vars]
 # MY_VARIABLE = "production_value"
