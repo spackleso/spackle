@@ -3,6 +3,7 @@ compatibility_date = "2023-12-01"
 
 [env.production]
 vars = {  ENVIRONMENT = "production"}
+logpush = true
 routes = [
   { pattern = "edge.spackle.so", custom_domain = true },
   { pattern = "us-east-1.edge.spackle.so", custom_domain = true },
