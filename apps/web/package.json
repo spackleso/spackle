@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@headlessui/react": "^1.7.2",
     "@heroicons/react": "^2.0.18",
     "@markdoc/markdoc": "^0.2.2",
     "@radix-ui/react-dialog": "^1.0.5",
