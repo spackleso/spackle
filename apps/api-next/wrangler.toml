@@ -1,27 +1,19 @@
 name = "spackle-api"
 compatibility_date = "2023-12-01"
 
+[vars]
+ENVIRONMENT = "development"
+ORIGIN = "http://localhost:3000"
+
 [env.production]
-vars = {  ENVIRONMENT = "production"}
 logpush = true
 routes = [
+  { pattern = "api.spackle.so", custom_domain = true },
   { pattern = "edge.spackle.so", custom_domain = true },
   { pattern = "us-east-1.edge.spackle.so", custom_domain = true },
   { pattern = "us-west-2.edge.spackle.so", custom_domain = true }
 ]
 
-# [vars]
-# MY_VARIABLE = "production_value"
-
-# [[kv_namespaces]]
-# binding = "MY_KV_NAMESPACE"
-# id = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-
-# [[r2_buckets]]
-# binding = "MY_BUCKET"
-# bucket_name = "my-bucket"
-
-# [[d1_databases]]
-# binding = "DB"
-# database_name = "my-database"
-# database_id = ""
+[env.production.vars]
+ENVIRONMENT = "production"
+ORIGIN = "https://spackle-cksxj3a32-bolder-research.vercel.app"
