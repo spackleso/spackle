@@ -1,0 +1,1423 @@
+{
+  "id": "00000000-0000-0000-0000-000000000000",
+  "prevId": "",
+  "version": "5",
+  "dialect": "pg",
+  "tables": {
+    "stripe_prices": {
+      "name": "stripe_prices",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "bigint",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "stripe_id": {
+          "name": "stripe_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "stripe_account_id": {
+          "name": "stripe_account_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "stripe_product_id": {
+          "name": "stripe_product_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "stripe_json": {
+          "name": "stripe_json",
+          "type": "json",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "stripe_prices_stripe_account_id_fkey": {
+          "name": "stripe_prices_stripe_account_id_fkey",
+          "tableFrom": "stripe_prices",
+          "tableTo": "stripe_accounts",
+          "schemaTo": "public",
+          "columnsFrom": [
+            "stripe_account_id"
+          ],
+          "columnsTo": [
+            "stripe_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "stripe_prices_stripe_product_id_fkey": {
+          "name": "stripe_prices_stripe_product_id_fkey",
+          "tableFrom": "stripe_prices",
+          "tableTo": "stripe_products",
+          "schemaTo": "public",
+          "columnsFrom": [
+            "stripe_product_id"
+          ],
+          "columnsTo": [
+            "stripe_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "stripe_prices_stripe_id_key": {
+          "columns": [
+            "stripe_id"
+          ],
+          "nullsNotDistinct": false,
+          "name": "stripe_prices_stripe_id_key"
+        }
+      }
+    },
+    "stripe_products": {
+      "name": "stripe_products",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "bigint",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "stripe_id": {
+          "name": "stripe_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "stripe_account_id": {
+          "name": "stripe_account_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "stripe_json": {
+          "name": "stripe_json",
+          "type": "json",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "stripe_products_stripe_account_id_fkey": {
+          "name": "stripe_products_stripe_account_id_fkey",
+          "tableFrom": "stripe_products",
+          "tableTo": "stripe_accounts",
+          "schemaTo": "public",
+          "columnsFrom": [
+            "stripe_account_id"
+          ],
+          "columnsTo": [
+            "stripe_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "stripe_products_stripe_id_key": {
+          "columns": [
+            "stripe_id"
+          ],
+          "nullsNotDistinct": false,
+          "name": "stripe_products_stripe_id_key"
+        }
+      }
+    },
+    "stripe_customers": {
+      "name": "stripe_customers",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "bigint",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "stripe_id": {
+          "name": "stripe_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "stripe_account_id": {
+          "name": "stripe_account_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "stripe_json": {
+          "name": "stripe_json",
+          "type": "json",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "stripe_customers_stripe_account_id_fkey": {
+          "name": "stripe_customers_stripe_account_id_fkey",
+          "tableFrom": "stripe_customers",
+          "tableTo": "stripe_accounts",
+          "schemaTo": "public",
+          "columnsFrom": [
+            "stripe_account_id"
+          ],
+          "columnsTo": [
+            "stripe_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "stripe_customers_stripe_id_key": {
+          "columns": [
+            "stripe_id"
+          ],
+          "nullsNotDistinct": false,
+          "name": "stripe_customers_stripe_id_key"
+        }
+      }
+    },
+    "stripe_subscription_items": {
+      "name": "stripe_subscription_items",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "bigint",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "stripe_id": {
+          "name": "stripe_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "stripe_account_id": {
+          "name": "stripe_account_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "stripe_json": {
+          "name": "stripe_json",
+          "type": "json",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "stripe_price_id": {
+          "name": "stripe_price_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "stripe_subscription_id": {
+          "name": "stripe_subscription_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "stripe_subscription_items_stripe_account_id_fkey": {
+          "name": "stripe_subscription_items_stripe_account_id_fkey",
+          "tableFrom": "stripe_subscription_items",
+          "tableTo": "stripe_accounts",
+          "schemaTo": "public",
+          "columnsFrom": [
+            "stripe_account_id"
+          ],
+          "columnsTo": [
+            "stripe_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "stripe_subscription_items_stripe_price_id_fkey": {
+          "name": "stripe_subscription_items_stripe_price_id_fkey",
+          "tableFrom": "stripe_subscription_items",
+          "tableTo": "stripe_prices",
+          "schemaTo": "public",
+          "columnsFrom": [
+            "stripe_price_id"
+          ],
+          "columnsTo": [
+            "stripe_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "stripe_subscription_items_stripe_subscription_id_fkey": {
+          "name": "stripe_subscription_items_stripe_subscription_id_fkey",
+          "tableFrom": "stripe_subscription_items",
+          "tableTo": "stripe_subscriptions",
+          "schemaTo": "public",
+          "columnsFrom": [
+            "stripe_subscription_id"
+          ],
+          "columnsTo": [
+            "stripe_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "stripe_subscription_items_stripe_id_key": {
+          "columns": [
+            "stripe_id"
+          ],
+          "nullsNotDistinct": false,
+          "name": "stripe_subscription_items_stripe_id_key"
+        }
+      }
+    },
+    "stripe_subscriptions": {
+      "name": "stripe_subscriptions",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "bigint",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "stripe_id": {
+          "name": "stripe_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "stripe_account_id": {
+          "name": "stripe_account_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "stripe_json": {
+          "name": "stripe_json",
+          "type": "json",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "stripe_customer_id": {
+          "name": "stripe_customer_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "stripe_subscriptions_stripe_account_id_fkey": {
+          "name": "stripe_subscriptions_stripe_account_id_fkey",
+          "tableFrom": "stripe_subscriptions",
+          "tableTo": "stripe_accounts",
+          "schemaTo": "public",
+          "columnsFrom": [
+            "stripe_account_id"
+          ],
+          "columnsTo": [
+            "stripe_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "stripe_subscriptions_stripe_customer_id_fkey": {
+          "name": "stripe_subscriptions_stripe_customer_id_fkey",
+          "tableFrom": "stripe_subscriptions",
+          "tableTo": "stripe_customers",
+          "schemaTo": "public",
+          "columnsFrom": [
+            "stripe_customer_id"
+          ],
+          "columnsTo": [
+            "stripe_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "stripe_subscriptions_stripe_id_key": {
+          "columns": [
+            "stripe_id"
+          ],
+          "nullsNotDistinct": false,
+          "name": "stripe_subscriptions_stripe_id_key"
+        }
+      }
+    },
+    "features": {
+      "name": "features",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "bigint",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "key": {
+          "name": "key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "type": {
+          "name": "type",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "value_limit": {
+          "name": "value_limit",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "value_flag": {
+          "name": "value_flag",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "stripe_account_id": {
+          "name": "stripe_account_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "features_stripe_account_id_fkey": {
+          "name": "features_stripe_account_id_fkey",
+          "tableFrom": "features",
+          "tableTo": "stripe_accounts",
+          "schemaTo": "public",
+          "columnsFrom": [
+            "stripe_account_id"
+          ],
+          "columnsTo": [
+            "stripe_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "features_stripe_account_id_key_key": {
+          "columns": [
+            "key",
+            "stripe_account_id"
+          ],
+          "nullsNotDistinct": false,
+          "name": "features_stripe_account_id_key_key"
+        }
+      }
+    },
+    "stripe_users": {
+      "name": "stripe_users",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "bigint",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "stripe_account_id": {
+          "name": "stripe_account_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "stripe_id": {
+          "name": "stripe_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "stripe_users_stripe_account_id_fkey": {
+          "name": "stripe_users_stripe_account_id_fkey",
+          "tableFrom": "stripe_users",
+          "tableTo": "stripe_accounts",
+          "schemaTo": "public",
+          "columnsFrom": [
+            "stripe_account_id"
+          ],
+          "columnsTo": [
+            "stripe_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "stripe_users_stripe_account_id_stripe_id_feat_key": {
+          "columns": [
+            "stripe_account_id",
+            "stripe_id"
+          ],
+          "nullsNotDistinct": false,
+          "name": "stripe_users_stripe_account_id_stripe_id_feat_key"
+        }
+      }
+    },
+    "tokens": {
+      "name": "tokens",
+      "schema": "",
+      "columns": {
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "token": {
+          "name": "token",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "stripe_account_id": {
+          "name": "stripe_account_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "tokens_stripe_account_id_fkey": {
+          "name": "tokens_stripe_account_id_fkey",
+          "tableFrom": "tokens",
+          "tableTo": "stripe_accounts",
+          "schemaTo": "public",
+          "columnsFrom": [
+            "stripe_account_id"
+          ],
+          "columnsTo": [
+            "stripe_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "stripe_accounts": {
+      "name": "stripe_accounts",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "bigint",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "stripe_id": {
+          "name": "stripe_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "stripe_json": {
+          "name": "stripe_json",
+          "type": "json",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "initial_sync_complete": {
+          "name": "initial_sync_complete",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "initial_sync_started_at": {
+          "name": "initial_sync_started_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "has_acknowledged_setup": {
+          "name": "has_acknowledged_setup",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "billing_stripe_customer_id": {
+          "name": "billing_stripe_customer_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "stripe_accounts_stripe_id_key": {
+          "columns": [
+            "stripe_id"
+          ],
+          "nullsNotDistinct": false,
+          "name": "stripe_accounts_stripe_id_key"
+        },
+        "stripe_accounts_billing_stripe_customer_id_key": {
+          "columns": [
+            "billing_stripe_customer_id"
+          ],
+          "nullsNotDistinct": false,
+          "name": "stripe_accounts_billing_stripe_customer_id_key"
+        }
+      }
+    },
+    "customer_features": {
+      "name": "customer_features",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "bigint",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "value_limit": {
+          "name": "value_limit",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "value_flag": {
+          "name": "value_flag",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "stripe_account_id": {
+          "name": "stripe_account_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "stripe_customer_id": {
+          "name": "stripe_customer_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "feature_id": {
+          "name": "feature_id",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "customer_features_feature_id_fkey": {
+          "name": "customer_features_feature_id_fkey",
+          "tableFrom": "customer_features",
+          "tableTo": "features",
+          "schemaTo": "public",
+          "columnsFrom": [
+            "feature_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "customer_features_stripe_account_id_fkey": {
+          "name": "customer_features_stripe_account_id_fkey",
+          "tableFrom": "customer_features",
+          "tableTo": "stripe_accounts",
+          "schemaTo": "public",
+          "columnsFrom": [
+            "stripe_account_id"
+          ],
+          "columnsTo": [
+            "stripe_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "customer_features_stripe_customer_id_fkey": {
+          "name": "customer_features_stripe_customer_id_fkey",
+          "tableFrom": "customer_features",
+          "tableTo": "stripe_customers",
+          "schemaTo": "public",
+          "columnsFrom": [
+            "stripe_customer_id"
+          ],
+          "columnsTo": [
+            "stripe_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "customer_features_stripe_account_id_stripe_customer_id_feat_key": {
+          "columns": [
+            "stripe_account_id",
+            "stripe_customer_id",
+            "feature_id"
+          ],
+          "nullsNotDistinct": false,
+          "name": "customer_features_stripe_account_id_stripe_customer_id_feat_key"
+        }
+      }
+    },
+    "product_features": {
+      "name": "product_features",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "bigint",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "value_limit": {
+          "name": "value_limit",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "value_flag": {
+          "name": "value_flag",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "stripe_account_id": {
+          "name": "stripe_account_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "stripe_product_id": {
+          "name": "stripe_product_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "feature_id": {
+          "name": "feature_id",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "product_features_feature_id_fkey": {
+          "name": "product_features_feature_id_fkey",
+          "tableFrom": "product_features",
+          "tableTo": "features",
+          "schemaTo": "public",
+          "columnsFrom": [
+            "feature_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "product_features_stripe_account_id_fkey": {
+          "name": "product_features_stripe_account_id_fkey",
+          "tableFrom": "product_features",
+          "tableTo": "stripe_accounts",
+          "schemaTo": "public",
+          "columnsFrom": [
+            "stripe_account_id"
+          ],
+          "columnsTo": [
+            "stripe_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "product_features_stripe_product_id_fkey": {
+          "name": "product_features_stripe_product_id_fkey",
+          "tableFrom": "product_features",
+          "tableTo": "stripe_products",
+          "schemaTo": "public",
+          "columnsFrom": [
+            "stripe_product_id"
+          ],
+          "columnsTo": [
+            "stripe_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "product_features_stripe_account_id_stripe_product_id_featur_key": {
+          "columns": [
+            "stripe_account_id",
+            "stripe_product_id",
+            "feature_id"
+          ],
+          "nullsNotDistinct": false,
+          "name": "product_features_stripe_account_id_stripe_product_id_featur_key"
+        }
+      }
+    },
+    "pricing_table_products": {
+      "name": "pricing_table_products",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "bigint",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "stripe_account_id": {
+          "name": "stripe_account_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "pricing_table_id": {
+          "name": "pricing_table_id",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "stripe_product_id": {
+          "name": "stripe_product_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "monthly_stripe_price_id": {
+          "name": "monthly_stripe_price_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "annual_stripe_price_id": {
+          "name": "annual_stripe_price_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "pricing_table_products_annual_stripe_price_id_fkey": {
+          "name": "pricing_table_products_annual_stripe_price_id_fkey",
+          "tableFrom": "pricing_table_products",
+          "tableTo": "stripe_prices",
+          "schemaTo": "public",
+          "columnsFrom": [
+            "annual_stripe_price_id"
+          ],
+          "columnsTo": [
+            "stripe_id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "pricing_table_products_monthly_stripe_price_id_fkey": {
+          "name": "pricing_table_products_monthly_stripe_price_id_fkey",
+          "tableFrom": "pricing_table_products",
+          "tableTo": "stripe_prices",
+          "schemaTo": "public",
+          "columnsFrom": [
+            "monthly_stripe_price_id"
+          ],
+          "columnsTo": [
+            "stripe_id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "pricing_table_products_pricing_table_id_fkey": {
+          "name": "pricing_table_products_pricing_table_id_fkey",
+          "tableFrom": "pricing_table_products",
+          "tableTo": "pricing_tables",
+          "schemaTo": "public",
+          "columnsFrom": [
+            "pricing_table_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "pricing_table_products_stripe_account_id_fkey": {
+          "name": "pricing_table_products_stripe_account_id_fkey",
+          "tableFrom": "pricing_table_products",
+          "tableTo": "stripe_accounts",
+          "schemaTo": "public",
+          "columnsFrom": [
+            "stripe_account_id"
+          ],
+          "columnsTo": [
+            "stripe_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "pricing_table_products_stripe_product_id_fkey": {
+          "name": "pricing_table_products_stripe_product_id_fkey",
+          "tableFrom": "pricing_table_products",
+          "tableTo": "stripe_products",
+          "schemaTo": "public",
+          "columnsFrom": [
+            "stripe_product_id"
+          ],
+          "columnsTo": [
+            "stripe_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "pricing_tables": {
+      "name": "pricing_tables",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "bigint",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "stripe_account_id": {
+          "name": "stripe_account_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'Default'"
+        },
+        "mode": {
+          "name": "mode",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
+        },
+        "monthly_enabled": {
+          "name": "monthly_enabled",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "annual_enabled": {
+          "name": "annual_enabled",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "pricing_tables_stripe_account_id_fkey": {
+          "name": "pricing_tables_stripe_account_id_fkey",
+          "tableFrom": "pricing_tables",
+          "tableTo": "stripe_accounts",
+          "schemaTo": "public",
+          "columnsFrom": [
+            "stripe_account_id"
+          ],
+          "columnsTo": [
+            "stripe_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "publishable_tokens": {
+      "name": "publishable_tokens",
+      "schema": "",
+      "columns": {
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "token": {
+          "name": "token",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "stripe_account_id": {
+          "name": "stripe_account_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "publishable_tokens_stripe_account_id_fkey": {
+          "name": "publishable_tokens_stripe_account_id_fkey",
+          "tableFrom": "publishable_tokens",
+          "tableTo": "stripe_accounts",
+          "schemaTo": "public",
+          "columnsFrom": [
+            "stripe_account_id"
+          ],
+          "columnsTo": [
+            "stripe_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "stripe_invoices": {
+      "name": "stripe_invoices",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "bigint",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "stripe_id": {
+          "name": "stripe_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "stripe_account_id": {
+          "name": "stripe_account_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "stripe_json": {
+          "name": "stripe_json",
+          "type": "json",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "stripe_subscription_id": {
+          "name": "stripe_subscription_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "stripe_invoices_stripe_account_id_fkey": {
+          "name": "stripe_invoices_stripe_account_id_fkey",
+          "tableFrom": "stripe_invoices",
+          "tableTo": "stripe_accounts",
+          "schemaTo": "public",
+          "columnsFrom": [
+            "stripe_account_id"
+          ],
+          "columnsTo": [
+            "stripe_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "stripe_invoices_stripe_id_key": {
+          "columns": [
+            "stripe_id"
+          ],
+          "nullsNotDistinct": false,
+          "name": "stripe_invoices_stripe_id_key"
+        }
+      }
+    },
+    "stripe_charges": {
+      "name": "stripe_charges",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "bigint",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "stripe_id": {
+          "name": "stripe_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "stripe_account_id": {
+          "name": "stripe_account_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "stripe_json": {
+          "name": "stripe_json",
+          "type": "json",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "amount": {
+          "name": "amount",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "stripe_created": {
+          "name": "stripe_created",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "stripe_invoice_id": {
+          "name": "stripe_invoice_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "mode": {
+          "name": "mode",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "stripe_charges_stripe_account_id_fkey": {
+          "name": "stripe_charges_stripe_account_id_fkey",
+          "tableFrom": "stripe_charges",
+          "tableTo": "stripe_accounts",
+          "schemaTo": "public",
+          "columnsFrom": [
+            "stripe_account_id"
+          ],
+          "columnsTo": [
+            "stripe_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "stripe_charges_stripe_invoice_id_fkey": {
+          "name": "stripe_charges_stripe_invoice_id_fkey",
+          "tableFrom": "stripe_charges",
+          "tableTo": "stripe_invoices",
+          "schemaTo": "public",
+          "columnsFrom": [
+            "stripe_invoice_id"
+          ],
+          "columnsTo": [
+            "stripe_id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "stripe_charges_stripe_id_key": {
+          "columns": [
+            "stripe_id"
+          ],
+          "nullsNotDistinct": false,
+          "name": "stripe_charges_stripe_id_key"
+        }
+      }
+    },
+    "signups": {
+      "name": "signups",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "bigint",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "signups_email_key": {
+          "columns": [
+            "email"
+          ],
+          "nullsNotDistinct": false,
+          "name": "signups_email_key"
+        }
+      }
+    }
+  },
+  "enums": {
+    "request_status": {
+      "name": "request_status",
+      "values": {
+        "ERROR": "ERROR",
+        "SUCCESS": "SUCCESS",
+        "PENDING": "PENDING"
+      }
+    },
+    "key_status": {
+      "name": "key_status",
+      "values": {
+        "expired": "expired",
+        "invalid": "invalid",
+        "valid": "valid",
+        "default": "default"
+      }
+    },
+    "key_type": {
+      "name": "key_type",
+      "values": {
+        "aead-det": "aead-det",
+        "aead-ietf": "aead-ietf"
+      }
+    },
+    "aal_level": {
+      "name": "aal_level",
+      "values": {
+        "aal3": "aal3",
+        "aal2": "aal2",
+        "aal1": "aal1"
+      }
+    },
+    "code_challenge_method": {
+      "name": "code_challenge_method",
+      "values": {
+        "plain": "plain",
+        "s256": "s256"
+      }
+    },
+    "factor_status": {
+      "name": "factor_status",
+      "values": {
+        "verified": "verified",
+        "unverified": "unverified"
+      }
+    },
+    "factor_type": {
+      "name": "factor_type",
+      "values": {
+        "webauthn": "webauthn",
+        "totp": "totp"
+      }
+    }
+  },
+  "schemas": {},
+  "_meta": {
+    "schemas": {},
+    "tables": {},
+    "columns": {}
+  }
+}

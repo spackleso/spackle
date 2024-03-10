@@ -2,10 +2,14 @@ import { Context, Hono } from 'hono'
 import { MemoryCache } from '@/lib/cache/memory'
 import { PersistentCache } from '@/lib/cache/persistent'
 import { TieredCache } from '@/lib/cache/tiered'
-import v1 from './routes/v1'
 import { StatusCode } from 'hono/utils/http-status'
 import { cors } from 'hono/cors'
 import { sentry } from '@hono/sentry'
+import postgres from 'postgres'
+import { drizzle } from 'drizzle-orm/postgres-js'
+import stripe from '@/routes/stripe'
+import v1 from '@/routes/v1'
+import { schema } from '@spackle/db'
 
 const cacheMap = new Map()
 
@@ -16,8 +20,11 @@ function init() {
   ])
   return async (c: Context, next: () => Promise<void>) => {
     c.set('cache', cache)
-    c.set('origin', c.env.ORIGIN || 'http://localhost:3000')
+    c.set('origin', c.env.ORIGIN)
+    const client = postgres(c.env.DATABASE_URL)
+    c.set('db', drizzle(client, { schema }))
     await next()
+    await client.end()
   }
 }
 
@@ -26,6 +33,7 @@ app.use('*', cors())
 app.use('*', sentry())
 app.use('*', init())
 
+app.route('/stripe', stripe)
 app.route('/v1', v1)
 app.route('/', v1)
 app.all('/*', async (c: Context) => {

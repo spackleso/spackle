@@ -2,11 +2,12 @@
   "compilerOptions": {
     "baseUrl": "./",
     "target": "ESNext",
+    "esModuleInterop": true,
     "module": "ESNext",
     "moduleResolution": "node",
     "strict": true,
     "lib": ["ESNext"],
-    "types": ["@cloudflare/workers-types"],
+    "types": ["@cloudflare/workers-types", "jest"],
     "jsx": "react-jsx",
     "jsxImportSource": "hono/jsx",
     "paths": {
