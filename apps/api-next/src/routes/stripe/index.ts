@@ -44,8 +44,9 @@ function auth() {
 }
 
 app.use('*', stripe())
-app.use('*', auth())
 
+// TODO enable auth for all routes when complete
+app.use('/acknowledge_setup', auth())
 app.post('/acknowledge_setup', acknowledgeSetup)
 
 export default app
