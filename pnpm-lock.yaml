@@ -132,9 +132,6 @@ importers:
       '@spackle/db':
         specifier: workspace:^
         version: link:../../internal/db
-      '@spackle/test':
-        specifier: workspace:^
-        version: link:../../internal/test
       drizzle-orm:
         specifier: ^0.30.1
         version: 0.30.1(@cloudflare/workers-types@4.20240222.0)(postgres@3.4.3)
@@ -416,24 +413,6 @@ importers:
       typescript:
         specifier: ^5.4.2
         version: 5.4.2
-
-  internal/test:
-    dependencies:
-      '@spackle/db':
-        specifier: workspace:^
-        version: link:../db
-      drizzle-orm:
-        specifier: ^0.30.1
-        version: 0.30.1(@cloudflare/workers-types@4.20240222.0)(postgres@3.4.3)
-      hono:
-        specifier: ^4.0.9
-        version: 4.0.10
-      postgres:
-        specifier: ^3.3.5
-        version: 3.4.3
-      stripe:
-        specifier: ^14.2.0
-        version: 14.20.0
 
 packages:
 
