@@ -50,7 +50,7 @@ export class TestClient {
     return this.app.request(url, options, this.env)
   }
 
-  async createStripeAccount() {
+  async createTestStripeAccount() {
     const stripeId = genStripeId('acct')
     const result = await this.db
       .insert(schema.stripeAccounts)
@@ -59,14 +59,6 @@ export class TestClient {
         billingStripeCustomerId: genStripeId('cus'),
       })
       .returning()
-    return result[0]
-  }
-
-  async getStripeAccount(stripeId: string) {
-    const result = await this.db
-      .select()
-      .from(schema.stripeAccounts)
-      .where(eq(schema.stripeAccounts.stripeId, stripeId))
     return result[0]
   }
 }

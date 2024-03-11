@@ -3,6 +3,8 @@
  */
 import app from '@/index'
 import { MOCK_ENV, TestClient } from '@/lib/test/client'
+import { schema } from '@spackle/db'
+import { eq } from 'drizzle-orm'
 
 let client: TestClient
 beforeAll(async () => {
@@ -42,7 +44,7 @@ describe('POST', () => {
   })
 
   test('Acknowledges account setup', async () => {
-    const account = await client.createStripeAccount()
+    const account = await client.createTestStripeAccount()
     expect(account.hasAcknowledgedSetup).toBe(false)
     const res = await client.stripeRequest('/stripe/acknowledge_setup', {
       method: 'POST',
@@ -56,7 +58,9 @@ describe('POST', () => {
       success: true,
     })
 
-    const updatedAccount = await client.getStripeAccount(account.stripeId)
+    const updatedAccount = await client.db.query.stripeAccounts.findFirst({
+      where: eq(schema.stripeAccounts.stripeId, account.stripeId),
+    })
     expect(updatedAccount!.hasAcknowledgedSetup).toBe(true)
   })
 })
