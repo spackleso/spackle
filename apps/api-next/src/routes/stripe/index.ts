@@ -1,8 +1,9 @@
-import { Context, Hono, Next } from 'hono'
+import { Context, Next } from 'hono'
 import acknowledgeSetup from './acknowledge_setup'
 import { Stripe } from 'stripe'
+import { OpenAPIHono } from '@hono/zod-openapi'
 
-const app = new Hono()
+const app = new OpenAPIHono()
 
 function stripe() {
   return async (c: Context, next: Next) => {

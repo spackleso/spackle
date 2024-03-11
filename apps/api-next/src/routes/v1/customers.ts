@@ -1,8 +1,9 @@
 import { TieredCache } from '@/lib/cache/tiered'
-import { Context, Hono } from 'hono'
+import { OpenAPIHono } from '@hono/zod-openapi'
+import { Context } from 'hono'
 import { StatusCode } from 'hono/utils/http-status'
 
-const app = new Hono()
+const app = new OpenAPIHono()
 
 app.get('/:id/state', async (c: Context) => {
   const id = c.req.param('id')

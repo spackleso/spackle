@@ -1,4 +1,4 @@
-import { Context, Hono } from 'hono'
+import { Context } from 'hono'
 import { MemoryCache } from '@/lib/cache/memory'
 import { PersistentCache } from '@/lib/cache/persistent'
 import { TieredCache } from '@/lib/cache/tiered'
@@ -10,6 +10,7 @@ import { drizzle } from 'drizzle-orm/postgres-js'
 import stripe from '@/routes/stripe'
 import v1 from '@/routes/v1'
 import { schema } from '@spackle/db'
+import { OpenAPIHono } from '@hono/zod-openapi'
 
 const cacheMap = new Map()
 
@@ -28,7 +29,7 @@ function init() {
   }
 }
 
-const app = new Hono()
+const app = new OpenAPIHono()
 app.use('*', cors())
 app.use('*', sentry())
 app.use('*', init())
@@ -36,6 +37,14 @@ app.use('*', init())
 app.route('/stripe', stripe)
 app.route('/v1', v1)
 app.route('/', v1)
+app.doc('/openapi.json', {
+  openapi: '3.0.0',
+  info: {
+    version: '1.0.0',
+    title: 'Spackle API',
+  },
+})
+
 app.all('/*', async (c: Context) => {
   // Proxy all other requests to the origin
   const url = `${c.get('origin')}${c.req.path}`
