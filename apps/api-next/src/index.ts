@@ -11,6 +11,11 @@ import stripe from '@/routes/stripe'
 import v1 from '@/routes/v1'
 import { schema } from '@spackle/db'
 import { OpenAPIHono } from '@hono/zod-openapi'
+import { DatabaseService } from '@/lib/db/service'
+import { TelemetryService } from '@/lib/telemetry/service'
+import { HonoEnv } from '@/lib/hono/env'
+import { StripeService } from '@/lib/stripe/service'
+import Stripe from 'stripe'
 
 const cacheMap = new Map()
 
@@ -19,17 +24,44 @@ function init() {
     new MemoryCache(cacheMap),
     new PersistentCache(),
   ])
-  return async (c: Context, next: () => Promise<void>) => {
+  return async (c: Context<HonoEnv>, next: () => Promise<void>) => {
     c.set('cache', cache)
-    c.set('origin', c.env.ORIGIN)
+    const telemetry = new TelemetryService(
+      c.env.POSTHOG_API_HOST,
+      c.env.POSTHOG_API_KEY,
+    )
+    c.set('telemetry', telemetry)
+
     const client = postgres(c.env.DATABASE_URL)
-    c.set('db', drizzle(client, { schema }))
+    const db = drizzle(client, { schema })
+    c.set('db', db)
+
+    const dbService = new DatabaseService(db, telemetry)
+    c.set('dbService', dbService)
+
+    const liveStripe = new Stripe(c.env.STRIPE_LIVE_SECRET_KEY, {
+      apiVersion: '2022-08-01' as any,
+    })
+    c.set('liveStripe', liveStripe)
+    const testStripe = new Stripe(c.env.STRIPE_TEST_SECRET_KEY, {
+      apiVersion: '2022-08-01' as any,
+    })
+    c.set('testStripe', testStripe)
+    const stripeService = new StripeService(
+      db,
+      dbService,
+      liveStripe,
+      testStripe,
+      c.get('sentry'),
+    )
+    c.set('stripeService', stripeService)
+
     await next()
     await client.end()
   }
 }
 
-const app = new OpenAPIHono()
+const app = new OpenAPIHono<HonoEnv>()
 app.use('*', cors())
 app.use('*', sentry())
 app.use('*', init())
@@ -45,11 +77,11 @@ app.doc('/openapi.json', {
   },
 })
 
-app.all('/*', async (c: Context) => {
+app.all('/*', async (c: Context<HonoEnv>) => {
   // Proxy all other requests to the origin
-  const url = `${c.get('origin')}${c.req.path}`
+  const url = `${c.env.ORIGIN}${c.req.path}`
   console.log('Proxying request to', url)
-  const res = await fetch(`${c.get('origin')}${c.req.path}`, {
+  const res = await fetch(`${c.env.ORIGIN}${c.req.path}`, {
     headers: c.req.raw.headers,
     body: c.req.raw.body,
     method: c.req.method,

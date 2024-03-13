@@ -1,28 +1,9 @@
 import { Context, Next } from 'hono'
 import acknowledgeSetup from './acknowledge_setup'
-import { Stripe } from 'stripe'
 import { OpenAPIHono } from '@hono/zod-openapi'
+import { HonoEnv } from '@/lib/hono/env'
 
 const app = new OpenAPIHono()
-
-function stripe() {
-  return async (c: Context, next: Next) => {
-    c.set(
-      'liveStripe',
-      new Stripe(c.env.STRIPE_LIVE_SECRET_KEY, {
-        apiVersion: '2022-08-01' as any,
-      }),
-    )
-    c.set(
-      'testStripe',
-      new Stripe(c.env.STRIPE_TEST_SECRET_KEY, {
-        apiVersion: '2022-08-01' as any,
-      }),
-    )
-
-    return next()
-  }
-}
 
 function auth() {
   return async (c: Context, next: Next) => {
@@ -43,8 +24,6 @@ function auth() {
     return next()
   }
 }
-
-app.use('*', stripe())
 
 // TODO enable auth for all routes when complete
 app.use('/acknowledge_setup', auth())

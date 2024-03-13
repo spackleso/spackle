@@ -147,6 +147,9 @@ importers:
       stripe:
         specifier: ^14.2.0
         version: 14.20.0
+      toucan-js:
+        specifier: ^3.3.1
+        version: 3.3.1
     devDependencies:
       '@cloudflare/workers-types':
         specifier: ^4.20240208.0

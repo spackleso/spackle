@@ -1,10 +1,11 @@
 import crypto from 'crypto'
 import postgres from 'postgres'
-import { PostgresJsDatabase, drizzle } from 'drizzle-orm/postgres-js'
-import { schema } from '@spackle/db'
-import { eq } from 'drizzle-orm'
+import { drizzle } from 'drizzle-orm/postgres-js'
+import { Database, schema } from '@spackle/db'
 import stripe from 'stripe'
 import { Hono } from 'hono'
+import { OpenAPIHono } from '@hono/zod-openapi'
+import { HonoEnv } from '@/lib/hono/env'
 
 export const genStripeId = (prefix: string) => {
   return `${prefix}_${crypto.randomBytes(16).toString('hex')}`
@@ -17,12 +18,12 @@ export const MOCK_ENV = {
 }
 
 export class TestClient {
-  app: Hono
+  app: OpenAPIHono<HonoEnv>
   client: postgres.Sql
-  db: PostgresJsDatabase<typeof schema>
+  db: Database
   env: Record<string, string> = MOCK_ENV
 
-  constructor(app: Hono, env: Record<string, string> = {}) {
+  constructor(app: OpenAPIHono<HonoEnv>, env: Record<string, string> = {}) {
     this.app = app
     this.env = {
       ...this.env,
