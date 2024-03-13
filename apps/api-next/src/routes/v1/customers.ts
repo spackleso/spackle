@@ -1,14 +1,15 @@
 import { TieredCache } from '@/lib/cache/tiered'
+import { HonoEnv } from '@/lib/hono/env'
 import { OpenAPIHono } from '@hono/zod-openapi'
 import { Context } from 'hono'
 import { StatusCode } from 'hono/utils/http-status'
 
 const app = new OpenAPIHono()
 
-app.get('/:id/state', async (c: Context) => {
+app.get('/:id/state', async (c: Context<HonoEnv>) => {
   const id = c.req.param('id')
   const cache = c.get('cache') as TieredCache
-  const url = `${c.get('origin')}/v1/customers/${id}/state`
+  const url = `${c.env.ORIGIN}/v1/customers/${id}/state`
   const headers = { Authorization: c.req.header('Authorization') ?? '' }
 
   let [state, stale] = await cache.get('customerState', id)
