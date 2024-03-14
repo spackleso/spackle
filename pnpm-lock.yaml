@@ -154,6 +154,9 @@ importers:
       '@cloudflare/workers-types':
         specifier: ^4.20240208.0
         version: 4.20240222.0
+      '@spackle/tsconfig':
+        specifier: workspace:^
+        version: link:../../internal/tsconfig
       '@types/jest':
         specifier: ^29.5.12
         version: 29.5.12

@@ -30,6 +30,7 @@ function init() {
     const telemetry = new TelemetryService(
       c.env.POSTHOG_API_HOST,
       c.env.POSTHOG_API_KEY,
+      c.get('sentry'),
     )
     c.set('telemetry', telemetry)
 

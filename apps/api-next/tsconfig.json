@@ -1,15 +1,14 @@
 {
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "@spackle/tsconfig/base.json",
+  "exclude": ["dist"],
   "compilerOptions": {
-    "baseUrl": "./",
-    "target": "ESNext",
-    "esModuleInterop": true,
-    "module": "ESNext",
-    "moduleResolution": "node",
-    "strict": true,
-    "lib": ["ESNext"],
+    "baseUrl": ".",
+    "outDir": "dist",
+    "target": "esnext",
+    "module": "esnext",
+    "lib": ["esnext"],
     "types": ["@cloudflare/workers-types", "jest"],
-    "jsx": "react-jsx",
-    "jsxImportSource": "hono/jsx",
     "paths": {
       "@/*": ["src/*"]
     }

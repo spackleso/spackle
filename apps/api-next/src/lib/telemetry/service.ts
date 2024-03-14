@@ -1,14 +1,18 @@
+import { Toucan } from 'toucan-js'
+
 export class TelemetryService {
   private readonly posthogHost: string
   private readonly posthogKey: string
+  private readonly sentry: Toucan
 
-  constructor(posthogHost: string, posthogKey: string) {
+  constructor(posthogHost: string, posthogKey: string, sentry: Toucan) {
     this.posthogHost = posthogHost
     this.posthogKey = posthogKey
+    this.sentry = sentry
   }
 
-  identify(userId: string, properties: any, path: string = '/') {
-    return fetch(`${this.posthogHost}/capture`, {
+  async identify(userId: string, properties: any, path: string = '/') {
+    const response = await fetch(`${this.posthogHost}/capture`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -23,10 +27,14 @@ export class TelemetryService {
         },
       }),
     })
+
+    if (!response.ok) {
+      this.sentry.captureMessage(`Failed to identify user ${userId} in PostHog`)
+    }
   }
 
-  groupIdentify(userId: string, groupId: string, name: string) {
-    return fetch(`${this.posthogHost}/capture`, {
+  async groupIdentify(userId: string, groupId: string, name: string) {
+    const response = await fetch(`${this.posthogHost}/capture`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -44,10 +52,16 @@ export class TelemetryService {
         },
       }),
     })
+
+    if (!response.ok) {
+      this.sentry.captureMessage(
+        `Failed to group identify user ${userId} in group ${groupId} in PostHog`,
+      )
+    }
   }
 
-  track = (distinctId: string, event: string, properties: any) => {
-    return fetch(`${this.posthogHost}/capture`, {
+  async track(distinctId: string, event: string, properties: any) {
+    const response = await fetch(`${this.posthogHost}/capture`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -59,5 +73,11 @@ export class TelemetryService {
         properties,
       }),
     })
+
+    if (!response.ok) {
+      this.sentry.captureMessage(
+        `Failed to track event ${event} for user ${distinctId} in PostHog`,
+      )
+    }
   }
 }
