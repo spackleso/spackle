@@ -26,6 +26,7 @@ function init() {
   ])
   return async (c: Context<HonoEnv>, next: () => Promise<void>) => {
     c.set('cache', cache)
+
     const telemetry = new TelemetryService(
       c.env.POSTHOG_API_HOST,
       c.env.POSTHOG_API_KEY,
@@ -43,10 +44,12 @@ function init() {
       apiVersion: '2022-08-01' as any,
     })
     c.set('liveStripe', liveStripe)
+
     const testStripe = new Stripe(c.env.STRIPE_TEST_SECRET_KEY, {
       apiVersion: '2022-08-01' as any,
     })
     c.set('testStripe', testStripe)
+
     const stripeService = new StripeService(
       db,
       dbService,

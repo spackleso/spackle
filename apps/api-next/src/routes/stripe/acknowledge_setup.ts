@@ -1,8 +1,9 @@
+import { HonoEnv } from '@/lib/hono/env'
 import { schema } from '@spackle/db'
 import { eq } from 'drizzle-orm'
 import { Context } from 'hono'
 
-export default async function (c: Context) {
+export default async function (c: Context<HonoEnv>) {
   const { account_id } = await c.req.json()
   if (account_id) {
     await c

@@ -3,7 +3,6 @@ import postgres from 'postgres'
 import { drizzle } from 'drizzle-orm/postgres-js'
 import { Database, schema } from '@spackle/db'
 import stripe from 'stripe'
-import { Hono } from 'hono'
 import { OpenAPIHono } from '@hono/zod-openapi'
 import { HonoEnv } from '@/lib/hono/env'
 
@@ -12,9 +11,15 @@ export const genStripeId = (prefix: string) => {
 }
 
 export const MOCK_ENV = {
-  ORIGIN: 'http://localhost:3000',
   DATABASE_URL: 'postgresql://postgres:postgres@localhost:54322/postgres',
+  ENVIRONMENT: 'test',
+  ORIGIN: 'http://localhost:3000',
+  POSTHOG_API_HOST: 'http://localhost:3000',
+  POSTHOG_API_KEY: 'phk_123',
+  SENTRY_DSN: 'http://localhost:3000',
+  STRIPE_LIVE_SECRET_KEY: 'live_123',
   STRIPE_SIGNING_SECRET: 'absec_123',
+  STRIPE_TEST_SECRET_KEY: 'test_123',
 }
 
 export class TestClient {
