@@ -12,7 +12,7 @@ jobs:
     name: Test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Test
         uses: ./.github/actions/test
     env:
@@ -43,7 +43,7 @@ jobs:
         run: pnpm turbo run build --filter='./apps/api-next'
 
       - name: Deploy
-        run: pnpm wrangler deploy --env=production --var VERSION:$(git rev-parse --short HEAD)
+        run: pnpm wrangler deploy --minify --env production --var VERSION:$(git rev-parse --short HEAD)
         working-directory: apps/api-next
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}

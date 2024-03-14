@@ -1,5 +1,6 @@
 name = "spackle-api"
 compatibility_date = "2023-12-01"
+main = "src/index.ts"
 node_compat = true
 
 [vars]
