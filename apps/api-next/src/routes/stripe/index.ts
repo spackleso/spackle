@@ -4,6 +4,7 @@ import { HonoEnv } from '@/lib/hono/env'
 
 import acknowledgeSetup from './acknowledge_setup'
 import getAccount from './get_account'
+import getAccountFeatures from './get_account_features'
 
 const app = new OpenAPIHono<HonoEnv>()
 
@@ -33,5 +34,8 @@ app.post('/acknowledge_setup', acknowledgeSetup)
 
 app.use('/get_account', auth())
 app.post('/get_account', getAccount)
+
+app.use('/get_account_features', auth())
+app.post('/get_account_features', getAccountFeatures)
 
 export default app
