@@ -1,12 +1,20 @@
-name: Deploy
+name: Test & Deploy
 
 on:
   push:
-    branches: [main]
+    branches:
+      - "main"
 
 concurrency: "only one deploy at a time"
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Test
+        uses: ./.github/actions/test
+
   production:
     needs:
       - test
