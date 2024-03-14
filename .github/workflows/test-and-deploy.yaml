@@ -9,18 +9,30 @@ concurrency: "only one deploy at a time"
 
 jobs:
   test:
+    name: Test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - name: Test
         uses: ./.github/actions/test
+    env:
+      AWS_REGION: us-west-2
+      BETTERSTACK_LOGS_TOKEN: super-secret-token
+      DATABASE_URL: postgresql://postgres:postgres@localhost:54322/postgres
+      REDIS_URL: redis://localhost:6379
+      SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+      SUPABASE_JWT_SECRET: super-secret-jwt-token-with-at-least-32-characters-long
+      SUPABASE_URL: http://localhost:54321
+      STRIPE_SIGNING_SECRET: ${{ secrets.STRIPE_SIGNING_SECRET }}
+      STRIPE_LIVE_SECRET_KEY: ${{ secrets.STRIPE_LIVE_SECRET_KEY }}
+      STRIPE_TEST_SECRET_KEY: ${{ secrets.STRIPE_TEST_SECRET_KEY }}
 
   production:
     needs:
       - test
     environment: Production
     runs-on: ubuntu-latest
-    name: Deploy Production
+    name: Deploy to production
     steps:
       - uses: actions/checkout@v4
 
