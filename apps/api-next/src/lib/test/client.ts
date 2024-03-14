@@ -67,4 +67,23 @@ export class TestClient {
       .returning()
     return result[0]
   }
+
+  createFlagFeature = async (
+    stripeAccountId: string,
+    name: string,
+    key: string,
+    valueFlag: boolean,
+  ) => {
+    const result = await this.db
+      .insert(schema.features)
+      .values({
+        name,
+        key,
+        type: 0,
+        valueFlag,
+        stripeAccountId,
+      })
+      .returning()
+    return result[0]
+  }
 }
