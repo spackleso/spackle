@@ -9,6 +9,7 @@ import { StripeService } from '../stripe/service'
 export type HonoEnv = {
   Bindings: {
     DATABASE_URL: string
+    DB_PK_SALT: string
     ENVIRONMENT: string
     ORIGIN: string
     POSTHOG_API_HOST: string

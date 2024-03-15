@@ -32,16 +32,16 @@ describe('POST', () => {
 
   test('Returns customer features', async () => {
     const decoy = await client.createTestStripeAccount()
-    await client.createFlagFeature(decoy.stripeId, 'Decoy', 'decoy', true)
+    await client.createTestFlagFeature(decoy.stripeId, 'Decoy', 'decoy', true)
 
     const account = await client.createTestStripeAccount()
-    const f1 = await client.createFlagFeature(
+    const f1 = await client.createTestFlagFeature(
       account.stripeId,
       'Feature',
       'feature',
       true,
     )
-    const f2 = await client.createFlagFeature(
+    const f2 = await client.createTestFlagFeature(
       account.stripeId,
       'Feature 2',
       'feature_2',

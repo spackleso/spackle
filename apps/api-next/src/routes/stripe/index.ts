@@ -5,6 +5,7 @@ import { HonoEnv } from '@/lib/hono/env'
 import acknowledgeSetup from './acknowledge_setup'
 import getAccount from './get_account'
 import getAccountFeatures from './get_account_features'
+import getPricingTables from './get_pricing_tables'
 
 const app = new OpenAPIHono<HonoEnv>()
 
@@ -20,7 +21,6 @@ function auth() {
         c.env.STRIPE_SIGNING_SECRET,
       )
     } catch (error: any) {
-      console.error(error)
       c.status(403)
       return c.json({ error: 'Unauthorized' })
     }
@@ -37,5 +37,8 @@ app.post('/get_account', getAccount)
 
 app.use('/get_account_features', auth())
 app.post('/get_account_features', getAccountFeatures)
+
+app.use('/get_pricing_tables', auth())
+app.post('/get_pricing_tables', getPricingTables)
 
 export default app
