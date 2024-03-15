@@ -38,7 +38,7 @@ function init() {
     const db = drizzle(client, { schema })
     c.set('db', db)
 
-    const dbService = new DatabaseService(db, telemetry)
+    const dbService = new DatabaseService(db, telemetry, c.env.DB_PK_SALT)
     c.set('dbService', dbService)
 
     const liveStripe = new Stripe(c.env.STRIPE_LIVE_SECRET_KEY, {
@@ -67,7 +67,13 @@ function init() {
 
 const app = new OpenAPIHono<HonoEnv>()
 app.use('*', cors())
-app.use('*', sentry())
+app.use('*', (c, next) => {
+  if (c.env.SENTRY_DSN) {
+    return sentry()(c, next)
+  } else {
+    return next()
+  }
+})
 app.use('*', init())
 
 app.route('/stripe', stripe)

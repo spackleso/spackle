@@ -1,14 +1,25 @@
-import { Database, and, eq, schema } from '@spackle/db'
+import { Database, and, eq, schema, sql } from '@spackle/db'
 import { TelemetryService } from '@/lib/telemetry/service'
+import { PgColumn } from 'drizzle-orm/pg-core'
 
 // TODO: update all `get` methods to use findOne
 export class DatabaseService {
   private readonly db: Database
   private readonly telemetry: TelemetryService
+  private readonly pkSalt: string
 
-  constructor(db: Database, telemetry: TelemetryService) {
+  constructor(db: Database, telemetry: TelemetryService, pkSalt: string) {
     this.db = db
     this.telemetry = telemetry
+    this.pkSalt = pkSalt
+  }
+
+  encodePk(id: PgColumn<any>) {
+    return sql`id_encode(${id}, ${this.pkSalt}, 8)`
+  }
+
+  decodePk(field: PgColumn<any>, id: string) {
+    return sql`${field} = (id_decode(${id}, ${this.pkSalt}, 8))[1]`
   }
 
   getStripeAccount = async (stripeId: string) => {
