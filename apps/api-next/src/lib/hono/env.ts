@@ -5,6 +5,7 @@ import { Toucan } from 'toucan-js'
 import { TelemetryService } from '@/lib/telemetry/service'
 import Stripe from 'stripe'
 import { StripeService } from '../stripe/service'
+import { EntitlementsService } from '../entitlements/service'
 
 export type HonoEnv = {
   Bindings: {
@@ -23,6 +24,7 @@ export type HonoEnv = {
     cache: TieredCache
     db: Database
     dbService: DatabaseService
+    entitlements: EntitlementsService
     liveStripe: Stripe
     sentry: Toucan
     telemetry: TelemetryService
