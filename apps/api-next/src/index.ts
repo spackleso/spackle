@@ -16,6 +16,7 @@ import { TelemetryService } from '@/lib/telemetry/service'
 import { HonoEnv } from '@/lib/hono/env'
 import { StripeService } from '@/lib/stripe/service'
 import Stripe from 'stripe'
+import { EntitlementsService } from './lib/entitlements/service'
 
 const cacheMap = new Map()
 
@@ -59,6 +60,9 @@ function init() {
       c.get('sentry'),
     )
     c.set('stripeService', stripeService)
+
+    const entitlements = new EntitlementsService(db)
+    c.set('entitlements', entitlements)
 
     await next()
     await client.end()

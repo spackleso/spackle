@@ -5,6 +5,7 @@ import { HonoEnv } from '@/lib/hono/env'
 import acknowledgeSetup from './acknowledge_setup'
 import getAccount from './get_account'
 import getAccountFeatures from './get_account_features'
+import getAccountState from './get_account_state'
 import getPricingTables from './get_pricing_tables'
 
 const app = new OpenAPIHono<HonoEnv>()
@@ -34,6 +35,9 @@ app.post('/acknowledge_setup', acknowledgeSetup)
 
 app.use('/get_account', auth())
 app.post('/get_account', getAccount)
+
+app.use('/get_account_state', auth())
+app.post('/get_account_state', getAccountState)
 
 app.use('/get_account_features', auth())
 app.post('/get_account_features', getAccountFeatures)
