@@ -22,7 +22,7 @@ export class DatabaseService {
     return sql`${field} = (id_decode(${id}, ${this.pkSalt}, 8))[1]`
   }
 
-  getStripeAccount = async (stripeId: string) => {
+  async getStripeAccount(stripeId: string) {
     const result = await this.db
       .select()
       .from(schema.stripeAccounts)
@@ -35,7 +35,7 @@ export class DatabaseService {
     return null
   }
 
-  getStripeAccountByBillingId = async (billingId: string) => {
+  async getStripeAccountByBillingId(billingId: string) {
     const result = await this.db
       .select()
       .from(schema.stripeAccounts)
@@ -48,12 +48,12 @@ export class DatabaseService {
     return null
   }
 
-  upsertStripeAccount = async (
+  async upsertStripeAccount(
     stripeId: string,
     name: string | undefined | null,
     initialSyncComplete?: boolean | undefined,
     initialSyncStartedAt?: string | undefined | null,
-  ) => {
+  ) {
     let stripeAccount = await this.getStripeAccount(stripeId)
     let result
     if (stripeAccount) {
@@ -79,7 +79,7 @@ export class DatabaseService {
     return result[0]
   }
 
-  getStripeUser = async (stripeAccountId: string, stripeId: string) => {
+  async getStripeUser(stripeAccountId: string, stripeId: string) {
     const result = await this.db
       .select()
       .from(schema.stripeUsers)
@@ -97,12 +97,12 @@ export class DatabaseService {
     return null
   }
 
-  upsertStripeUser = async (
+  async upsertStripeUser(
     stripeAccountId: string,
     stripeId: string,
     email?: string | null,
     name?: string | null,
-  ) => {
+  ) {
     const stripeUser = await this.getStripeUser(stripeAccountId, stripeId)
 
     let result
@@ -137,7 +137,7 @@ export class DatabaseService {
     return result[0]
   }
 
-  getStripeProduct = async (stripeAccountId: string, stripeId: string) => {
+  async getStripeProduct(stripeAccountId: string, stripeId: string) {
     const result = await this.db
       .select()
       .from(schema.stripeProducts)
@@ -155,11 +155,11 @@ export class DatabaseService {
     return null
   }
 
-  upsertStripeProduct = async (
+  async upsertStripeProduct(
     stripeAccountId: string,
     stripeId: string,
     stripeJson: any,
-  ) => {
+  ) {
     const stripeProduct = await this.getStripeProduct(stripeAccountId, stripeId)
 
     let result
@@ -187,7 +187,7 @@ export class DatabaseService {
     return result[0]
   }
 
-  getStripePrice = async (stripeAccountId: string, stripeId: string) => {
+  async getStripePrice(stripeAccountId: string, stripeId: string) {
     const result = await this.db
       .select()
       .from(schema.stripePrices)
@@ -205,12 +205,12 @@ export class DatabaseService {
     return null
   }
 
-  upsertStripePrice = async (
+  async upsertStripePrice(
     stripeAccountId: string,
     stripeId: string,
     stripeProductId: string,
     stripeJson: any,
-  ) => {
+  ) {
     const stripePrice = await this.getStripePrice(stripeAccountId, stripeId)
 
     let result
@@ -234,7 +234,7 @@ export class DatabaseService {
     return result[0]
   }
 
-  getStripeCustomer = async (stripeAccountId: string, stripeId: string) => {
+  async getStripeCustomer(stripeAccountId: string, stripeId: string) {
     const result = await this.db
       .select()
       .from(schema.stripeCustomers)
@@ -252,11 +252,11 @@ export class DatabaseService {
     return null
   }
 
-  upsertStripeCustomer = async (
+  async upsertStripeCustomer(
     stripeAccountId: string,
     stripeId: string,
     stripeJson: any,
-  ) => {
+  ) {
     const stripeCustomer = await this.getStripeCustomer(
       stripeAccountId,
       stripeId,
@@ -287,7 +287,7 @@ export class DatabaseService {
     return result[0]
   }
 
-  getStripeSubscription = async (stripeAccountId: string, stripeId: string) => {
+  async getStripeSubscription(stripeAccountId: string, stripeId: string) {
     const result = await this.db
       .select()
       .from(schema.stripeSubscriptions)
@@ -305,13 +305,13 @@ export class DatabaseService {
     return null
   }
 
-  upsertStripeSubscription = async (
+  async upsertStripeSubscription(
     stripeAccountId: string,
     stripeId: string,
     stripeCustomerId: string,
     status: string,
     stripeJson: any,
-  ) => {
+  ) {
     const stripeSubscription = await this.getStripeSubscription(
       stripeAccountId,
       stripeId,
@@ -344,10 +344,7 @@ export class DatabaseService {
     return result[0]
   }
 
-  deleteStripeSubscription = async (
-    stripeAccountId: string,
-    stripeId: string,
-  ) => {
+  async deleteStripeSubscription(stripeAccountId: string, stripeId: string) {
     await this.db
       .delete(schema.stripeSubscriptions)
       .where(
@@ -358,10 +355,7 @@ export class DatabaseService {
       )
   }
 
-  getStripeSubscriptionItem = async (
-    stripeAccountId: string,
-    stripeId: string,
-  ) => {
+  async getStripeSubscriptionItem(stripeAccountId: string, stripeId: string) {
     const result = await this.db
       .select()
       .from(schema.stripeSubscriptionItems)
@@ -379,13 +373,13 @@ export class DatabaseService {
     return null
   }
 
-  upsertStripeSubscriptionItem = async (
+  async upsertStripeSubscriptionItem(
     stripeAccountId: string,
     stripeId: string,
     stripePriceId: string,
     stripeSubscriptionId: string,
     stripeJson: any,
-  ) => {
+  ) {
     const stripeSubscriptionItem = await this.getStripeSubscriptionItem(
       stripeAccountId,
       stripeId,
@@ -425,7 +419,7 @@ export class DatabaseService {
     return result[0]
   }
 
-  getStripeInvoice = async (stripeAccountId: string, stripeId: string) => {
+  async getStripeInvoice(stripeAccountId: string, stripeId: string) {
     const result = await this.db
       .select()
       .from(schema.stripeInvoices)
@@ -443,7 +437,7 @@ export class DatabaseService {
     return null
   }
 
-  getStripeCharge = async (stripeAccountId: string, stripeId: string) => {
+  async getStripeCharge(stripeAccountId: string, stripeId: string) {
     const result = await this.db
       .select()
       .from(schema.stripeCharges)
@@ -461,12 +455,12 @@ export class DatabaseService {
     return null
   }
 
-  upsertStripeInvoice = async (
+  async upsertStripeInvoice(
     stripeAccountId: string,
     stripeId: string,
     stripeJson: any,
     stripeSubscriptionId: string | null,
-  ) => {
+  ) {
     const stripeInvoice = await this.getStripeInvoice(stripeAccountId, stripeId)
 
     let result
@@ -494,7 +488,7 @@ export class DatabaseService {
     return result[0]
   }
 
-  upsertStripeCharge = async (
+  async upsertStripeCharge(
     stripeAccountId: string,
     stripeId: string,
     amount: number,
@@ -503,7 +497,7 @@ export class DatabaseService {
     stripeCreated: number,
     stripeInvoiceId: string | null,
     stripeJson: any,
-  ) => {
+  ) {
     const stripeCharge = await this.getStripeCharge(stripeAccountId, stripeId)
 
     let result
