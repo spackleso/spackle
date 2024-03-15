@@ -7,6 +7,7 @@ import getAccount from './get_account'
 import getAccountFeatures from './get_account_features'
 import getAccountState from './get_account_state'
 import getPricingTables from './get_pricing_tables'
+import getPricingTable from './get_pricing_table'
 
 const app = new OpenAPIHono<HonoEnv>()
 
@@ -44,5 +45,8 @@ app.post('/get_account_features', getAccountFeatures)
 
 app.use('/get_pricing_tables', auth())
 app.post('/get_pricing_tables', getPricingTables)
+
+app.use('/get_pricing_table', auth())
+app.post('/get_pricing_table', getPricingTable)
 
 export default app
