@@ -4,6 +4,7 @@ import { HonoEnv } from '@/lib/hono/env'
 
 import acknowledgeSetup from './acknowledge_setup'
 import createAccountFeature from './create_account_feature'
+import createPricingTable from './create_pricing_table'
 import getAccount from './get_account'
 import getAccountFeatures from './get_account_features'
 import getAccountState from './get_account_state'
@@ -37,6 +38,9 @@ app.post('/acknowledge_setup', acknowledgeSetup)
 
 app.use('/create_account_feature', auth())
 app.post('/create_account_feature', createAccountFeature)
+
+app.use('/create_pricing_table', auth())
+app.post('/create_pricing_table', createPricingTable)
 
 app.use('/get_account', auth())
 app.post('/get_account', getAccount)

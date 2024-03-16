@@ -126,4 +126,41 @@ export class TestClient {
       })
     return result[0]
   }
+
+  async createTestStripeProduct(stripeAccountId: string, stripeJson?: any) {
+    const stripeId = genStripeId('prod')
+    const result = await this.db
+      .insert(schema.stripeProducts)
+      .values({
+        stripeAccountId,
+        stripeId,
+        stripeJson: {
+          ...stripeJson,
+          id: stripeId,
+        },
+      })
+      .returning()
+    return result[0]
+  }
+
+  async createTestStripePrice(
+    stripeAccountId: string,
+    stripeProductId: string,
+    stripeJson?: any,
+  ) {
+    const stripeId = genStripeId('price')
+    const result = await this.db
+      .insert(schema.stripePrices)
+      .values({
+        stripeAccountId,
+        stripeProductId,
+        stripeId,
+        stripeJson: {
+          ...stripeJson,
+          id: stripeId,
+        },
+      })
+      .returning()
+    return result[0]
+  }
 }

@@ -72,11 +72,9 @@ function init() {
 const app = new OpenAPIHono<HonoEnv>()
 app.use('*', cors())
 app.use('*', (c, next) => {
-  if (c.env.SENTRY_DSN) {
-    return sentry()(c, next)
-  } else {
-    return next()
-  }
+  return sentry({
+    enabled: !!c.env.SENTRY_DSN,
+  })(c, next)
 })
 app.use('*', init())
 
