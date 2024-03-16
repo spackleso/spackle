@@ -3,11 +3,12 @@ import { OpenAPIHono } from '@hono/zod-openapi'
 import { HonoEnv } from '@/lib/hono/env'
 
 import acknowledgeSetup from './acknowledge_setup'
+import createAccountFeature from './create_account_feature'
 import getAccount from './get_account'
 import getAccountFeatures from './get_account_features'
 import getAccountState from './get_account_state'
-import getPricingTables from './get_pricing_tables'
 import getPricingTable from './get_pricing_table'
+import getPricingTables from './get_pricing_tables'
 
 const app = new OpenAPIHono<HonoEnv>()
 
@@ -33,6 +34,9 @@ function auth() {
 // TODO enable auth for all routes when complete
 app.use('/acknowledge_setup', auth())
 app.post('/acknowledge_setup', acknowledgeSetup)
+
+app.use('/create_account_feature', auth())
+app.post('/create_account_feature', createAccountFeature)
 
 app.use('/get_account', auth())
 app.post('/get_account', getAccount)
