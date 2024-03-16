@@ -10,6 +10,7 @@ import deletePricingTable from './delete_pricing_table'
 import getAccount from './get_account'
 import getAccountFeatures from './get_account_features'
 import getAccountState from './get_account_state'
+import getCustomerFeatures from './get_customer_features'
 import getPricingTable from './get_pricing_table'
 import getPricingTables from './get_pricing_tables'
 
@@ -58,6 +59,9 @@ app.post('/get_account_state', getAccountState)
 
 app.use('/get_account_features', auth())
 app.post('/get_account_features', getAccountFeatures)
+
+app.use('/get_customer_features', auth())
+app.post('/get_customer_features', getCustomerFeatures)
 
 app.use('/get_pricing_tables', auth())
 app.post('/get_pricing_tables', getPricingTables)

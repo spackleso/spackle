@@ -163,4 +163,49 @@ export class TestClient {
       .returning()
     return result[0]
   }
+
+  async createTestStripeCustomer(stripeAccountId: string) {
+    const stripeId = genStripeId('cust')
+    const result = await this.db
+      .insert(schema.stripeCustomers)
+      .values({
+        stripeId,
+        stripeAccountId,
+        stripeJson: {
+          id: stripeId,
+        },
+      })
+      .returning()
+    return result[0]
+  }
+
+  async createCustomerFlagFeature(
+    stripeAccountId: string,
+    name: string,
+    key: string,
+    valueFlag: boolean,
+    customer?: any,
+  ) {
+    const feature = await this.createTestFlagFeature(
+      stripeAccountId,
+      name,
+      key,
+      false,
+    )
+
+    if (!customer) {
+      customer = await this.createTestStripeCustomer(stripeAccountId)
+    }
+
+    const result = await this.db
+      .insert(schema.customerFeatures)
+      .values({
+        stripeAccountId,
+        featureId: feature.id,
+        stripeCustomerId: customer.stripeId,
+        valueFlag,
+      })
+      .returning()
+    return result[0]
+  }
 }
