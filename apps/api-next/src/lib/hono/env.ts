@@ -9,6 +9,7 @@ import { EntitlementsService } from '../entitlements/service'
 
 export type HonoEnv = {
   Bindings: {
+    BILLING_STRIPE_ACCOUNT_ID: string
     DATABASE_URL: string
     DB_PK_SALT: string
     ENVIRONMENT: string

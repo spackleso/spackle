@@ -55,7 +55,11 @@ export class TestClient {
     await this.client.end()
   }
 
-  stripeRequest(url: string, options: RequestInit) {
+  stripeRequest(
+    url: string,
+    options: RequestInit,
+    env?: Record<string, string>,
+  ) {
     options = {
       ...options,
       headers: {
@@ -66,7 +70,13 @@ export class TestClient {
         }),
       },
     }
-    return this.app.request(url, options, this.env)
+
+    env = {
+      ...this.env,
+      ...env,
+    }
+
+    return this.app.request(url, options, env)
   }
 
   async createTestStripeAccount() {
