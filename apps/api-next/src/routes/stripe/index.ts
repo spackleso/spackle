@@ -14,6 +14,7 @@ import getCustomerFeatures from './get_customer_features'
 import getCustomerState from './get_customer_state'
 import getEntitlements from './get_entitlements'
 import getPricingTable from './get_pricing_table'
+import getPricingTableProducts from './get_pricing_table_products'
 import getPricingTables from './get_pricing_tables'
 
 const app = new OpenAPIHono<HonoEnv>()
@@ -73,6 +74,9 @@ app.post('/get_entitlements', getEntitlements)
 
 app.use('/get_pricing_tables', auth())
 app.post('/get_pricing_tables', getPricingTables)
+
+app.use('/get_pricing_table_products', auth())
+app.post('/get_pricing_table_products', getPricingTableProducts)
 
 app.use('/get_pricing_table', auth())
 app.post('/get_pricing_table', getPricingTable)

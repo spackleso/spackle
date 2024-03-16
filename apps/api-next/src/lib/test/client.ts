@@ -218,4 +218,24 @@ export class TestClient {
       .returning()
     return result[0]
   }
+
+  async createTestPricingTableProduct(
+    stripeAccountId: string,
+    pricingTableId: number,
+    stripeProductId: string,
+    monthlyStripePriceId?: string | null,
+    annualStripePriceId?: string | null,
+  ) {
+    const result = await this.db
+      .insert(schema.pricingTableProducts)
+      .values({
+        stripeAccountId,
+        pricingTableId,
+        stripeProductId,
+        monthlyStripePriceId,
+        annualStripePriceId,
+      })
+      .returning()
+    return result[0]
+  }
 }

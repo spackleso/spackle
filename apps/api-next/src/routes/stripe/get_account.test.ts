@@ -16,7 +16,7 @@ afterAll(async () => {
 describe('POST', () => {
   test('Requires a signature', async () => {
     const res = await app.request(
-      '/stripe/acknowledge_setup',
+      '/stripe/get_account',
       {
         method: 'POST',
         body: JSON.stringify({}),
