@@ -17,6 +17,7 @@ import getPricingTable from './get_pricing_table'
 import getPricingTableProducts from './get_pricing_table_products'
 import getPricingTables from './get_pricing_tables'
 import getProductFeatures from './get_product_features'
+import getProductState from './get_product_state'
 
 const app = new OpenAPIHono<HonoEnv>()
 
@@ -84,5 +85,8 @@ app.post('/get_pricing_table', getPricingTable)
 
 app.use('/get_product_features', auth())
 app.post('/get_product_features', getProductFeatures)
+
+app.use('/get_product_state', auth())
+app.post('/get_product_state', getProductState)
 
 export default app
