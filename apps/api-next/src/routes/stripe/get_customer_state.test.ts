@@ -5,6 +5,7 @@
 import app from '@/index'
 import { MOCK_ENV, TestClient } from '@/lib/test/client'
 import { schema, eq } from '@spackle/db'
+import { beforeAll, afterAll, describe, test, expect } from 'vitest'
 
 let client: TestClient
 beforeAll(async () => {
