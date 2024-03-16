@@ -1,7 +1,7 @@
 import { Toucan } from 'toucan-js'
 
 export class TelemetryService {
-  private readonly posthogHost: string
+  private readonly posthogHost: string = 'https://app.posthog.com'
   private readonly posthogKey: string
   private readonly sentry: Toucan
 
