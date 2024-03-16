@@ -6,6 +6,7 @@ import acknowledgeSetup from './acknowledge_setup'
 import createAccountFeature from './create_account_feature'
 import createPricingTable from './create_pricing_table'
 import deleteAccountFeature from './delete_account_feature'
+import deletePricingTable from './delete_pricing_table'
 import getAccount from './get_account'
 import getAccountFeatures from './get_account_features'
 import getAccountState from './get_account_state'
@@ -45,6 +46,9 @@ app.post('/create_pricing_table', createPricingTable)
 
 app.use('/delete_account_feature', auth())
 app.post('/delete_account_feature', deleteAccountFeature)
+
+app.use('/delete_pricing_table', auth())
+app.post('/delete_pricing_table', deletePricingTable)
 
 app.use('/get_account', auth())
 app.post('/get_account', getAccount)
