@@ -238,4 +238,34 @@ export class TestClient {
       .returning()
     return result[0]
   }
+
+  async createTestProductFeature(
+    stripeAccountId: string,
+    valueFlag: boolean,
+    opts: any,
+  ) {
+    if (!opts.feature) {
+      opts.feature = await this.createTestFlagFeature(
+        stripeAccountId,
+        opts.name,
+        opts.key,
+        false,
+      )
+    }
+
+    if (!opts.product) {
+      opts.product = await this.createTestStripeProduct(stripeAccountId)
+    }
+
+    const result = await this.db
+      .insert(schema.productFeatures)
+      .values({
+        stripeAccountId,
+        featureId: opts.feature.id,
+        stripeProductId: opts.product.stripeId,
+        valueFlag,
+      })
+      .returning()
+    return result[0]
+  }
 }
