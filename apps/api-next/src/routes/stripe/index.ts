@@ -11,6 +11,7 @@ import getAccount from './get_account'
 import getAccountFeatures from './get_account_features'
 import getAccountState from './get_account_state'
 import getCustomerFeatures from './get_customer_features'
+import getCustomerState from './get_customer_state'
 import getPricingTable from './get_pricing_table'
 import getPricingTables from './get_pricing_tables'
 
@@ -62,6 +63,9 @@ app.post('/get_account_features', getAccountFeatures)
 
 app.use('/get_customer_features', auth())
 app.post('/get_customer_features', getCustomerFeatures)
+
+app.use('/get_customer_state', auth())
+app.post('/get_customer_state', getCustomerState)
 
 app.use('/get_pricing_tables', auth())
 app.post('/get_pricing_tables', getPricingTables)
