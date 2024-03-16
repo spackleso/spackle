@@ -6,6 +6,7 @@ import { TelemetryService } from '@/lib/services/telemetry'
 import Stripe from 'stripe'
 import { StripeService } from '../services/stripe'
 import { EntitlementsService } from '../services/entitlements'
+import { TokenService } from '../services/token'
 
 export type HonoEnv = {
   Bindings: {
@@ -20,6 +21,7 @@ export type HonoEnv = {
     STRIPE_LIVE_SECRET_KEY: string
     STRIPE_SIGNING_SECRET: string
     STRIPE_TEST_SECRET_KEY: string
+    SUPABASE_JWT_SECRET: string
   }
   Variables: {
     cache: TieredCache
@@ -28,8 +30,9 @@ export type HonoEnv = {
     entitlementsService: EntitlementsService
     liveStripe: Stripe
     sentry: Toucan
+    stripeService: StripeService
     telemetry: TelemetryService
     testStripe: Stripe
-    stripeService: StripeService
+    tokenService: TokenService
   }
 }
