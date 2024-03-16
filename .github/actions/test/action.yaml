@@ -22,7 +22,7 @@ runs:
       with:
         version: 1.60.1
 
-    - run: supabase start
+    - run: supabase start -x gotrue,realtime,storage-api,imgproxy,kong,inbucket,postgrest,pgadmin-schema-diff,migra,postgres-meta,studio,edge-runtime,logflare,vector,pgbouncer,pg_prove
       shell: bash
 
     - name: Run tests
