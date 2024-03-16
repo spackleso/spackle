@@ -25,7 +25,7 @@ export type HonoEnv = {
     cache: TieredCache
     db: Database
     dbService: DatabaseService
-    entitlements: EntitlementsService
+    entitlementsService: EntitlementsService
     liveStripe: Stripe
     sentry: Toucan
     telemetry: TelemetryService

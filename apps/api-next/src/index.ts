@@ -62,7 +62,7 @@ function init() {
     c.set('stripeService', stripeService)
 
     const entitlements = new EntitlementsService(db)
-    c.set('entitlements', entitlements)
+    c.set('entitlementsService', entitlements)
 
     await next()
     await client.end()

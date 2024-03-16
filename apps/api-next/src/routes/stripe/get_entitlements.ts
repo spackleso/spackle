@@ -20,7 +20,7 @@ export default async function (c: Context<HonoEnv>) {
 
   if (account.billingStripeCustomerId) {
     entitlements = await c
-      .get('entitlements')
+      .get('entitlementsService')
       .getCustomerState(billingStripeAccountId, account.billingStripeCustomerId)
   }
 
