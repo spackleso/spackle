@@ -1,5 +1,5 @@
 import { Database, and, eq, schema, sql } from '@spackle/db'
-import { TelemetryService } from '@/lib/telemetry/service'
+import { TelemetryService } from '@/lib/services/telemetry'
 import { PgColumn } from 'drizzle-orm/pg-core'
 
 // TODO: update all `get` methods to use findOne

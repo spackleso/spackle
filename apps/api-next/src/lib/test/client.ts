@@ -5,8 +5,8 @@ import { Database, schema } from '@spackle/db'
 import stripe from 'stripe'
 import { OpenAPIHono } from '@hono/zod-openapi'
 import { HonoEnv } from '@/lib/hono/env'
-import { DatabaseService } from '../db/service'
-import { TelemetryService } from '../telemetry/service'
+import { DatabaseService } from '@/lib/services/db'
+import { TelemetryService } from '@/lib/services/telemetry'
 import { Toucan } from 'toucan-js'
 
 export const genStripeId = (prefix: string) => {

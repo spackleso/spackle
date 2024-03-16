@@ -1,6 +1,6 @@
 import { Database, eq, schema } from '@spackle/db'
 import Stripe from 'stripe'
-import { DatabaseService } from '@/lib/db/service'
+import { DatabaseService } from '@/lib/services/db'
 import { Toucan } from 'toucan-js'
 
 export type Mode = 'live' | 'test'

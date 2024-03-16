@@ -1,11 +1,11 @@
 import { Database } from '@spackle/db'
 import { TieredCache } from '@/lib/cache/tiered'
-import { DatabaseService } from '@/lib/db/service'
+import { DatabaseService } from '@/lib/services/db'
 import { Toucan } from 'toucan-js'
-import { TelemetryService } from '@/lib/telemetry/service'
+import { TelemetryService } from '@/lib/services/telemetry'
 import Stripe from 'stripe'
-import { StripeService } from '../stripe/service'
-import { EntitlementsService } from '../entitlements/service'
+import { StripeService } from '../services/stripe'
+import { EntitlementsService } from '../services/entitlements'
 
 export type HonoEnv = {
   Bindings: {

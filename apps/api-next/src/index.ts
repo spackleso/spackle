@@ -11,12 +11,12 @@ import stripe from '@/routes/stripe'
 import v1 from '@/routes/v1'
 import { schema } from '@spackle/db'
 import { OpenAPIHono } from '@hono/zod-openapi'
-import { DatabaseService } from '@/lib/db/service'
-import { TelemetryService } from '@/lib/telemetry/service'
+import { DatabaseService } from '@/lib/services/db'
+import { TelemetryService } from '@/lib/services/telemetry'
 import { HonoEnv } from '@/lib/hono/env'
-import { StripeService } from '@/lib/stripe/service'
+import { StripeService } from '@/lib/services/stripe'
 import Stripe from 'stripe'
-import { EntitlementsService } from './lib/entitlements/service'
+import { EntitlementsService } from './lib/services/entitlements'
 
 const cacheMap = new Map()
 

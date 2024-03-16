@@ -1,4 +1,4 @@
-import { CustomerState } from '@/lib/entitlements/service'
+import { CustomerState } from '@/lib/services/entitlements'
 import { HonoEnv } from '@/lib/hono/env'
 import { Context } from 'hono'
 
