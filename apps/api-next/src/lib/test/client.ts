@@ -8,6 +8,7 @@ import { HonoEnv } from '@/lib/hono/env'
 import { DatabaseService } from '@/lib/services/db'
 import { TelemetryService } from '@/lib/services/telemetry'
 import { Toucan } from 'toucan-js'
+import { TokenService } from '../services/token'
 
 export const genStripeId = (prefix: string) => {
   return `${prefix}_${crypto.randomBytes(16).toString('hex')}`
@@ -23,6 +24,8 @@ export const MOCK_ENV = {
   STRIPE_LIVE_SECRET_KEY: 'live_123',
   STRIPE_SIGNING_SECRET: 'absec_123',
   STRIPE_TEST_SECRET_KEY: 'test_123',
+  SUPABASE_JWT_SECRET:
+    'super-secret-jwt-token-with-at-least-32-characters-long',
 }
 
 export class TestClient {
@@ -30,6 +33,7 @@ export class TestClient {
   client: postgres.Sql
   db: Database
   dbService: DatabaseService
+  tokenService: TokenService
   env: Record<string, string> = MOCK_ENV
 
   constructor(app: OpenAPIHono<HonoEnv>, env: Record<string, string> = {}) {
@@ -49,6 +53,7 @@ export class TestClient {
       ),
       this.env.DB_PK_SALT,
     )
+    this.tokenService = new TokenService(this.db, this.env.SUPABASE_JWT_SECRET)
   }
 
   async teardown() {

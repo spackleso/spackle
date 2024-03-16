@@ -17,6 +17,7 @@ import { HonoEnv } from '@/lib/hono/env'
 import { StripeService } from '@/lib/services/stripe'
 import Stripe from 'stripe'
 import { EntitlementsService } from './lib/services/entitlements'
+import { TokenService } from './lib/services/token'
 
 const cacheMap = new Map()
 
@@ -60,9 +61,8 @@ function init() {
       c.get('sentry'),
     )
     c.set('stripeService', stripeService)
-
-    const entitlements = new EntitlementsService(db)
-    c.set('entitlementsService', entitlements)
+    c.set('entitlementsService', new EntitlementsService(db))
+    c.set('tokenService', new TokenService(db, c.env.SUPABASE_JWT_SECRET))
 
     await next()
     await client.end()
