@@ -19,8 +19,6 @@ export const MOCK_ENV = {
   DB_PK_SALT: 'salt',
   ENVIRONMENT: 'test',
   ORIGIN: 'http://localhost:3000',
-  POSTHOG_API_HOST: 'http://localhost:3000',
-  POSTHOG_API_KEY: 'phk_123',
   STRIPE_LIVE_SECRET_KEY: 'live_123',
   STRIPE_SIGNING_SECRET: 'absec_123',
   STRIPE_TEST_SECRET_KEY: 'test_123',
@@ -269,6 +267,18 @@ export class TestClient {
         featureId: opts.feature.id,
         stripeProductId: opts.product.stripeId,
         valueFlag,
+      })
+      .returning()
+    return result[0]
+  }
+
+  async createTestStripeUser(stripeAccountId: string) {
+    const stripeId = genStripeId('usr')
+    const result = await this.db
+      .insert(schema.stripeUsers)
+      .values({
+        stripeId,
+        stripeAccountId,
       })
       .returning()
     return result[0]
