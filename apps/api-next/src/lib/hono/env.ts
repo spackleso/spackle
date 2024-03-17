@@ -23,6 +23,7 @@ export type HonoEnv = {
     SENTRY_DSN: string
     STRIPE_APP_ID: string
     STRIPE_BILLING_WEBHOOK_SECRET: string
+    STRIPE_CONNECTED_WEBHOOK_SECRET: string
     STRIPE_LIVE_SECRET_KEY: string
     STRIPE_SIGNING_SECRET: string
     STRIPE_TEST_SECRET_KEY: string
