@@ -23,6 +23,7 @@ import getSubscriptionsState from './get_subscriptions_state'
 import getToken from './get_token'
 import identify from './identify'
 import track from './track'
+import updateAccountFeature from './update_account_feature'
 
 const app = new OpenAPIHono<HonoEnv>()
 
@@ -108,5 +109,8 @@ app.post('/identify', identify)
 
 app.use('/track', auth())
 app.post('/track', track)
+
+app.use('/update_account_feature', auth())
+app.post('/update_account_feature', updateAccountFeature)
 
 export default app
