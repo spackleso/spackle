@@ -158,7 +158,6 @@ export default async function (c: Context<HonoEnv>) {
         )
     }
   } catch (error: any) {
-    console.error(error)
     c.get('sentry').captureException(error)
     c.status(400)
     return c.json({

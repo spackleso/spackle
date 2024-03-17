@@ -20,6 +20,7 @@ export type HonoEnv = {
     POSTHOG_API_HOST: string
     POSTHOG_API_KEY: string
     SENTRY_DSN: string
+    STRIPE_APP_ID: string
     STRIPE_LIVE_SECRET_KEY: string
     STRIPE_SIGNING_SECRET: string
     STRIPE_TEST_SECRET_KEY: string
