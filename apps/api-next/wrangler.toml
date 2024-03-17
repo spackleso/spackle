@@ -18,5 +18,6 @@ routes = [
 
 [env.production.vars]
 ENVIRONMENT = "production"
+HOST = "https://api.spackle.so"
 ORIGIN = "https://spackle-cksxj3a32-bolder-research.vercel.app"
 POSTHOG_API_HOST = "https://app.posthog.com"

@@ -3,6 +3,7 @@ import { OpenAPIHono } from '@hono/zod-openapi'
 import { HonoEnv } from '@/lib/hono/env'
 
 import acknowledgeSetup from './acknowledge_setup'
+import billingCheckout from './billing_checkout'
 import billingCheckoutSuccess from './billing_checkout_success'
 import createAccountFeature from './create_account_feature'
 import createPricingTable from './create_pricing_table'
@@ -56,6 +57,7 @@ function auth() {
 app.use('/acknowledge_setup', auth())
 app.post('/acknowledge_setup', acknowledgeSetup)
 
+app.get('/billing_checkout', billingCheckout)
 app.get('/billing_checkout_success', billingCheckoutSuccess)
 
 app.use('/create_account_feature', auth())
