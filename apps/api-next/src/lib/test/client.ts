@@ -192,7 +192,7 @@ export class TestClient {
     return result[0]
   }
 
-  async createCustomerFlagFeature(
+  async createTestCustomerFlagFeature(
     stripeAccountId: string,
     name: string,
     key: string,
@@ -279,6 +279,55 @@ export class TestClient {
       .values({
         stripeId,
         stripeAccountId,
+      })
+      .returning()
+    return result[0]
+  }
+
+  async createTestLimitFeature(
+    stripeAccountId: string,
+    name: string,
+    key: string,
+    valueLimit: number,
+  ) {
+    const result = await this.db
+      .insert(schema.features)
+      .values({
+        name,
+        key,
+        type: 1,
+        valueLimit,
+        stripeAccountId,
+      })
+      .returning()
+    return result[0]
+  }
+
+  async createTestCustomerLimitFeature(
+    stripeAccountId: string,
+    name: string,
+    key: string,
+    valueLimit: number,
+    customer?: any,
+  ) {
+    const feature = await this.createTestLimitFeature(
+      stripeAccountId,
+      name,
+      key,
+      valueLimit,
+    )
+
+    if (!customer) {
+      customer = await this.createTestStripeCustomer(stripeAccountId)
+    }
+
+    const result = await this.db
+      .insert(schema.customerFeatures)
+      .values({
+        stripeAccountId,
+        featureId: feature.id,
+        stripeCustomerId: customer.stripeId,
+        valueLimit,
       })
       .returning()
     return result[0]

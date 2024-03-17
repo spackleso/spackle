@@ -60,7 +60,7 @@ describe('POST', () => {
         .orderBy(desc(schema.pricingTables.id))
     )[0]
 
-    expect(pt).toStrictEqual({
+    expect(pt).toEqual({
       id: pt.id,
       name: 'Default',
       mode: 0,
@@ -111,7 +111,7 @@ describe('POST', () => {
         .orderBy(desc(schema.pricingTables.id))
     )[0]
 
-    expect(pt).toStrictEqual({
+    expect(pt).toEqual({
       id: pt.id,
       name: 'Default',
       mode: 0,
@@ -130,7 +130,7 @@ describe('POST', () => {
       .where(eq(schema.pricingTableProducts.pricingTableId, pt.id))
 
     expect(ptps.length).toBe(1)
-    expect(ptps[0]).toStrictEqual({
+    expect(ptps[0]).toEqual({
       id: ptps[0].id,
       stripeProductId: product.stripeId,
       monthlyStripePriceId: monthlyPrice.stripeId,

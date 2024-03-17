@@ -33,7 +33,7 @@ describe('POST', () => {
 
   test('Returns customer features', async () => {
     const decoy = await client.createTestStripeAccount()
-    await client.createCustomerFlagFeature(
+    await client.createTestCustomerFlagFeature(
       decoy.stripeId,
       'Decoy',
       'decoy',
@@ -42,14 +42,14 @@ describe('POST', () => {
 
     const account = await client.createTestStripeAccount()
     const customer = await client.createTestStripeCustomer(account.stripeId)
-    const cf1 = await client.createCustomerFlagFeature(
+    const cf1 = await client.createTestCustomerFlagFeature(
       account.stripeId,
       'Feature',
       'feature',
       true,
       customer,
     )
-    const cf2 = await client.createCustomerFlagFeature(
+    const cf2 = await client.createTestCustomerFlagFeature(
       account.stripeId,
       'Feature 2',
       'feature_2',

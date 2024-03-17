@@ -24,6 +24,7 @@ import getToken from './get_token'
 import identify from './identify'
 import track from './track'
 import updateAccountFeature from './update_account_feature'
+import updateCustomerFeatures from './update_customer_features'
 
 const app = new OpenAPIHono<HonoEnv>()
 
@@ -112,5 +113,8 @@ app.post('/track', track)
 
 app.use('/update_account_feature', auth())
 app.post('/update_account_feature', updateAccountFeature)
+
+app.use('/update_customer_features', auth())
+app.post('/update_customer_features', updateCustomerFeatures)
 
 export default app

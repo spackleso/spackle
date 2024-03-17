@@ -14,6 +14,7 @@ beforeAll(async () => {
 afterAll(async () => {
   await client.teardown()
 })
+
 describe('POST', () => {
   test('Requires a signature', async () => {
     const res = await app.request(
