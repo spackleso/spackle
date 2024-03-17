@@ -49,7 +49,6 @@ export class TokenService {
   }
 
   createPublishableToken = async (stripeAccountId: string) => {
-    console.log('createPublishableToken', stripeAccountId, this.secret)
     const token = await jwt.sign(
       {
         sub: stripeAccountId,

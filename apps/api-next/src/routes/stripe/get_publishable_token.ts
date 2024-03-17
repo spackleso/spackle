@@ -10,7 +10,6 @@ export default async function (c: Context<HonoEnv>) {
       token = await c.get('tokenService').createPublishableToken(account_id)
     }
   } catch (error) {
-    console.error(error)
     c.get('sentry').captureException(error)
     c.status(400)
     return c.json({})
