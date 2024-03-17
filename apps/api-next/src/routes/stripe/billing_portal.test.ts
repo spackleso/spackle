@@ -5,6 +5,7 @@
 import app from '@/index'
 import { MOCK_ENV, TestClient, genStripeId } from '@/lib/test/client'
 import { beforeAll, afterAll, describe, test, expect, vi } from 'vitest'
+import { schema } from '@spackle/db'
 import stripe from 'stripe'
 
 let client: TestClient
@@ -17,7 +18,7 @@ afterAll(async () => {
 
 vi.mock('stripe', () => {
   const Stripe = vi.fn() as any
-  Stripe.prototype.checkout = {
+  Stripe.prototype.billingPortal = {
     sessions: {
       create: vi.fn(() => ({
         url: 'https://billing.stripe.com/session/123',
@@ -37,14 +38,22 @@ vi.mock('stripe', () => {
 })
 
 describe('GET', () => {
-  test('Redirects to a Stripe billing checkout session', async () => {
-    const account = await client.createTestStripeAccount()
+  test('Redirects to a Stripe billing portal session', async () => {
+    const account = (
+      await client.db
+        .insert(schema.stripeAccounts)
+        .values({
+          stripeId: genStripeId('acct'),
+          billingStripeCustomerId: genStripeId('cus'),
+        })
+        .returning()
+    )[0]
+
     const user = await client.createTestStripeUser(account.stripeId)
+
     const query = {
       user_id: user.stripeId,
-      email: 'test@test.com',
       account_id: account.stripeId,
-      product: 'entitlements',
       sig: stripe.webhooks.generateTestHeaderString({
         payload: JSON.stringify({
           user_id: user.stripeId,
@@ -53,8 +62,9 @@ describe('GET', () => {
         secret: client.env.STRIPE_SIGNING_SECRET,
       }),
     }
+
     const res = await app.request(
-      `/stripe/billing_checkout?${new URLSearchParams(query).toString()}`,
+      `/stripe/billing_portal?${new URLSearchParams(query).toString()}`,
       {
         method: 'GET',
       },
