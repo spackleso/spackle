@@ -20,6 +20,7 @@ import getProductFeatures from './get_product_features'
 import getProductState from './get_product_state'
 import getPublishableToken from './get_publishable_token'
 import getSubscriptionsState from './get_subscriptions_state'
+import getToken from './get_token'
 
 const app = new OpenAPIHono<HonoEnv>()
 
@@ -96,5 +97,8 @@ app.post('/get_publishable_token', getPublishableToken)
 
 app.use('/get_subscriptions_state', auth())
 app.post('/get_subscriptions_state', getSubscriptionsState)
+
+app.use('/get_token', auth())
+app.post('/get_token', getToken)
 
 export default app
