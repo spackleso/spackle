@@ -6,9 +6,13 @@ export default async function handler(c: Context<HonoEnv>) {
     const sig = c.req.header('stripe-signature') as string
     const raw = await c.req.raw.clone().text()
 
-    let event = c
+    let event = await c
       .get('liveStripe')
-      .webhooks.constructEvent(raw, sig, c.env.STRIPE_CONNECTED_WEBHOOK_SECRET)
+      .webhooks.constructEventAsync(
+        raw,
+        sig,
+        c.env.STRIPE_CONNECTED_WEBHOOK_SECRET,
+      )
 
     c.get('sentry').setContext('stripeEvent', {
       id: event.id,
