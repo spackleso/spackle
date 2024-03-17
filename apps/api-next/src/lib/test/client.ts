@@ -15,6 +15,8 @@ export const genStripeId = (prefix: string) => {
 }
 
 export const MOCK_ENV = {
+  BILLING_STRIPE_ACCOUNT_ID: 'acct_123',
+  BILLING_ENTITLEMENTS_PRICE_ID: 'price_123',
   DATABASE_URL: 'postgresql://postgres:postgres@localhost:54322/postgres',
   DB_PK_SALT: 'salt',
   ENVIRONMENT: 'test',
@@ -328,6 +330,125 @@ export class TestClient {
         featureId: feature.id,
         stripeCustomerId: customer.stripeId,
         valueLimit,
+      })
+      .returning()
+    return result[0]
+  }
+
+  async createTestStripeSubscription(
+    stripeAccountId: string,
+    stripeCustomerId: string,
+    stripePriceId: string,
+    stripeJson: any,
+    stripeId: string = genStripeId('sub'),
+    siId: string = genStripeId('si'),
+    status: string = 'active',
+  ) {
+    stripeJson = {
+      id: stripeId,
+      ...stripeJson,
+    }
+
+    const subs = await this.db
+      .insert(schema.stripeSubscriptions)
+      .values({
+        status,
+        stripeAccountId,
+        stripeCustomerId,
+        stripeId,
+        stripeJson,
+      })
+      .returning()
+
+    await this.db
+      .insert(schema.stripeSubscriptionItems)
+      .values({
+        stripeAccountId,
+        stripeId: siId,
+        stripePriceId,
+        stripeSubscriptionId: subs[0].stripeId,
+      })
+      .returning()
+
+    return subs[0]
+  }
+
+  createTestBillableCharge = async (
+    stripeAccountId: string,
+    amount: number,
+    stripeCreatedDate: Date,
+    mode: number,
+    status: string,
+  ) => {
+    const product = await this.createTestStripeProduct(stripeAccountId)
+    const price = await this.createTestStripePrice(
+      stripeAccountId,
+      product.stripeId,
+    )
+    const customer = await this.createTestStripeCustomer(stripeAccountId)
+
+    const subscription = await this.createTestStripeSubscription(
+      stripeAccountId,
+      customer.stripeId,
+      price.stripeId,
+      {},
+    )
+    const invoice = await this.createTestStripeInvoice(
+      stripeAccountId,
+      subscription.stripeId,
+      {},
+      genStripeId('inv'),
+    )
+    return await this.createTestStripeCharge(
+      stripeAccountId,
+      {},
+      status,
+      amount,
+      stripeCreatedDate,
+      invoice.stripeId,
+      mode,
+    )
+  }
+
+  async createTestStripeInvoice(
+    stripeAccountId: string,
+    stripeSubscriptionId: string | null,
+    stripeJson: any,
+    stripeId: string = genStripeId('inv'),
+  ) {
+    const result = await this.db
+      .insert(schema.stripeInvoices)
+      .values({
+        stripeAccountId,
+        stripeId,
+        stripeSubscriptionId,
+        stripeJson,
+      })
+      .returning()
+    return result[0]
+  }
+
+  async createTestStripeCharge(
+    stripeAccountId: string,
+    stripeJson: any,
+    status: string,
+    amount: number,
+    stripeCreated: Date,
+    stripeInvoiceId: string | null,
+    mode: number,
+    stripeId: string = genStripeId('ch'),
+  ) {
+    const result = await this.db
+      .insert(schema.stripeCharges)
+      .values({
+        stripeId,
+        stripeAccountId,
+        stripeJson,
+        status,
+        amount,
+        stripeCreated: stripeCreated.toISOString(),
+        stripeInvoiceId,
+        mode,
       })
       .returning()
     return result[0]

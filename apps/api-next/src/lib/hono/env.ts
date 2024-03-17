@@ -7,9 +7,11 @@ import Stripe from 'stripe'
 import { StripeService } from '../services/stripe'
 import { EntitlementsService } from '../services/entitlements'
 import { TokenService } from '../services/token'
+import { BillingService } from '../services/billing'
 
 export type HonoEnv = {
   Bindings: {
+    BILLING_ENTITLEMENTS_PRICE_ID: string
     BILLING_STRIPE_ACCOUNT_ID: string
     DATABASE_URL: string
     DB_PK_SALT: string
@@ -25,6 +27,7 @@ export type HonoEnv = {
   }
   Variables: {
     cache: TieredCache
+    billingService: BillingService
     db: Database
     dbService: DatabaseService
     entitlementsService: EntitlementsService

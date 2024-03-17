@@ -18,6 +18,7 @@ import { StripeService } from '@/lib/services/stripe'
 import Stripe from 'stripe'
 import { EntitlementsService } from './lib/services/entitlements'
 import { TokenService } from './lib/services/token'
+import { BillingService } from './lib/services/billing'
 
 const cacheMap = new Map()
 
@@ -61,8 +62,18 @@ function init() {
       c.get('sentry'),
     )
     c.set('stripeService', stripeService)
-    c.set('entitlementsService', new EntitlementsService(db))
+    const entitlementsService = new EntitlementsService(db)
+    c.set('entitlementsService', entitlementsService)
     c.set('tokenService', new TokenService(db, c.env.SUPABASE_JWT_SECRET))
+    c.set(
+      'billingService',
+      new BillingService(
+        db,
+        dbService,
+        entitlementsService,
+        c.env.BILLING_STRIPE_ACCOUNT_ID,
+      ),
+    )
 
     await next()
     await client.end()
