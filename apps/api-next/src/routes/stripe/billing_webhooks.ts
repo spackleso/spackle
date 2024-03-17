@@ -8,9 +8,13 @@ export default async function handler(c: Context<HonoEnv>) {
     const raw = await c.req.raw.clone().text()
 
     // Live webhook endpoints receive both live and test events.
-    const event = c
+    const event = await c
       .get('liveStripe')
-      .webhooks.constructEvent(raw, sig, c.env.STRIPE_BILLING_WEBHOOK_SECRET)
+      .webhooks.constructEventAsync(
+        raw,
+        sig,
+        c.env.STRIPE_BILLING_WEBHOOK_SECRET,
+      )
 
     c.get('sentry').setContext('stripeEvent', event)
 
