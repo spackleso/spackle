@@ -26,6 +26,7 @@ import track from './track'
 import updateAccountFeature from './update_account_feature'
 import updateCustomerFeatures from './update_customer_features'
 import updatePricingTable from './update_pricing_table'
+import updateProductFeatures from './update_product_features'
 
 const app = new OpenAPIHono<HonoEnv>()
 
@@ -120,5 +121,8 @@ app.post('/update_customer_features', updateCustomerFeatures)
 
 app.use('/update_pricing_table', auth())
 app.post('/update_pricing_table', updatePricingTable)
+
+app.use('/update_product_features', auth())
+app.post('/update_product_features', updateProductFeatures)
 
 export default app
