@@ -22,6 +22,7 @@ import getPublishableToken from './get_publishable_token'
 import getSubscriptionsState from './get_subscriptions_state'
 import getToken from './get_token'
 import identify from './identify'
+import track from './track'
 
 const app = new OpenAPIHono<HonoEnv>()
 
@@ -104,5 +105,8 @@ app.post('/get_token', getToken)
 
 app.use('/identify', auth())
 app.post('/identify', identify)
+
+app.use('/track', auth())
+app.post('/track', track)
 
 export default app
