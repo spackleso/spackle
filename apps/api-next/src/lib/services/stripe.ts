@@ -459,4 +459,93 @@ export class StripeService {
       }
     }
   }
+
+  handleWebhook = async (account: string, event: any) => {
+    this.syncStripeAccount(account!, null)
+
+    console.log(`Received event: ${event.id}`)
+    if (event.type === 'account.updated') {
+      await this.syncStripeAccount(
+        (event.data.object as Stripe.Account).id,
+        null,
+      )
+    } else if (event.type === 'account.application.authorized') {
+      await this.syncStripeAccount(account!, null)
+    } else if (event.type === 'account.application.deauthorized') {
+      console.error(`${event.type} not handled`)
+    } else if (event.type === 'customer.created') {
+      await this.syncStripeCustomer(
+        account!,
+        (event.data.object as Stripe.Customer).id,
+        event.livemode ? 'live' : 'test',
+      )
+    } else if (event.type === 'customer.deleted') {
+      console.error(`${event.type} not handled`)
+    } else if (event.type === 'customer.updated') {
+      await this.syncStripeCustomer(
+        account!,
+        (event.data.object as Stripe.Customer).id,
+        event.livemode ? 'live' : 'test',
+      )
+    } else if (event.type === 'customer.subscription.created') {
+      await this.syncStripeSubscriptions(
+        account!,
+        (event.data.object as any).customer,
+        event.livemode ? 'live' : 'test',
+      )
+    } else if (event.type === 'customer.subscription.deleted') {
+      await this.dbService.deleteStripeSubscription(
+        account!,
+        (event.data.object as any).id,
+      )
+    } else if (event.type === 'customer.subscription.updated') {
+      await this.syncStripeSubscriptions(
+        account!,
+        (event.data.object as any).customer,
+        event.livemode ? 'live' : 'test',
+      )
+    } else if (event.type === 'price.created') {
+      await this.syncStripePrice(
+        account!,
+        (event.data.object as any).id,
+        event.livemode ? 'live' : 'test',
+      )
+    } else if (event.type === 'price.deleted') {
+      console.error(`${event.type} not handled`)
+    } else if (event.type === 'price.updated') {
+      await this.syncStripePrice(
+        account!,
+        (event.data.object as any).id,
+        event.livemode ? 'live' : 'test',
+      )
+    } else if (event.type === 'product.created') {
+      await this.syncStripeProduct(
+        account!,
+        (event.data.object as any).id,
+        event.livemode ? 'live' : 'test',
+      )
+    } else if (event.type === 'product.deleted') {
+      console.error(`${event.type} not handled`)
+    } else if (event.type === 'product.updated') {
+      await this.syncStripeProduct(
+        account!,
+        (event.data.object as any).id,
+        event.livemode ? 'live' : 'test',
+      )
+    } else if (event.type.startsWith('invoice.')) {
+      await this.syncStripeInvoice(
+        account!,
+        (event.data.object as any).id,
+        event.livemode ? 'live' : 'test',
+      )
+    } else if (event.type.startsWith('charge.')) {
+      await this.syncStripeCharge(
+        account!,
+        (event.data.object as any).id,
+        event.livemode ? 'live' : 'test',
+      )
+    } else {
+      console.error(`Unhandled event type ${event.type}`)
+    }
+  }
 }

@@ -6,6 +6,7 @@ import acknowledgeSetup from './acknowledge_setup'
 import billingCheckout from './billing_checkout'
 import billingCheckoutSuccess from './billing_checkout_success'
 import billingPortal from './billing_portal'
+import billingWebhooks from './billing_webhooks'
 import createAccountFeature from './create_account_feature'
 import createPricingTable from './create_pricing_table'
 import deleteAccountFeature from './delete_account_feature'
@@ -61,6 +62,7 @@ app.post('/acknowledge_setup', acknowledgeSetup)
 app.get('/billing_checkout', billingCheckout)
 app.get('/billing_checkout_success', billingCheckoutSuccess)
 app.get('/billing_portal', billingPortal)
+app.post('/billing_webhooks', billingWebhooks)
 
 app.use('/create_account_feature', auth())
 app.post('/create_account_feature', createAccountFeature)
