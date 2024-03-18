@@ -28,6 +28,7 @@ export type HonoEnv = {
     STRIPE_SIGNING_SECRET: string
     STRIPE_TEST_SECRET_KEY: string
     SUPABASE_JWT_SECRET: string
+    WEB_HOST: string
   }
   Variables: {
     cache: TieredCache
