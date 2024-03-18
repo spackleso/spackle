@@ -58,7 +58,6 @@ describe('GET', () => {
     expect(res.headers.get('location')).toBe(
       `https://spackle.so/checkout?session=${btoa(JSON.stringify(query))}`,
     )
-    console.log(res.headers.get('set-cookie'))
     expect(res.headers.get('set-cookie')).toBe(
       `user_id=${user.stripeId}; Domain=.spackle.so; Path=/, account_id=${
         account.stripeId
