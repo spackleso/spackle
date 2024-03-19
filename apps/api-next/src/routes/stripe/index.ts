@@ -30,6 +30,7 @@ import getPublishableToken from './get_publishable_token'
 import getSubscriptionsState from './get_subscriptions_state'
 import getToken from './get_token'
 import identify from './identify'
+import syncAccount from './sync_account'
 import track from './track'
 import updateAccountFeature from './update_account_feature'
 import updateCustomerFeatures from './update_customer_features'
@@ -130,6 +131,9 @@ app.post('/get_token', getToken)
 
 app.use('/identify', auth())
 app.post('/identify', identify)
+
+app.use('/sync_account', auth())
+app.post('/sync_account', syncAccount)
 
 app.use('/track', auth())
 app.post('/track', track)
