@@ -6,66 +6,37 @@ import pricingTables from './pricing_tables'
 import productFeatures from './product_features'
 import { OpenAPIHono, createRoute } from '@hono/zod-openapi'
 import { APIHonoEnv, App } from '@/lib/hono/env'
-import jwt from '@tsndr/cloudflare-worker-jwt'
-import { eq, schema } from '@spackle/db'
+import { verifyToken } from '@/lib/auth/token'
 
 const app = new OpenAPIHono() as App
 
-type TokenPayload = {
-  sub: string
-  iat: number
-  publishable?: boolean
+function tokenAuth(exemptPaths: string[]) {
+  return async (c: Context<APIHonoEnv>, next: any) => {
+    if (exemptPaths.includes(c.req.path)) {
+      return next()
+    }
+
+    const authorization = c.req.header('authorization') || 'Bearer '
+    const tokenStr = authorization.split(' ')[1]
+
+    let payload
+    try {
+      payload = await verifyToken(
+        tokenStr,
+        c.env.SUPABASE_JWT_SECRET,
+        c.get('db'),
+      )
+    } catch (error) {
+      c.status(401)
+      return c.json({ error: 'Unauthorized' })
+    }
+
+    c.set('token', payload)
+    return next()
+  }
 }
 
-app.use('*', async (c: Context<APIHonoEnv>, next) => {
-  const authorization = c.req.header('authorization') || 'Bearer '
-  const tokenStr = authorization.split(' ')[1]
-
-  let payload
-  try {
-    const data = jwt.decode(tokenStr)
-    payload = data.payload
-  } catch (error) {}
-
-  if (!payload || !(await jwt.verify(tokenStr, c.env.SUPABASE_JWT_SECRET))) {
-    c.status(401)
-    return c.json({ error: 'Unauthorized' })
-  }
-
-  const sub = payload.sub as string
-  const publishable = !!(payload as TokenPayload).publishable
-
-  if (publishable) {
-    const response = await c
-      .get('db')
-      .select()
-      .from(schema.publishableTokens)
-      .where(eq(schema.publishableTokens.token, tokenStr))
-
-    if (!response.length) {
-      c.status(401)
-      return c.json({ error: 'Unauthorized' })
-    }
-  } else {
-    const response = await c
-      .get('db')
-      .select()
-      .from(schema.tokens)
-      .where(eq(schema.tokens.token, tokenStr))
-
-    if (!response.length) {
-      c.status(401)
-      return c.json({ error: 'Unauthorized' })
-    }
-  }
-
-  c.set('token', {
-    sub,
-    publishable,
-  })
-
-  return next()
-})
+app.use('*', tokenAuth(['/']))
 
 app.route('/customers', customers)
 app.route('/customer_features', customerFeatures)
