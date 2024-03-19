@@ -6,7 +6,7 @@ import { OpenAPIHono } from '@hono/zod-openapi'
 import { App, HonoEnv, Job } from '@/lib/hono/env'
 import { Toucan } from 'toucan-js'
 import { initServices } from '@/lib/services/init'
-import { initContext } from '@/lib/hono/context'
+import { initCacheContext, initServiceContext } from '@/lib/hono/context'
 
 const cacheMap = new Map()
 const app = new OpenAPIHono<HonoEnv>() as App
@@ -17,7 +17,9 @@ app.use('*', (c, next) => {
     enabled: !!c.env.SENTRY_DSN,
   })(c, next)
 })
-app.use('*', initContext(cacheMap))
+
+app.use('*', initCacheContext(cacheMap))
+app.use('*', initServiceContext())
 
 app.route('/stripe', stripe)
 app.route('/v1', v1)

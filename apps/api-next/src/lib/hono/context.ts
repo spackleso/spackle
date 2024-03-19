@@ -5,8 +5,9 @@ import { TieredCache } from '@/lib/cache/tiered'
 import { Cache, Entry } from '@/lib/cache/interface'
 import { HonoEnv } from '@/lib/hono/env'
 import { initServices } from '@/lib/services/init'
+import { sentry } from '@hono/sentry'
 
-export function initContext(
+export function initCacheContext(
   cacheMap: Map<`${string}:${string}`, Entry<unknown>>,
 ) {
   let _caches: Cache[] = [new MemoryCache(cacheMap)]
@@ -17,7 +18,12 @@ export function initContext(
   const cache = new TieredCache(_caches)
   return async (c: Context<HonoEnv>, next: () => Promise<void>) => {
     c.set('cache', cache)
+    await next()
+  }
+}
 
+export function initServiceContext() {
+  return async (c: Context<HonoEnv>, next: () => Promise<void>) => {
     const services = initServices(c.get('sentry'), c.env)
     c.set('telemetry', services.telemetryService)
     c.set('db', services.db)
