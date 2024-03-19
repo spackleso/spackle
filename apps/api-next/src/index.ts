@@ -1,99 +1,14 @@
-import { Context } from 'hono'
-import { MemoryCache } from '@/lib/cache/memory'
-import { PersistentCache } from '@/lib/cache/persistent'
-import { TieredCache } from '@/lib/cache/tiered'
-import { StatusCode } from 'hono/utils/http-status'
 import { cors } from 'hono/cors'
 import { sentry } from '@hono/sentry'
-import postgres from 'postgres'
-import { drizzle } from 'drizzle-orm/postgres-js'
 import stripe from '@/routes/stripe'
 import v1 from '@/routes/v1'
-import { schema } from '@spackle/db'
 import { OpenAPIHono } from '@hono/zod-openapi'
-import { DatabaseService } from '@/lib/services/db'
-import { TelemetryService } from '@/lib/services/telemetry'
 import { App, HonoEnv, Job } from '@/lib/hono/env'
-import { StripeService } from '@/lib/services/stripe'
-import Stripe from 'stripe'
-import { EntitlementsService } from './lib/services/entitlements'
-import { TokenService } from './lib/services/token'
-import { BillingService } from './lib/services/billing'
-import { Cache } from './lib/cache/interface'
 import { Toucan } from 'toucan-js'
+import { initServices } from '@/lib/services/init'
+import { initContext } from '@/lib/hono/context'
 
 const cacheMap = new Map()
-
-function initServices(sentry: Toucan, env: HonoEnv['Bindings']) {
-  const telemetryService = new TelemetryService(
-    env.POSTHOG_API_HOST,
-    env.POSTHOG_API_KEY,
-    sentry,
-  )
-  const client = postgres(env.DATABASE_URL)
-  const db = drizzle(client, { schema })
-  const dbService = new DatabaseService(db, telemetryService, env.DB_PK_SALT)
-  const liveStripe = new Stripe(env.STRIPE_LIVE_SECRET_KEY, {
-    apiVersion: '2022-08-01' as any,
-  })
-  const testStripe = new Stripe(env.STRIPE_TEST_SECRET_KEY, {
-    apiVersion: '2022-08-01' as any,
-  })
-  const stripeService = new StripeService(
-    db,
-    dbService,
-    liveStripe,
-    testStripe,
-    sentry,
-  )
-  const entitlementsService = new EntitlementsService(db)
-  const tokenService = new TokenService(db, env.SUPABASE_JWT_SECRET)
-  const billingService = new BillingService(
-    db,
-    dbService,
-    entitlementsService,
-    env.BILLING_STRIPE_ACCOUNT_ID,
-  )
-  return {
-    billingService,
-    client,
-    db,
-    dbService,
-    entitlementsService,
-    liveStripe,
-    stripeService,
-    telemetryService,
-    testStripe,
-    tokenService,
-  }
-}
-
-function initContext() {
-  let _caches: Cache[] = [new MemoryCache(cacheMap)]
-  if (typeof caches !== 'undefined') {
-    _caches = _caches.concat(new PersistentCache())
-  }
-
-  const cache = new TieredCache(_caches)
-  return async (c: Context<HonoEnv>, next: () => Promise<void>) => {
-    c.set('cache', cache)
-
-    const services = initServices(c.get('sentry'), c.env)
-    c.set('telemetry', services.telemetryService)
-    c.set('db', services.db)
-    c.set('dbService', services.dbService)
-    c.set('liveStripe', services.liveStripe)
-    c.set('testStripe', services.testStripe)
-    c.set('stripeService', services.stripeService)
-    c.set('entitlementsService', services.entitlementsService)
-    c.set('tokenService', services.tokenService)
-    c.set('billingService', services.billingService)
-
-    await next()
-    await services.client.end()
-  }
-}
-
 const app = new OpenAPIHono<HonoEnv>() as App
 
 app.use('*', cors())
@@ -102,7 +17,7 @@ app.use('*', (c, next) => {
     enabled: !!c.env.SENTRY_DSN,
   })(c, next)
 })
-app.use('*', initContext())
+app.use('*', initContext(cacheMap))
 
 app.route('/stripe', stripe)
 app.route('/v1', v1)
