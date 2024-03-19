@@ -27,6 +27,7 @@ function init() {
     new MemoryCache(cacheMap),
     new PersistentCache(),
   ])
+
   return async (c: Context<HonoEnv>, next: () => Promise<void>) => {
     c.set('cache', cache)
 

@@ -12,5 +12,10 @@
     "paths": {
       "@/*": ["src/*"]
     }
+  },
+  "ts-node": {
+    "compilerOptions": {
+      "module": "commonjs"
+    }
   }
 }
