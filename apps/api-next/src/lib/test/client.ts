@@ -20,7 +20,6 @@ export const MOCK_ENV = {
   DATABASE_URL: 'postgresql://postgres:postgres@localhost:54322/postgres',
   DB_PK_SALT: 'salt',
   ENVIRONMENT: 'test',
-  ORIGIN: 'http://localhost:3000',
   STRIPE_LIVE_SECRET_KEY: 'live_123',
   STRIPE_SIGNING_SECRET: 'absec_123',
   STRIPE_TEST_SECRET_KEY: 'test_123',

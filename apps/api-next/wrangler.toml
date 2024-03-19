@@ -5,7 +5,6 @@ node_compat = true
 
 [vars]
 ENVIRONMENT = "development"
-ORIGIN = "http://localhost:3000"
 
 [queues]
 producers = [
@@ -27,7 +26,6 @@ routes = [
 [env.production.vars]
 ENVIRONMENT = "production"
 HOST = "https://api.spackle.so"
-ORIGIN = "https://spackle-cksxj3a32-bolder-research.vercel.app"
 POSTHOG_API_HOST = "https://app.posthog.com"
 WEB_HOST = "https://www.spackle.so"
 

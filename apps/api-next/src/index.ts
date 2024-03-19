@@ -115,25 +115,6 @@ app.doc('/openapi.json', {
   },
 })
 
-app.all('/*', async (c: Context<HonoEnv>) => {
-  // Proxy all other requests to the origin
-  const url = `${c.env.ORIGIN}${c.req.path}`
-  console.log('Proxying request to', url)
-  const res = await fetch(`${c.env.ORIGIN}${c.req.path}`, {
-    headers: c.req.raw.headers,
-    body: c.req.raw.body,
-    method: c.req.method,
-  })
-  c.status(res.status as StatusCode)
-  if (res.headers.get('Content-Type') === 'application/json') {
-    return c.json(await res.json())
-  } else if (res.headers.get('Content-Type') === 'text/html') {
-    return c.html(await res.text())
-  } else {
-    return c.text(await res.text())
-  }
-})
-
 app.queue = async (batch: MessageBatch<Job>, env: HonoEnv['Bindings']) => {
   const sentry = new Toucan({
     dsn: env.SENTRY_DSN,

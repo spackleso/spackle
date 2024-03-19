@@ -27,7 +27,6 @@ export type HonoEnv = {
     DB_PK_SALT: string
     ENVIRONMENT: string
     HOST: string
-    ORIGIN: string
     POSTHOG_API_HOST: string
     POSTHOG_API_KEY: string
     REDIS_URL: string
