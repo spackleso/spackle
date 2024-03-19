@@ -8,6 +8,16 @@ import { StripeService } from '../services/stripe'
 import { EntitlementsService } from '../services/entitlements'
 import { TokenService } from '../services/token'
 import { BillingService } from '../services/billing'
+import { OpenAPIHono } from '@hono/zod-openapi'
+
+export type Job = {
+  type: string
+  payload: any
+}
+
+export type App = OpenAPIHono<HonoEnv> & {
+  queue: (batch: MessageBatch<Job>, env: HonoEnv['Bindings']) => Promise<void>
+}
 
 export type HonoEnv = {
   Bindings: {
@@ -29,7 +39,7 @@ export type HonoEnv = {
     STRIPE_SIGNING_SECRET: string
     STRIPE_TEST_SECRET_KEY: string
     SUPABASE_JWT_SECRET: string
-    SYNC: Queue
+    SYNC: Queue<Job>
     WEB_HOST: string
   }
   Variables: {

@@ -1,10 +1,10 @@
 import { TieredCache } from '@/lib/cache/tiered'
-import { APIHonoEnv } from '@/lib/hono/env'
+import { APIHonoEnv, App } from '@/lib/hono/env'
 import { OpenAPIHono } from '@hono/zod-openapi'
 import { and, eq, schema } from '@spackle/db'
 import { Context } from 'hono'
 
-const app = new OpenAPIHono()
+const app = new OpenAPIHono() as App
 
 app.use('*', async (c: Context<APIHonoEnv>, next) => {
   if (c.get('token').publishable) {

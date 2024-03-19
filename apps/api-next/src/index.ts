@@ -13,7 +13,7 @@ import { schema } from '@spackle/db'
 import { OpenAPIHono } from '@hono/zod-openapi'
 import { DatabaseService } from '@/lib/services/db'
 import { TelemetryService } from '@/lib/services/telemetry'
-import { HonoEnv } from '@/lib/hono/env'
+import { App, HonoEnv, Job } from '@/lib/hono/env'
 import { StripeService } from '@/lib/services/stripe'
 import Stripe from 'stripe'
 import { EntitlementsService } from './lib/services/entitlements'
@@ -94,7 +94,8 @@ function initContext() {
   }
 }
 
-const app = new OpenAPIHono<HonoEnv>()
+const app = new OpenAPIHono<HonoEnv>() as App
+
 app.use('*', cors())
 app.use('*', (c, next) => {
   return sentry({
@@ -133,29 +134,21 @@ app.all('/*', async (c: Context<HonoEnv>) => {
   }
 })
 
-type Job = {
-  type: string
-  payload: any
-}
-
-export default {
-  fetch: app.fetch,
-  async queue(batch: MessageBatch<Job>, env: HonoEnv['Bindings']) {
-    const sentry = new Toucan({
-      dsn: env.SENTRY_DSN,
-      enabled: !!env.SENTRY_DSN,
-    })
-    const services = initServices(sentry, env)
-    for (const message of batch.messages) {
-      const { type, payload } = message.body
-      switch (type) {
-        case 'syncAllAccountData': {
-          await services.stripeService.syncAllAccountData(
-            payload.stripeAccountId,
-          )
-          break
-        }
+app.queue = async (batch: MessageBatch<Job>, env: HonoEnv['Bindings']) => {
+  const sentry = new Toucan({
+    dsn: env.SENTRY_DSN,
+    enabled: !!env.SENTRY_DSN,
+  })
+  const services = initServices(sentry, env)
+  for (const message of batch.messages) {
+    const { type, payload } = message.body
+    switch (type) {
+      case 'syncAllAccountData': {
+        await services.stripeService.syncAllAccountData(payload.stripeAccountId)
+        break
       }
     }
-  },
+  }
 }
+
+export default app

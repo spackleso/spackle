@@ -1,6 +1,6 @@
 import { Context, Next } from 'hono'
 import { OpenAPIHono } from '@hono/zod-openapi'
-import { HonoEnv } from '@/lib/hono/env'
+import { App, HonoEnv } from '@/lib/hono/env'
 
 import acknowledgeSetup from './acknowledge_setup'
 import billingCheckout from './billing_checkout'
@@ -37,7 +37,7 @@ import updateCustomerFeatures from './update_customer_features'
 import updatePricingTable from './update_pricing_table'
 import updateProductFeatures from './update_product_features'
 
-const app = new OpenAPIHono<HonoEnv>()
+const app = new OpenAPIHono<HonoEnv>() as App
 
 function auth() {
   return async (c: Context, next: Next) => {

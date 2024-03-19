@@ -1,11 +1,11 @@
-import { APIHonoEnv } from '@/lib/hono/env'
+import { APIHonoEnv, App } from '@/lib/hono/env'
 import { OpenAPIHono } from '@hono/zod-openapi'
 import { schema, eq, and } from '@spackle/db'
 import { alias } from 'drizzle-orm/pg-core'
 import { Context } from 'hono'
 import Stripe from 'stripe'
 
-const app = new OpenAPIHono()
+const app = new OpenAPIHono() as App
 
 type Success = {
   id: string

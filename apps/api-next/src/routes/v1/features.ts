@@ -1,11 +1,11 @@
-import { APIHonoEnv } from '@/lib/hono/env'
+import { APIHonoEnv, App } from '@/lib/hono/env'
 import { getPagination } from '@/lib/pagination'
 import { OpenAPIHono } from '@hono/zod-openapi'
 import { and, eq, schema } from '@spackle/db'
 import { Context } from 'hono'
 import { z } from 'zod'
 
-const app = new OpenAPIHono()
+const app = new OpenAPIHono() as App
 
 export enum FeatureType {
   Flag = 0,

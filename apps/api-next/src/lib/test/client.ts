@@ -26,6 +26,9 @@ export const MOCK_ENV = {
   STRIPE_TEST_SECRET_KEY: 'test_123',
   SUPABASE_JWT_SECRET:
     'super-secret-jwt-token-with-at-least-32-characters-long',
+  SYNC: {
+    send: async () => {},
+  },
 }
 
 export class TestClient {
@@ -34,9 +37,9 @@ export class TestClient {
   db: Database
   dbService: DatabaseService
   tokenService: TokenService
-  env: Record<string, string> = MOCK_ENV
+  env: Record<string, any> = MOCK_ENV
 
-  constructor(app: OpenAPIHono<HonoEnv>, env: Record<string, string> = {}) {
+  constructor(app: OpenAPIHono<HonoEnv>, env: Record<string, any> = {}) {
     this.app = app
     this.env = {
       ...this.env,
@@ -60,11 +63,7 @@ export class TestClient {
     await this.client.end()
   }
 
-  stripeRequest(
-    url: string,
-    options: RequestInit,
-    env?: Record<string, string>,
-  ) {
+  stripeRequest(url: string, options: RequestInit, env?: Record<string, any>) {
     options = {
       ...options,
       headers: {

@@ -39,15 +39,28 @@ describe('POST', () => {
   })
 
   test('Syncs all account data', async () => {
-    const res = await client.stripeRequest('/stripe/sync_account', {
-      method: 'POST',
-      body: JSON.stringify({
-        account_id: 'acct_123',
-      }),
-    })
+    const send = vi.fn()
+    const res = await client.stripeRequest(
+      '/stripe/sync_account',
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          account_id: 'acct_123',
+        }),
+      },
+      {
+        ...MOCK_ENV,
+        SYNC: {
+          send: send,
+        },
+      },
+    )
     expect(res.status).toBe(200)
-    expect(Queue.prototype.add).toHaveBeenCalledWith('syncAllAccountData', {
-      stripeAccountId: 'acct_123',
+    expect(send).toHaveBeenCalledWith({
+      type: 'syncAllAccountData',
+      payload: {
+        stripeAccountId: 'acct_123',
+      },
     })
   })
 })

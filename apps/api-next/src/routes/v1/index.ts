@@ -5,11 +5,11 @@ import features from './features'
 import pricingTables from './pricing_tables'
 import productFeatures from './product_features'
 import { OpenAPIHono, createRoute } from '@hono/zod-openapi'
-import { APIHonoEnv } from '@/lib/hono/env'
+import { APIHonoEnv, App } from '@/lib/hono/env'
 import jwt from '@tsndr/cloudflare-worker-jwt'
 import { eq, schema } from '@spackle/db'
 
-const app = new OpenAPIHono()
+const app = new OpenAPIHono() as App
 
 type TokenPayload = {
   sub: string
