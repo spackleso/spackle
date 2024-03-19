@@ -3,6 +3,8 @@ import { APIHonoEnv, App } from '@/lib/hono/env'
 import { OpenAPIHono } from '@hono/zod-openapi'
 import { and, eq, schema } from '@spackle/db'
 import { Context } from 'hono'
+import jwt from '@tsndr/cloudflare-worker-jwt'
+import { authorizeToken, verifyToken } from '@/lib/auth/token'
 
 const app = new OpenAPIHono() as App
 
@@ -15,12 +17,22 @@ app.use('*', async (c: Context<APIHonoEnv>, next) => {
 })
 
 app.get('/:id/state', async (c: Context<APIHonoEnv>) => {
-  const stripeAccountId = c.get('token').sub
+  const authorization = c.req.header('authorization') || 'Bearer '
+  const tokenStr = authorization.split(' ')[1]
   const stripeCustomerId = c.req.param('id')
-  const cacheKey = `${stripeAccountId}:${stripeCustomerId}`
-  const cache = c.get('cache')
 
   const fetchState = async () => {
+    let token
+    try {
+      token = await authorizeToken(
+        tokenStr,
+        c.env.SUPABASE_JWT_SECRET,
+        c.get('db'),
+      )
+    } catch (error) {
+      return null
+    }
+    const stripeAccountId = token.sub
     const customers = await c
       .get('db')
       .select()
@@ -66,13 +78,31 @@ app.get('/:id/state', async (c: Context<APIHonoEnv>) => {
       .getCustomerState(stripeAccountId, stripeCustomerId)
   }
 
+  let payload
+  try {
+    payload = await verifyToken(tokenStr, c.env.SUPABASE_JWT_SECRET)
+  } catch (error) {
+    c.status(401)
+    return c.json({ error: 'Unauthorized' })
+  }
+
+  const stripeAccountId = payload.sub
+  const cacheKey = `${stripeAccountId}:${stripeCustomerId}`
+  const cache = c.get('cache')
+
   let [state, stale] = await cache.get('customerState', cacheKey)
   if (state) {
     console.log('Cache hit for', cacheKey)
     if (stale) {
       console.log('Revalidating stale cache for', cacheKey)
       c.executionCtx.waitUntil(
-        fetchState().then((s) => cache.set('customerState', cacheKey, s)),
+        fetchState().then((s) => {
+          if (s) {
+            cache.set('customerState', cacheKey, s)
+          } else {
+            cache.remove('customerState', cacheKey)
+          }
+        }),
       )
     }
     return c.json(state)

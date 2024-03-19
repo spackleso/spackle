@@ -1,13 +1,14 @@
-import jwt from '@tsndr/cloudflare-worker-jwt'
+import jwt, { JwtPayload } from '@tsndr/cloudflare-worker-jwt'
 import { Database, eq, schema } from '@spackle/db'
 
-type TokenPayload = {
-  sub: string
-  iat: number
-  publishable?: boolean
+type TokenPayload = JwtPayload & {
+  publishable: boolean
 }
 
-export async function verifyToken(token: string, secret: string, db: Database) {
+export async function verifyToken(
+  token: string,
+  secret: string,
+): Promise<TokenPayload> {
   let payload
   try {
     const data = jwt.decode(token)
@@ -18,6 +19,15 @@ export async function verifyToken(token: string, secret: string, db: Database) {
     throw new Error('Unauthorized')
   }
 
+  return payload as TokenPayload
+}
+
+export async function authorizeToken(
+  token: string,
+  secret: string,
+  db: Database,
+) {
+  const payload = await verifyToken(token, secret)
   const sub = payload.sub as string
   const publishable = !!(payload as TokenPayload).publishable
 

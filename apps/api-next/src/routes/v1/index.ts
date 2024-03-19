@@ -6,13 +6,18 @@ import pricingTables from './pricing_tables'
 import productFeatures from './product_features'
 import { OpenAPIHono, createRoute } from '@hono/zod-openapi'
 import { APIHonoEnv, App } from '@/lib/hono/env'
-import { verifyToken } from '@/lib/auth/token'
+import { authorizeToken } from '@/lib/auth/token'
 
 const app = new OpenAPIHono() as App
 
 function tokenAuth(exemptPaths: string[] = []) {
   return async (c: Context<APIHonoEnv>, next: any) => {
-    if (exemptPaths.includes(c.req.path)) {
+    if (
+      exemptPaths.includes(c.req.routePath) ||
+      exemptPaths.includes('/v1' + c.req.routePath) ||
+      exemptPaths.includes(c.req.path) ||
+      exemptPaths.includes('/v1' + c.req.path)
+    ) {
       return next()
     }
 
@@ -21,7 +26,7 @@ function tokenAuth(exemptPaths: string[] = []) {
 
     let payload
     try {
-      payload = await verifyToken(
+      payload = await authorizeToken(
         tokenStr,
         c.env.SUPABASE_JWT_SECRET,
         c.get('db'),
@@ -36,7 +41,7 @@ function tokenAuth(exemptPaths: string[] = []) {
   }
 }
 
-app.use('*', tokenAuth(['/', '/v1']))
+app.use('*', tokenAuth(['/', '/customers/:id/state']))
 
 app.route('/customers', customers)
 app.route('/customer_features', customerFeatures)
