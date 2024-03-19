@@ -96,6 +96,28 @@ export class TestClient {
     return result[0]
   }
 
+  async createTestAccountWithToken() {
+    const account = await this.createTestStripeAccount()
+    const token = await this.tokenService.createToken(account.stripeId)
+
+    return {
+      account,
+      token,
+    }
+  }
+
+  async createTestAccountWithPublishableToken() {
+    const account = await this.createTestStripeAccount()
+    const token = await this.tokenService.createPublishableToken(
+      account.stripeId,
+    )
+
+    return {
+      account,
+      token,
+    }
+  }
+
   createTestFlagFeature = async (
     stripeAccountId: string,
     name: string,

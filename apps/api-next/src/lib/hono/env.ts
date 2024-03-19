@@ -45,3 +45,12 @@ export type HonoEnv = {
     tokenService: TokenService
   }
 }
+
+export type APIHonoEnv = HonoEnv & {
+  Variables: HonoEnv['Variables'] & {
+    token: {
+      sub: string
+      publishable: boolean
+    }
+  }
+}

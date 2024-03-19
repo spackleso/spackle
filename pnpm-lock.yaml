@@ -162,6 +162,9 @@ importers:
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.11.28)(typescript@5.4.2)
+      zod:
+        specifier: ^3.19.1
+        version: 3.22.4
     devDependencies:
       '@cloudflare/workers-types':
         specifier: ^4.20240208.0

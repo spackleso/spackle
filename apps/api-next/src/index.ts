@@ -19,15 +19,17 @@ import Stripe from 'stripe'
 import { EntitlementsService } from './lib/services/entitlements'
 import { TokenService } from './lib/services/token'
 import { BillingService } from './lib/services/billing'
+import { Cache } from './lib/cache/interface'
 
 const cacheMap = new Map()
 
 function init() {
-  const cache = new TieredCache([
-    new MemoryCache(cacheMap),
-    new PersistentCache(),
-  ])
+  let _caches: Cache[] = [new MemoryCache(cacheMap)]
+  if (typeof caches !== 'undefined') {
+    _caches = _caches.concat(new PersistentCache())
+  }
 
+  const cache = new TieredCache(_caches)
   return async (c: Context<HonoEnv>, next: () => Promise<void>) => {
     c.set('cache', cache)
 
