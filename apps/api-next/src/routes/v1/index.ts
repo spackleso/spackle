@@ -10,7 +10,7 @@ import { verifyToken } from '@/lib/auth/token'
 
 const app = new OpenAPIHono() as App
 
-function tokenAuth(exemptPaths: string[]) {
+function tokenAuth(exemptPaths: string[] = []) {
   return async (c: Context<APIHonoEnv>, next: any) => {
     if (exemptPaths.includes(c.req.path)) {
       return next()
@@ -36,7 +36,7 @@ function tokenAuth(exemptPaths: string[]) {
   }
 }
 
-app.use('*', tokenAuth(['/']))
+app.use('*', tokenAuth(['/', '/v1']))
 
 app.route('/customers', customers)
 app.route('/customer_features', customerFeatures)

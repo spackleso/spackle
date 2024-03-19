@@ -39,8 +39,12 @@ import updateProductFeatures from './update_product_features'
 
 const app = new OpenAPIHono<HonoEnv>() as App
 
-function auth() {
+function auth(exemptPaths: string[] = []) {
   return async (c: Context, next: Next) => {
+    if (exemptPaths.includes(c.req.path)) {
+      return next()
+    }
+
     const stripe = c.get('liveStripe')
     const sig = c.req.header('stripe-signature')
     const payload = await c.req.raw.clone().text()
@@ -58,96 +62,51 @@ function auth() {
   }
 }
 
-// TODO enable auth for all routes when complete
-app.use('/acknowledge_setup', auth())
-app.post('/acknowledge_setup', acknowledgeSetup)
+app.use(
+  '*',
+  auth([
+    '/stripe/billing_checkout',
+    '/stripe/billing_checkout_success',
+    '/stripe/billing_portal',
+    '/stripe/billing_webhooks',
+    '/stripe/checkout_redirect',
+    '/stripe/connected_webhooks',
+  ]),
+)
 
+app.post('/acknowledge_setup', acknowledgeSetup)
 app.get('/billing_checkout', billingCheckout)
 app.get('/billing_checkout_success', billingCheckoutSuccess)
 app.get('/billing_portal', billingPortal)
 app.post('/billing_webhooks', billingWebhooks)
 app.get('/checkout_redirect', checkoutRedirect)
 app.post('/connected_webhooks', connectedWebhooks)
-
-app.use('/create_account_feature', auth())
 app.post('/create_account_feature', createAccountFeature)
-
-app.use('/create_pricing_table', auth())
 app.post('/create_pricing_table', createPricingTable)
-
-app.use('/delete_account_feature', auth())
 app.post('/delete_account_feature', deleteAccountFeature)
-
-app.use('/delete_pricing_table', auth())
 app.post('/delete_pricing_table', deletePricingTable)
-
-app.use('/get_account', auth())
 app.post('/get_account', getAccount)
-
-app.use('/get_account_state', auth())
 app.post('/get_account_state', getAccountState)
-
-app.use('/get_account_features', auth())
 app.post('/get_account_features', getAccountFeatures)
-
-app.use('/get_customer_features', auth())
 app.post('/get_customer_features', getCustomerFeatures)
-
-app.use('/get_customer_state', auth())
 app.post('/get_customer_state', getCustomerState)
-
-app.use('/get_entitlements', auth())
 app.post('/get_entitlements', getEntitlements)
-
-app.use('/get_mtr', auth())
 app.post('/get_mtr', getMtr)
-
-app.use('/get_mtr_estimate', auth())
 app.post('/get_mtr_estimate', getMtrEstimate)
-
-app.use('/get_pricing_tables', auth())
 app.post('/get_pricing_tables', getPricingTables)
-
-app.use('/get_pricing_table_products', auth())
 app.post('/get_pricing_table_products', getPricingTableProducts)
-
-app.use('/get_pricing_table', auth())
 app.post('/get_pricing_table', getPricingTable)
-
-app.use('/get_product_features', auth())
 app.post('/get_product_features', getProductFeatures)
-
-app.use('/get_product_state', auth())
 app.post('/get_product_state', getProductState)
-
-app.use('/get_publishable_token', auth())
 app.post('/get_publishable_token', getPublishableToken)
-
-app.use('/get_subscriptions_state', auth())
 app.post('/get_subscriptions_state', getSubscriptionsState)
-
-app.use('/get_token', auth())
 app.post('/get_token', getToken)
-
-app.use('/identify', auth())
 app.post('/identify', identify)
-
-app.use('/sync_account', auth())
 app.post('/sync_account', syncAccount)
-
-app.use('/track', auth())
 app.post('/track', track)
-
-app.use('/update_account_feature', auth())
 app.post('/update_account_feature', updateAccountFeature)
-
-app.use('/update_customer_features', auth())
 app.post('/update_customer_features', updateCustomerFeatures)
-
-app.use('/update_pricing_table', auth())
 app.post('/update_pricing_table', updatePricingTable)
-
-app.use('/update_product_features', auth())
 app.post('/update_product_features', updateProductFeatures)
 
 export default app
