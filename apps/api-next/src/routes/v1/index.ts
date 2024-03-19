@@ -12,12 +12,11 @@ const app = new OpenAPIHono() as App
 
 function tokenAuth(exemptPaths: string[] = []) {
   return async (c: Context<APIHonoEnv>, next: any) => {
-    if (
-      exemptPaths.includes(c.req.routePath) ||
-      exemptPaths.includes('/v1' + c.req.routePath) ||
-      exemptPaths.includes(c.req.path) ||
-      exemptPaths.includes('/v1' + c.req.path)
-    ) {
+    const matchedPaths = c.req.matchedRoutes
+      .map((r) => r.path)
+      .filter((p) => !p.includes('*'))
+
+    if (matchedPaths.filter((p) => exemptPaths.includes(p)).length) {
       return next()
     }
 
@@ -41,7 +40,10 @@ function tokenAuth(exemptPaths: string[] = []) {
   }
 }
 
-app.use('*', tokenAuth(['/', '/customers/:id/state']))
+app.use(
+  '*',
+  tokenAuth(['/', '/customers/:id/state', '/v1/customers/:id/state']),
+)
 
 app.route('/customers', customers)
 app.route('/customer_features', customerFeatures)

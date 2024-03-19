@@ -22,8 +22,16 @@ export function initCacheContext(
   }
 }
 
-export function initServiceContext() {
+export function initServiceContext(exemptPaths: string[] = []) {
   return async (c: Context<HonoEnv>, next: () => Promise<void>) => {
+    const matchedPaths = c.req.matchedRoutes
+      .map((r) => r.path)
+      .filter((p) => !p.includes('*'))
+
+    if (matchedPaths.filter((p) => exemptPaths.includes(p)).length) {
+      return next()
+    }
+
     const services = initServices(c.get('sentry'), c.env)
     c.set('telemetry', services.telemetryService)
     c.set('db', services.db)

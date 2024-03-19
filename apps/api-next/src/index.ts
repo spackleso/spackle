@@ -19,7 +19,10 @@ app.use('*', (c, next) => {
 })
 
 app.use('*', initCacheContext(cacheMap))
-app.use('*', initServiceContext())
+app.use(
+  '*',
+  initServiceContext(['/customers/:id/state', '/v1/customers/:id/state']),
+)
 
 app.route('/stripe', stripe)
 app.route('/v1', v1)

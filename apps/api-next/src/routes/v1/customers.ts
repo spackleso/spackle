@@ -5,16 +5,10 @@ import { and, eq, schema } from '@spackle/db'
 import { Context } from 'hono'
 import jwt from '@tsndr/cloudflare-worker-jwt'
 import { authorizeToken, verifyToken } from '@/lib/auth/token'
+import { initServiceContext } from '@/lib/hono/context'
+import { initServices } from '@/lib/services/init'
 
 const app = new OpenAPIHono() as App
-
-app.use('*', async (c: Context<APIHonoEnv>, next) => {
-  if (c.get('token').publishable) {
-    c.status(403)
-    return c.json({ error: 'Forbidden' })
-  }
-  return next()
-})
 
 app.get('/:id/state', async (c: Context<APIHonoEnv>) => {
   const authorization = c.req.header('authorization') || 'Bearer '
@@ -22,19 +16,25 @@ app.get('/:id/state', async (c: Context<APIHonoEnv>) => {
   const stripeCustomerId = c.req.param('id')
 
   const fetchState = async () => {
+    const services = initServices(c.get('sentry'), c.env)
+
     let token
     try {
       token = await authorizeToken(
         tokenStr,
         c.env.SUPABASE_JWT_SECRET,
-        c.get('db'),
+        services.db,
       )
     } catch (error) {
       return null
     }
+
+    if (token.publishable) {
+      return null
+    }
+
     const stripeAccountId = token.sub
-    const customers = await c
-      .get('db')
+    const customers = await services.db
       .select()
       .from(schema.stripeCustomers)
       .where(
@@ -63,19 +63,24 @@ app.get('/:id/state', async (c: Context<APIHonoEnv>) => {
         return null
       }
       try {
-        await c
-          .get('stripeService')
-          .syncStripeSubscriptions(stripeAccountId, customer.stripeId, 'live')
+        await services.stripeService.syncStripeSubscriptions(
+          stripeAccountId,
+          customer.stripeId,
+          'live',
+        )
       } catch (error) {
-        await c
-          .get('stripeService')
-          .syncStripeSubscriptions(stripeAccountId, customer.stripeId, 'test')
+        await services.stripeService.syncStripeSubscriptions(
+          stripeAccountId,
+          customer.stripeId,
+          'test',
+        )
       }
     }
 
-    return await c
-      .get('entitlementsService')
-      .getCustomerState(stripeAccountId, stripeCustomerId)
+    return await services.entitlementsService.getCustomerState(
+      stripeAccountId,
+      stripeCustomerId,
+    )
   }
 
   let payload
@@ -84,6 +89,11 @@ app.get('/:id/state', async (c: Context<APIHonoEnv>) => {
   } catch (error) {
     c.status(401)
     return c.json({ error: 'Unauthorized' })
+  }
+
+  if (payload.publishable) {
+    c.status(403)
+    return c.json({ error: 'Forbidden' })
   }
 
   const stripeAccountId = payload.sub
