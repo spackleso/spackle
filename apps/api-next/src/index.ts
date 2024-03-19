@@ -20,10 +20,55 @@ import { EntitlementsService } from './lib/services/entitlements'
 import { TokenService } from './lib/services/token'
 import { BillingService } from './lib/services/billing'
 import { Cache } from './lib/cache/interface'
+import { Toucan } from 'toucan-js'
 
 const cacheMap = new Map()
 
-function init() {
+function initServices(sentry: Toucan, env: HonoEnv['Bindings']) {
+  const telemetryService = new TelemetryService(
+    env.POSTHOG_API_HOST,
+    env.POSTHOG_API_KEY,
+    sentry,
+  )
+  const client = postgres(env.DATABASE_URL)
+  const db = drizzle(client, { schema })
+  const dbService = new DatabaseService(db, telemetryService, env.DB_PK_SALT)
+  const liveStripe = new Stripe(env.STRIPE_LIVE_SECRET_KEY, {
+    apiVersion: '2022-08-01' as any,
+  })
+  const testStripe = new Stripe(env.STRIPE_TEST_SECRET_KEY, {
+    apiVersion: '2022-08-01' as any,
+  })
+  const stripeService = new StripeService(
+    db,
+    dbService,
+    liveStripe,
+    testStripe,
+    sentry,
+  )
+  const entitlementsService = new EntitlementsService(db)
+  const tokenService = new TokenService(db, env.SUPABASE_JWT_SECRET)
+  const billingService = new BillingService(
+    db,
+    dbService,
+    entitlementsService,
+    env.BILLING_STRIPE_ACCOUNT_ID,
+  )
+  return {
+    billingService,
+    client,
+    db,
+    dbService,
+    entitlementsService,
+    liveStripe,
+    stripeService,
+    telemetryService,
+    testStripe,
+    tokenService,
+  }
+}
+
+function initContext() {
   let _caches: Cache[] = [new MemoryCache(cacheMap)]
   if (typeof caches !== 'undefined') {
     _caches = _caches.concat(new PersistentCache())
@@ -33,53 +78,19 @@ function init() {
   return async (c: Context<HonoEnv>, next: () => Promise<void>) => {
     c.set('cache', cache)
 
-    const telemetry = new TelemetryService(
-      c.env.POSTHOG_API_HOST,
-      c.env.POSTHOG_API_KEY,
-      c.get('sentry'),
-    )
-    c.set('telemetry', telemetry)
-
-    const client = postgres(c.env.DATABASE_URL)
-    const db = drizzle(client, { schema })
-    c.set('db', db)
-
-    const dbService = new DatabaseService(db, telemetry, c.env.DB_PK_SALT)
-    c.set('dbService', dbService)
-
-    const liveStripe = new Stripe(c.env.STRIPE_LIVE_SECRET_KEY, {
-      apiVersion: '2022-08-01' as any,
-    })
-    c.set('liveStripe', liveStripe)
-
-    const testStripe = new Stripe(c.env.STRIPE_TEST_SECRET_KEY, {
-      apiVersion: '2022-08-01' as any,
-    })
-    c.set('testStripe', testStripe)
-
-    const stripeService = new StripeService(
-      db,
-      dbService,
-      liveStripe,
-      testStripe,
-      c.get('sentry'),
-    )
-    c.set('stripeService', stripeService)
-    const entitlementsService = new EntitlementsService(db)
-    c.set('entitlementsService', entitlementsService)
-    c.set('tokenService', new TokenService(db, c.env.SUPABASE_JWT_SECRET))
-    c.set(
-      'billingService',
-      new BillingService(
-        db,
-        dbService,
-        entitlementsService,
-        c.env.BILLING_STRIPE_ACCOUNT_ID,
-      ),
-    )
+    const services = initServices(c.get('sentry'), c.env)
+    c.set('telemetry', services.telemetryService)
+    c.set('db', services.db)
+    c.set('dbService', services.dbService)
+    c.set('liveStripe', services.liveStripe)
+    c.set('testStripe', services.testStripe)
+    c.set('stripeService', services.stripeService)
+    c.set('entitlementsService', services.entitlementsService)
+    c.set('tokenService', services.tokenService)
+    c.set('billingService', services.billingService)
 
     await next()
-    await client.end()
+    await services.client.end()
   }
 }
 
@@ -90,7 +101,7 @@ app.use('*', (c, next) => {
     enabled: !!c.env.SENTRY_DSN,
   })(c, next)
 })
-app.use('*', init())
+app.use('*', initContext())
 
 app.route('/stripe', stripe)
 app.route('/v1', v1)
@@ -122,4 +133,29 @@ app.all('/*', async (c: Context<HonoEnv>) => {
   }
 })
 
-export default app
+type Job = {
+  type: string
+  payload: any
+}
+
+export default {
+  fetch: app.fetch,
+  async queue(batch: MessageBatch<Job>, env: HonoEnv['Bindings']) {
+    const sentry = new Toucan({
+      dsn: env.SENTRY_DSN,
+      enabled: !!env.SENTRY_DSN,
+    })
+    const services = initServices(sentry, env)
+    for (const message of batch.messages) {
+      const { type, payload } = message.body
+      switch (type) {
+        case 'syncAllAccountData': {
+          await services.stripeService.syncAllAccountData(
+            payload.stripeAccountId,
+          )
+          break
+        }
+      }
+    }
+  },
+}

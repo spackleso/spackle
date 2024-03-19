@@ -277,14 +277,6 @@ export class StripeService {
     return charge
   }
 
-  syncAllAccountDataAsync = async (stripeAccountId: string) => {
-    this.sentry.captureMessage(
-      'called syncAllAccountDataAsync from Cloudflare Worker',
-    )
-    // const q = getQueue()
-    // return await q.add('syncAllAccountData', { stripeAccountId })
-  }
-
   syncAllAccountData = async (stripeAccountId: string) => {
     console.info(`Syncing account ${stripeAccountId}`)
 
