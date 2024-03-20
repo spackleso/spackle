@@ -32,6 +32,7 @@ export function initServices(sentry: Toucan, env: HonoEnv['Bindings']) {
     liveStripe,
     testStripe,
     sentry,
+    env.SYNC,
   )
   const entitlementsService = new EntitlementsService(db)
   const tokenService = new TokenService(db, env.SUPABASE_JWT_SECRET)

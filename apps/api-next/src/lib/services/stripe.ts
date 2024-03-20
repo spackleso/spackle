@@ -11,6 +11,7 @@ export class StripeService {
   private readonly liveStripe: Stripe
   private readonly testStripe: Stripe
   private readonly sentry: Toucan
+  private readonly queue: Queue
 
   constructor(
     db: Database,
@@ -18,11 +19,13 @@ export class StripeService {
     liveStripe: Stripe,
     testStripe: Stripe,
     sentry: Toucan,
+    queue: Queue,
   ) {
     this.db = db
     this.dbService = dbService
     this.liveStripe = liveStripe
     this.testStripe = testStripe
+    this.queue = queue
     this.sentry = sentry
   }
 
@@ -287,31 +290,39 @@ export class StripeService {
       })
       .where(eq(schema.stripeAccounts.stripeId, stripeAccountId))
 
-    try {
-      await this.syncAllAccountModeData(stripeAccountId, 'live')
-    } catch (error) {
-      if (!(error as Error).message.includes('testmode')) {
-        this.sentry.captureException(error)
-        return
-      }
-    }
+    const syncJob = (
+      await this.db
+        .insert(schema.syncJobs)
+        .values({
+          stripeAccountId,
+        })
+        .returning()
+    )[0]
 
-    try {
-      await this.syncAllAccountModeData(stripeAccountId, 'test')
-    } catch (error) {
-      this.sentry.captureException(error)
-      return
-    }
-
-    await this.db
-      .update(schema.stripeAccounts)
-      .set({
-        initialSyncComplete: true,
-      })
-      .where(eq(schema.stripeAccounts.stripeId, stripeAccountId))
+    this.queue.send({
+      type: 'syncAllAccountModeData',
+      payload: {
+        stripeAccountId,
+        mode: 'live',
+        syncJobId: syncJob.id,
+      },
+    })
+    this.queue.send({
+      type: 'syncAllAccountModeData',
+      payload: {
+        stripeAccountId,
+        mode: 'test',
+        syncJobId: syncJob.id,
+      },
+    })
   }
 
-  syncAllAccountModeData = async (stripeAccountId: string, mode: Mode) => {
+  syncAllAccountModeData = async (
+    stripeAccountId: string,
+    mode: Mode,
+    syncJobId: number,
+  ) => {
+    console.info(`Syncing ${mode} data for account ${stripeAccountId}`)
     const stripe = mode === 'live' ? this.liveStripe : this.testStripe
 
     // TODO: the creation is really inefficient as it stands
@@ -449,6 +460,30 @@ export class StripeService {
         console.error(error)
         this.sentry.captureException(error)
       }
+    }
+
+    const updateData: any = {}
+    if (mode === 'live') {
+      updateData['liveModeComplete'] = true
+    } else {
+      updateData['testModeComplete'] = true
+    }
+
+    const syncJob = (
+      await this.db
+        .update(schema.syncJobs)
+        .set(updateData)
+        .where(eq(schema.syncJobs.id, syncJobId))
+        .returning()
+    )[0]
+
+    if (syncJob.liveModeComplete && syncJob.testModeComplete) {
+      await this.db
+        .update(schema.stripeAccounts)
+        .set({
+          initialSyncComplete: true,
+        })
+        .where(eq(schema.stripeAccounts.stripeId, stripeAccountId))
     }
   }
 

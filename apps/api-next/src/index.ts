@@ -44,8 +44,12 @@ app.queue = async (batch: MessageBatch<Job>, env: HonoEnv['Bindings']) => {
   for (const message of batch.messages) {
     const { type, payload } = message.body
     switch (type) {
-      case 'syncAllAccountData': {
-        await services.stripeService.syncAllAccountData(payload.stripeAccountId)
+      case 'syncAllAccountModeData': {
+        await services.stripeService.syncAllAccountModeData(
+          payload.stripeAccountId,
+          payload.mode,
+          payload.syncJobId,
+        )
         break
       }
     }
