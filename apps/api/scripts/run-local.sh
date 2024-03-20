@@ -1,1 +1,0 @@
-pnpm ts-node -r dotenv/config scripts/$1.ts ${@:2} dotenv_config_path=.env.local
