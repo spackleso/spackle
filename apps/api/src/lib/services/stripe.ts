@@ -323,12 +323,42 @@ export class StripeService {
     syncJobId: number,
   ) => {
     console.info(`Syncing ${mode} data for account ${stripeAccountId}`)
+    await this.syncStripeAccount(stripeAccountId)
+    await this.syncAllCustomers(stripeAccountId, mode)
+    await this.syncAllProducts(stripeAccountId, mode)
+    await this.syncAllPrices(stripeAccountId, mode)
+    await this.syncAllSubscriptions(stripeAccountId, mode)
+    await this.syncAllInvoices(stripeAccountId, mode)
+    await this.syncAllCharges(stripeAccountId, mode)
+
+    const updateData: any = {}
+    if (mode === 'live') {
+      updateData['liveModeComplete'] = true
+    } else {
+      updateData['testModeComplete'] = true
+    }
+
+    const syncJob = (
+      await this.db
+        .update(schema.syncJobs)
+        .set(updateData)
+        .where(eq(schema.syncJobs.id, syncJobId))
+        .returning()
+    )[0]
+
+    if (syncJob.liveModeComplete && syncJob.testModeComplete) {
+      await this.db
+        .update(schema.stripeAccounts)
+        .set({
+          initialSyncComplete: true,
+        })
+        .where(eq(schema.stripeAccounts.stripeId, stripeAccountId))
+    }
+  }
+
+  syncAllCustomers = async (stripeAccountId: string, mode: Mode) => {
     const stripe = mode === 'live' ? this.liveStripe : this.testStripe
 
-    // TODO: the creation is really inefficient as it stands
-    await this.syncStripeAccount(stripeAccountId)
-
-    // Customers
     for await (const stripeCustomer of stripe.customers.list({
       stripeAccount: stripeAccountId,
     })) {
@@ -344,8 +374,11 @@ export class StripeService {
         this.sentry.captureException(error)
       }
     }
+  }
 
-    // Products
+  syncAllProducts = async (stripeAccountId: string, mode: Mode) => {
+    const stripe = mode === 'live' ? this.liveStripe : this.testStripe
+
     for await (const stripeProduct of stripe.products.list({
       stripeAccount: stripeAccountId,
     })) {
@@ -361,8 +394,11 @@ export class StripeService {
         this.sentry.captureException(error)
       }
     }
+  }
 
-    // Prices
+  syncAllPrices = async (stripeAccountId: string, mode: Mode) => {
+    const stripe = mode === 'live' ? this.liveStripe : this.testStripe
+
     for await (const stripePrice of stripe.prices.list({
       stripeAccount: stripeAccountId,
     })) {
@@ -379,6 +415,10 @@ export class StripeService {
         this.sentry.captureException(error)
       }
     }
+  }
+
+  syncAllSubscriptions = async (stripeAccountId: string, mode: Mode) => {
+    const stripe = mode === 'live' ? this.liveStripe : this.testStripe
 
     // Subscriptions & Subscription Items
     for await (const stripeSubscription of stripe.subscriptions.list(
@@ -413,11 +453,11 @@ export class StripeService {
         this.sentry.captureException(error)
       }
     }
+  }
 
-    // Invoices
-    for await (const stripeInvoice of stripe.invoices.list({
-      stripeAccount: stripeAccountId,
-    })) {
+  syncAllInvoices = async (stripeAccountId: string, mode: Mode) => {
+    const stripe = mode === 'live' ? this.liveStripe : this.testStripe
+    for await (const stripeInvoice of stripe.invoices.list({})) {
       console.info(`Syncing invoice ${stripeInvoice.id}`)
       try {
         await this.dbService.upsertStripeInvoice(
@@ -431,8 +471,11 @@ export class StripeService {
         this.sentry.captureException(error)
       }
     }
+  }
 
-    // Charges
+  syncAllCharges = async (stripeAccountId: string, mode: Mode) => {
+    const stripe = mode === 'live' ? this.liveStripe : this.testStripe
+
     for await (const stripeCharge of stripe.charges.list({
       stripeAccount: stripeAccountId,
     })) {
@@ -460,30 +503,6 @@ export class StripeService {
         console.error(error)
         this.sentry.captureException(error)
       }
-    }
-
-    const updateData: any = {}
-    if (mode === 'live') {
-      updateData['liveModeComplete'] = true
-    } else {
-      updateData['testModeComplete'] = true
-    }
-
-    const syncJob = (
-      await this.db
-        .update(schema.syncJobs)
-        .set(updateData)
-        .where(eq(schema.syncJobs.id, syncJobId))
-        .returning()
-    )[0]
-
-    if (syncJob.liveModeComplete && syncJob.testModeComplete) {
-      await this.db
-        .update(schema.stripeAccounts)
-        .set({
-          initialSyncComplete: true,
-        })
-        .where(eq(schema.stripeAccounts.stripeId, stripeAccountId))
     }
   }
 
