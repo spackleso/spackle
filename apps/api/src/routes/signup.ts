@@ -37,7 +37,8 @@ const emailHtml = `
 
 export default async function (c: Context<HonoEnv>) {
   try {
-    const { email } = formSchema.parse(await c.req.parseBody())
+    const body = await c.req.parseBody()
+    const { email } = formSchema.parse(body)
 
     const select = await c
       .get('db')
