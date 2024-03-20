@@ -46,7 +46,7 @@ app.queue = async (batch: MessageBatch<Job>, env: HonoEnv['Bindings']) => {
     const { type, payload } = message.body
     if (SYNC_OPS.includes(type)) {
       const op = type as keyof StripeService
-      await services.stripeService[op](
+      await (services.stripeService[op] as any)(
         payload.stripeAccountId,
         payload.mode,
         payload.syncJobId,
