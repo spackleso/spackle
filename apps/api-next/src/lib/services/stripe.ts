@@ -299,7 +299,7 @@ export class StripeService {
         .returning()
     )[0]
 
-    this.queue.send({
+    await this.queue.send({
       type: 'syncAllAccountModeData',
       payload: {
         stripeAccountId,
@@ -307,7 +307,7 @@ export class StripeService {
         syncJobId: syncJob.id,
       },
     })
-    this.queue.send({
+    await this.queue.send({
       type: 'syncAllAccountModeData',
       payload: {
         stripeAccountId,
