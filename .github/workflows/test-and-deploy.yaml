@@ -56,5 +56,5 @@ jobs:
           SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
         with:
           environment: production
-          sourcemaps: './apps/api/dist'
+          sourcemaps: './apps/api/dist/src'
           ignore_missing: true

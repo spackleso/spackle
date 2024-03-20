@@ -1,6 +1,5 @@
 import { z } from 'zod'
 import { eq } from 'drizzle-orm'
-import * as postmark from 'postmark'
 import { Context } from 'hono'
 import { HonoEnv } from '@/lib/hono/env'
 import { schema } from '@spackle/db'
@@ -49,14 +48,25 @@ export default async function (c: Context<HonoEnv>) {
       await c.get('db').insert(schema.signups).values({ email })
     }
 
-    const client = new postmark.ServerClient(c.env.POSTMARK_API_KEY)
-    await client.sendEmail({
-      From: c.env.POSTMARK_FROM_EMAIL,
-      To: email,
-      Subject: 'Welcome to Spackle!',
-      TextBody: emailText,
-      HtmlBody: emailHtml,
+    const res = await fetch('https://api.postmarkapp.com/email', {
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Postmark-Server-Token': c.env.POSTMARK_API_KEY,
+      },
+      body: JSON.stringify({
+        From: c.env.POSTMARK_FROM_EMAIL,
+        To: email,
+        Subject: 'Welcome to Spackle!',
+        TextBody: emailText,
+        HtmlBody: emailHtml,
+      }),
     })
+
+    if (res.status !== 200) {
+      throw new Error(
+        'Failed to send email: ' + res.status + ' ' + res.statusText,
+      )
+    }
 
     c.status(301)
     return c.redirect('https://www.spackle.so/signed-up')

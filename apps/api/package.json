@@ -16,7 +16,6 @@
     "hono": "^4.0.9",
     "ioredis": "^5.2.4",
     "postgres": "^3.3.5",
-    "postmark": "^4.0.2",
     "stripe": "^14.2.0",
     "toucan-js": "^3.3.1",
     "ts-node": "^10.9.1",
