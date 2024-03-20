@@ -29,7 +29,8 @@ const navigation = [
     title: 'Guides',
     links: [
       { title: 'Django', href: '/django' },
-    ]
+      { title: 'Ruby on Rails', href: '/rails' },
+    ],
   },
   {
     title: 'SDKs',
