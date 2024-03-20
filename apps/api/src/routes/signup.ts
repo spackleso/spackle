@@ -60,7 +60,7 @@ export default async function (c: Context<HonoEnv>) {
     c.status(301)
     return c.redirect('https://www.spackle.so/signed-up')
   } catch (error) {
-    console.error(error)
+    c.get('sentry').captureException(error)
     c.status(301)
     return c.redirect('https://www.spackle.so/signup?error=true')
   }
