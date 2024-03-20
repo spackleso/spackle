@@ -47,6 +47,42 @@ export const syncJobs = pgTable('sync_jobs', {
       onDelete: 'cascade',
       onUpdate: 'cascade',
     }),
+  liveModeCustomersComplete: boolean('live_mode_customers_complete')
+    .default(false)
+    .notNull(),
+  testModeCustomersComplete: boolean('test_mode_customers_complete')
+    .default(false)
+    .notNull(),
+  liveModeProductsComplete: boolean('live_mode_products_complete')
+    .default(false)
+    .notNull(),
+  testModeProductsComplete: boolean('test_mode_products_complete')
+    .default(false)
+    .notNull(),
+  liveModePricesComplete: boolean('live_mode_prices_complete')
+    .default(false)
+    .notNull(),
+  testModePricesComplete: boolean('test_mode_prices_complete')
+    .default(false)
+    .notNull(),
+  liveModeSubscriptionsComplete: boolean('live_mode_subscriptions_complete')
+    .default(false)
+    .notNull(),
+  testModeSubscriptionsComplete: boolean('test_mode_subscriptions_complete')
+    .default(false)
+    .notNull(),
+  liveModeInvoicesComplete: boolean('live_mode_invoices_complete')
+    .default(false)
+    .notNull(),
+  testModeInvoicesComplete: boolean('test_mode_invoices_complete')
+    .default(false)
+    .notNull(),
+  liveModeChargesComplete: boolean('live_mode_charges_complete')
+    .default(false)
+    .notNull(),
+  testModeChargesComplete: boolean('test_mode_charges_complete')
+    .default(false)
+    .notNull(),
 })
 
 export const stripePrices = pgTable(

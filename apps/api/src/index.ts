@@ -7,6 +7,7 @@ import { App, HonoEnv, Job } from '@/lib/hono/env'
 import { Toucan } from 'toucan-js'
 import { initServices } from '@/lib/services/init'
 import { initCacheContext, initServiceContext } from '@/lib/hono/context'
+import { SYNC_OPS, StripeService } from '@/lib/services/stripe'
 
 const cacheMap = new Map()
 const app = new OpenAPIHono<HonoEnv>() as App
@@ -43,15 +44,13 @@ app.queue = async (batch: MessageBatch<Job>, env: HonoEnv['Bindings']) => {
   const services = initServices(sentry, env)
   for (const message of batch.messages) {
     const { type, payload } = message.body
-    switch (type) {
-      case 'syncAllAccountModeData': {
-        await services.stripeService.syncAllAccountModeData(
-          payload.stripeAccountId,
-          payload.mode,
-          payload.syncJobId,
-        )
-        break
-      }
+    if (SYNC_OPS.includes(type)) {
+      const op = type as keyof StripeService
+      await services.stripeService[op](
+        payload.stripeAccountId,
+        payload.mode,
+        payload.syncJobId,
+      )
     }
   }
 }
