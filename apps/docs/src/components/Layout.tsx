@@ -29,6 +29,7 @@ const navigation = [
     title: 'Guides',
     links: [
       { title: 'Django', href: '/django' },
+      { title: 'Laravel', href: '/laravel' },
       { title: 'Ruby on Rails', href: '/rails' },
     ],
   },
