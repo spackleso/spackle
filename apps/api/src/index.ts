@@ -8,6 +8,7 @@ import { Toucan } from 'toucan-js'
 import { initServices } from '@/lib/services/init'
 import { initCacheContext, initServiceContext } from '@/lib/hono/context'
 import { SYNC_OPS, StripeService } from '@/lib/services/stripe'
+import signup from '@/routes/signup'
 
 const cacheMap = new Map()
 const app = new OpenAPIHono<HonoEnv>() as App
@@ -25,6 +26,7 @@ app.use(
   initServiceContext(['/customers/:id/state', '/v1/customers/:id/state']),
 )
 
+app.post('/signup', signup)
 app.route('/stripe', stripe)
 app.route('/v1', v1)
 app.route('/', v1)

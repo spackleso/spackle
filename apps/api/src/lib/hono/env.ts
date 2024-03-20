@@ -29,6 +29,8 @@ export type HonoEnv = {
     HOST: string
     POSTHOG_API_HOST: string
     POSTHOG_API_KEY: string
+    POSTMARK_API_KEY: string
+    POSTMARK_FROM_EMAIL: string
     REDIS_URL: string
     SENTRY_DSN: string
     STRIPE_APP_ID: string
