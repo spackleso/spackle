@@ -57,3 +57,4 @@ jobs:
         with:
           environment: production
           sourcemaps: './apps/api/dist'
+          ignore_missing: true
