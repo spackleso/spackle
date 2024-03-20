@@ -49,7 +49,9 @@ export default async function (c: Context<HonoEnv>) {
     }
 
     const res = await fetch('https://api.postmarkapp.com/email', {
+      method: 'POST',
       headers: {
+        Accept: 'application/json',
         'Content-Type': 'application/json',
         'X-Postmark-Server-Token': c.env.POSTMARK_API_KEY,
       },
