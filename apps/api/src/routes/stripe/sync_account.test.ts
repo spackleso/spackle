@@ -5,7 +5,6 @@
 import app from '@/index'
 import { MOCK_ENV, TestClient } from '@/lib/test/client'
 import { beforeAll, afterAll, describe, test, expect, vi } from 'vitest'
-import { Queue } from 'bullmq'
 import { SYNC_OPS } from '@/lib/services/stripe'
 
 let client: TestClient
@@ -14,12 +13,6 @@ beforeAll(async () => {
 })
 afterAll(async () => {
   await client.teardown()
-})
-
-vi.mock('bullmq', () => {
-  const Queue = vi.fn()
-  Queue.prototype.add = vi.fn()
-  return { Queue }
 })
 
 describe('POST', () => {
