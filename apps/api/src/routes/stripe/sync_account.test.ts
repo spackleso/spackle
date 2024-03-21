@@ -5,7 +5,6 @@
 import app from '@/index'
 import { MOCK_ENV, TestClient } from '@/lib/test/client'
 import { beforeAll, afterAll, describe, test, expect, vi } from 'vitest'
-import { SYNC_OPS } from '@/lib/services/stripe'
 
 let client: TestClient
 beforeAll(async () => {
@@ -51,17 +50,11 @@ describe('POST', () => {
       },
     )
     expect(res.status).toBe(200)
-    for (const mode of ['live', 'test'] as const) {
-      for (const op of SYNC_OPS) {
-        expect(send).toHaveBeenCalledWith({
-          type: op,
-          payload: {
-            stripeAccountId: account.stripeId,
-            mode: mode,
-            syncJobId: expect.any(Number),
-          },
-        })
-      }
-    }
+    expect(send).toHaveBeenCalledWith({
+      type: 'sync',
+      payload: {
+        syncJobId: expect.any(Number),
+      },
+    })
   })
 })

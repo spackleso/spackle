@@ -10,6 +10,7 @@ import { EntitlementsService } from '@/lib/services/entitlements'
 import { TokenService } from '@/lib/services/token'
 import { BillingService } from '@/lib/services/billing'
 import { HonoEnv } from '@/lib/hono/env'
+import { SyncService } from './sync'
 
 export function initServices(sentry: Toucan, env: HonoEnv['Bindings']) {
   const telemetryService = new TelemetryService(
@@ -26,13 +27,13 @@ export function initServices(sentry: Toucan, env: HonoEnv['Bindings']) {
   const testStripe = new Stripe(env.STRIPE_TEST_SECRET_KEY, {
     apiVersion: '2022-08-01' as any,
   })
-  const stripeService = new StripeService(
+  const stripeService = new StripeService(dbService, liveStripe, testStripe)
+  const syncService = new SyncService(
     db,
     dbService,
-    liveStripe,
-    testStripe,
-    sentry,
     env.SYNC,
+    sentry,
+    stripeService,
   )
   const entitlementsService = new EntitlementsService(db)
   const tokenService = new TokenService(db, env.SUPABASE_JWT_SECRET)
@@ -50,6 +51,7 @@ export function initServices(sentry: Toucan, env: HonoEnv['Bindings']) {
     entitlementsService,
     liveStripe,
     stripeService,
+    syncService,
     telemetryService,
     testStripe,
     tokenService,

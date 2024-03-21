@@ -39,6 +39,7 @@ export function initServiceContext(exemptPaths: string[] = []) {
     c.set('liveStripe', services.liveStripe)
     c.set('testStripe', services.testStripe)
     c.set('stripeService', services.stripeService)
+    c.set('syncService', services.syncService)
     c.set('entitlementsService', services.entitlementsService)
     c.set('tokenService', services.tokenService)
     c.set('billingService', services.billingService)

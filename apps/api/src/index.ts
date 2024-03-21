@@ -7,7 +7,7 @@ import { App, HonoEnv, Job } from '@/lib/hono/env'
 import { Toucan } from 'toucan-js'
 import { initServices } from '@/lib/services/init'
 import { initCacheContext, initServiceContext } from '@/lib/hono/context'
-import { SYNC_OPS, StripeService } from '@/lib/services/stripe'
+import { StripeService } from '@/lib/services/stripe'
 import signup from '@/routes/signup'
 
 const cacheMap = new Map()
@@ -46,13 +46,13 @@ app.queue = async (batch: MessageBatch<Job>, env: HonoEnv['Bindings']) => {
   const services = initServices(sentry, env)
   for (const message of batch.messages) {
     const { type, payload } = message.body
-    if (SYNC_OPS.includes(type)) {
-      const op = type as keyof StripeService
-      await (services.stripeService[op] as any)(
-        payload.stripeAccountId,
-        payload.mode,
-        payload.syncJobId,
-      )
+    switch (type) {
+      case 'sync': {
+        services.syncService.sync(payload.syncJobId)
+      }
+      default: {
+        sentry.captureMessage(`Unknown message type: ${type}`)
+      }
     }
   }
 }

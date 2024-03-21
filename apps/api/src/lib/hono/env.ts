@@ -52,6 +52,7 @@ export type HonoEnv = {
     liveStripe: Stripe
     sentry: Toucan
     stripeService: StripeService
+    syncService: SyncService
     telemetry: TelemetryService
     testStripe: Stripe
     tokenService: TokenService
