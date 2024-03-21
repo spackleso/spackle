@@ -1,9 +1,3 @@
-// import type { NextApiRequest, NextApiResponse } from 'next'
-// import { verifySignature } from '@/stripe/signature'
-// import * as Sentry from '@sentry/nextjs'
-// import db, { decodePk, pricingTableProducts, pricingTables } from '@/db'
-// import { and, eq, inArray } from 'drizzle-orm'
-
 import { HonoEnv } from '@/lib/hono/env'
 import { schema, and, eq, inArray } from '@spackle/db'
 import { Context } from 'hono'
