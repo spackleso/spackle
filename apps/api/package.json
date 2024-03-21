@@ -1,6 +1,7 @@
 {
   "name": "api",
   "version": "0.0.1",
+  "license": "AGPL-3.0",
   "scripts": {
     "build": "wrangler publish --dry-run --outdir=dist",
     "dev": "wrangler dev",
