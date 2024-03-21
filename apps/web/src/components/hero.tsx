@@ -21,8 +21,8 @@ export function Hero() {
         transition={{ duration: 0.3, ease: 'easeOut', delay: 0.1 }}
       >
         <p className="mx-auto max-w-xl text-lg leading-tight tracking-tight text-slate-600 dark:text-slate-400 md:text-2xl">
-          Meet the new billing abstraction loved by <br />
-          engineering and sales, startups and enterprises.
+          Entitlements built for Stripe billing. Loved by engineering and sales,
+          startups and enterprises.
         </p>
       </motion.div>
       <motion.div
