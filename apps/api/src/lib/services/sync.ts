@@ -22,14 +22,6 @@ export class SyncService {
     'syncAllInvoices',
     'syncAllCharges',
   ]
-  private readonly pipelineOps = [
-    SyncService.prototype.syncAllCustomers,
-    SyncService.prototype.syncAllProducts,
-    SyncService.prototype.syncAllPrices,
-    SyncService.prototype.syncAllSubscriptions,
-    SyncService.prototype.syncAllInvoices,
-    SyncService.prototype.syncAllCharges,
-  ]
 
   constructor(
     db: Database,

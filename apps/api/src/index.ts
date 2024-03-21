@@ -48,7 +48,7 @@ app.queue = async (batch: MessageBatch<Job>, env: HonoEnv['Bindings']) => {
     const { type, payload } = message.body
     switch (type) {
       case 'sync': {
-        services.syncService.sync(payload.syncJobId)
+        await services.syncService.sync(payload.syncJobId)
       }
       default: {
         sentry.captureMessage(`Unknown message type: ${type}`)
