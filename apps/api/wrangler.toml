@@ -11,7 +11,7 @@ producers = [
   { queue = "sync-development", binding = "SYNC"},
 ]
 consumers = [
-  { queue = "sync-development", max_batch_size = 1, max_batch_timeout = 3, max_retries = 0 },
+  { queue = "sync-development", max_batch_size = 1, max_batch_timeout = 3, max_retries = 3 },
 ]
 
 [env.production]
@@ -34,5 +34,5 @@ producers = [
   { queue = "sync-production", binding = "SYNC"},
 ]
 consumers = [
-  { queue = "sync-production", max_batch_size = 1, max_batch_timeout = 3, max_retries = 0 },
+  { queue = "sync-production", max_batch_size = 1, max_batch_timeout = 3, max_retries = 3 },
 ]
