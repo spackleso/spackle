@@ -9,15 +9,13 @@ import { cn } from '@/lib/utils'
 export default function Home() {
   return (
     <>
-      <main className="mt-40 flex flex-grow flex-col items-center justify-center gap-y-32 px-4">
-        <div className="flex max-w-4xl items-center">
+      <main className="mt-16 flex flex-grow flex-col items-center justify-center gap-y-32 px-4">
+        <div className="flex flex-col max-w-4xl items-center gap-y-10">
           <Hero />
         </div>
-
         <div className="mx-2 max-w-6xl">
           <Screenshot />
         </div>
-
         <div className="relative w-full py-72">
           <div className="mx-auto flex max-w-4xl flex-col items-center gap-8">
             <div className="flex flex-col gap-4 text-center">
@@ -55,11 +53,9 @@ export default function Home() {
             )}
           />
         </div>
-
         <div className="mx-auto flex flex-col gap-8">
           <Workflows />
         </div>
-
         <div className="mx-auto flex max-w-4xl flex-col items-center gap-8">
           <p className="font-display mx-auto text-4xl font-medium tracking-tight text-slate-900 dark:text-white sm:text-5xl">
             Features
