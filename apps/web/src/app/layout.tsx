@@ -6,7 +6,7 @@ import { Footer } from '@/components/tailwindui/footer'
 import PHProvider from '../components/posthog'
 
 export const metadata = {
-  title: 'Spackle - Effortless Billing',
+  title: 'Spackle - Entitlements for Stripe Billing',
   description:
     'Meet the new billing abstraction loved by engineering and sales, startups and enterprises.',
 }
