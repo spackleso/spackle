@@ -97,28 +97,40 @@ export class SyncService {
 
     let finished = false
     if (nextCheckpoint) {
-      await this.db.update(schema.syncJobs).set({
-        pipelineStepCheckpoint: nextCheckpoint,
-      })
+      await this.db
+        .update(schema.syncJobs)
+        .set({
+          pipelineStepCheckpoint: nextCheckpoint,
+        })
+        .where(eq(schema.syncJobs.id, syncJobId))
     } else {
       const nextPipelineIndex = this.pipelineSteps.indexOf(pipeline) + 1
       const nextModeIndex = this.modeSteps.indexOf(syncJob.modeStep as Mode) + 1
 
       if (nextPipelineIndex < this.pipelineSteps.length) {
-        await this.db.update(schema.syncJobs).set({
-          pipelineStep: this.pipelineSteps[nextPipelineIndex],
-          pipelineStepCheckpoint: null,
-        })
+        await this.db
+          .update(schema.syncJobs)
+          .set({
+            pipelineStep: this.pipelineSteps[nextPipelineIndex],
+            pipelineStepCheckpoint: null,
+          })
+          .where(eq(schema.syncJobs.id, syncJobId))
       } else if (nextModeIndex < this.modeSteps.length) {
-        await this.db.update(schema.syncJobs).set({
-          modeStep: this.modeSteps[nextModeIndex],
-          pipelineStep: this.pipelineSteps[0],
-          pipelineStepCheckpoint: null,
-        })
+        await this.db
+          .update(schema.syncJobs)
+          .set({
+            modeStep: this.modeSteps[nextModeIndex],
+            pipelineStep: this.pipelineSteps[0],
+            pipelineStepCheckpoint: null,
+          })
+          .where(eq(schema.syncJobs.id, syncJobId))
       } else {
-        await this.db.update(schema.stripeAccounts).set({
-          initialSyncComplete: true,
-        })
+        await this.db
+          .update(schema.stripeAccounts)
+          .set({
+            initialSyncComplete: true,
+          })
+          .where(eq(schema.stripeAccounts.stripeId, syncJob.stripeAccountId))
         finished = true
       }
     }
