@@ -1,14 +1,67 @@
-import { TieredCache } from '@/lib/cache/tiered'
 import { APIHonoEnv, App } from '@/lib/hono/env'
 import { OpenAPIHono } from '@hono/zod-openapi'
 import { and, eq, schema } from '@spackle/db'
 import { Context } from 'hono'
-import jwt from '@tsndr/cloudflare-worker-jwt'
 import { authorizeToken, verifyToken } from '@/lib/auth/token'
-import { initServiceContext } from '@/lib/hono/context'
 import { initServices } from '@/lib/services/init'
 
 const app = new OpenAPIHono() as App
+
+app.get('/:id', async (c: Context<APIHonoEnv>) => {
+  if (c.get('token').publishable) {
+    c.status(403)
+    return c.json({ error: 'Forbidden' })
+  }
+
+  const stripeCustomerId = c.req.param('id')
+  const stripeAccountId = c.get('token').sub
+  const customers = await c
+    .get('db')
+    .select()
+    .from(schema.stripeCustomers)
+    .where(
+      and(
+        eq(schema.stripeCustomers.stripeId, stripeCustomerId),
+        eq(schema.stripeCustomers.stripeAccountId, stripeAccountId),
+      ),
+    )
+
+  let customer
+  if (customers.length) {
+    customer = customers[0]
+  } else {
+    try {
+      customer = await c
+        .get('stripeService')
+        .syncStripeCustomer(stripeAccountId, stripeCustomerId, 'live')
+    } catch (error) {
+      try {
+        customer = await c
+          .get('stripeService')
+          .syncStripeCustomer(stripeAccountId, stripeCustomerId, 'test')
+      } catch (error) {}
+    }
+    if (!customer) {
+      c.status(404)
+      return c.json({ error: 'Not found' })
+    }
+    try {
+      await c
+        .get('stripeService')
+        .syncStripeSubscriptions(stripeAccountId, customer.stripeId, 'live')
+    } catch (error) {
+      await c
+        .get('stripeService')
+        .syncStripeSubscriptions(stripeAccountId, customer.stripeId, 'test')
+    }
+  }
+
+  const state = await c
+    .get('entitlementsService')
+    .getCustomerState(stripeAccountId, stripeCustomerId)
+
+  return c.json(state)
+})
 
 app.get('/:id/state', async (c: Context<APIHonoEnv>) => {
   const authorization = c.req.header('authorization') || 'Bearer '
