@@ -43,6 +43,7 @@ export function initServiceContext(exemptPaths: string[] = []) {
     c.set('entitlementsService', services.entitlementsService)
     c.set('tokenService', services.tokenService)
     c.set('billingService', services.billingService)
+    c.set('pricingTablesService', services.pricingTablesService)
 
     await next()
     await services.client.end()

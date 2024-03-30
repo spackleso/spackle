@@ -11,6 +11,7 @@ import { TokenService } from '@/lib/services/token'
 import { BillingService } from '@/lib/services/billing'
 import { HonoEnv } from '@/lib/hono/env'
 import { SyncService } from './sync'
+import { PricingTablesService } from './pricing-tables'
 
 export function initServices(sentry: Toucan, env: HonoEnv['Bindings']) {
   const telemetryService = new TelemetryService(
@@ -43,6 +44,11 @@ export function initServices(sentry: Toucan, env: HonoEnv['Bindings']) {
     entitlementsService,
     env.BILLING_STRIPE_ACCOUNT_ID,
   )
+  const pricingTablesService = new PricingTablesService(
+    db,
+    dbService,
+    entitlementsService,
+  )
   return {
     billingService,
     client,
@@ -50,6 +56,7 @@ export function initServices(sentry: Toucan, env: HonoEnv['Bindings']) {
     dbService,
     entitlementsService,
     liveStripe,
+    pricingTablesService,
     stripeService,
     syncService,
     telemetryService,

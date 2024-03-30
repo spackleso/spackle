@@ -9,6 +9,8 @@ import { EntitlementsService } from '../services/entitlements'
 import { TokenService } from '../services/token'
 import { BillingService } from '../services/billing'
 import { OpenAPIHono } from '@hono/zod-openapi'
+import { SyncService } from '../services/sync'
+import { PricingTablesService } from '../services/pricing-tables'
 
 export type Job = {
   type: string
@@ -50,6 +52,7 @@ export type HonoEnv = {
     dbService: DatabaseService
     entitlementsService: EntitlementsService
     liveStripe: Stripe
+    pricingTablesService: PricingTablesService
     sentry: Toucan
     stripeService: StripeService
     syncService: SyncService
