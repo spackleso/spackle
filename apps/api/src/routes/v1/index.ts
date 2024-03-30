@@ -42,7 +42,13 @@ function tokenAuth(exemptPaths: string[] = []) {
 
 app.use(
   '*',
-  tokenAuth(['/', '/customers/:id/state', '/v1/customers/:id/state']),
+  tokenAuth([
+    '/',
+    '/customers/:id/state',
+    '/v1/customers/:id/state',
+    '/pricing_tables/:id/state',
+    '/v1/pricing_tables/:id/state',
+  ]),
 )
 
 app.route('/customers', customers)
