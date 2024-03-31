@@ -155,9 +155,7 @@ app.get('/:id/state', async (c: Context<APIHonoEnv>) => {
 
   let [state, stale] = await cache.get('customerState', cacheKey)
   if (state) {
-    console.log('Cache hit for', cacheKey)
     if (stale) {
-      console.log('Revalidating stale cache for', cacheKey)
       c.executionCtx.waitUntil(
         fetchState().then((s) => {
           if (s) {
@@ -171,7 +169,6 @@ app.get('/:id/state', async (c: Context<APIHonoEnv>) => {
     return c.json(state)
   }
 
-  console.log('Cache miss for', cacheKey)
   state = await fetchState()
   if (!state) {
     c.status(404)

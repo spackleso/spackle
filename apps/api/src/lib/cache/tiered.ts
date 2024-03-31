@@ -1,6 +1,7 @@
 import { Cache } from './interface'
 
 export class TieredCache implements Cache {
+  public readonly tier = 'tiered'
   private readonly caches: Cache[]
 
   constructor(caches: Cache[]) {
