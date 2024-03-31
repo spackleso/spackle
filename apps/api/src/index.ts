@@ -1,6 +1,6 @@
 import { cors } from 'hono/cors'
 import { sentry } from '@hono/sentry'
-import { initRoutes as initStripeRoutes } from '@/routes/stripe'
+import stripe from '@/routes/stripe'
 import v1 from '@/routes/v1'
 import { OpenAPIHono } from '@hono/zod-openapi'
 import { App, HonoEnv, Job } from '@/lib/hono/env'
@@ -36,7 +36,7 @@ app.use(
 )
 
 app.post('/signup', signup)
-initStripeRoutes(app, '/stripe')
+app.route('/stripe', stripe)
 app.route('/v1', v1)
 app.route('/', v1)
 app.doc('/openapi.json', {
