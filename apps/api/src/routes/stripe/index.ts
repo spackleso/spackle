@@ -37,8 +37,6 @@ import updateCustomerFeatures from './update_customer_features'
 import updatePricingTable from './update_pricing_table'
 import updateProductFeatures from './update_product_features'
 
-const app = new OpenAPIHono<HonoEnv>() as App
-
 function auth(exemptPaths: string[] = []) {
   return async (c: Context, next: Next) => {
     if (!exemptPaths.includes(c.req.path)) {
@@ -60,51 +58,51 @@ function auth(exemptPaths: string[] = []) {
   }
 }
 
-app.use(
-  '*',
-  auth([
-    '/stripe/billing_checkout',
-    '/stripe/billing_checkout_success',
-    '/stripe/billing_portal',
-    '/stripe/billing_webhooks',
-    '/stripe/checkout_redirect',
-    '/stripe/connected_webhooks',
-  ]),
-)
+export function initRoutes(app: App, basePath: string) {
+  app.use(
+    `${basePath}/*`,
+    auth([
+      `${basePath}/billing_checkout`,
+      `${basePath}/billing_checkout_success`,
+      `${basePath}/billing_portal`,
+      `${basePath}/billing_webhooks`,
+      `${basePath}/checkout_redirect`,
+      `${basePath}/connected_webhooks`,
+    ]),
+  )
 
-app.post('/acknowledge_setup', acknowledgeSetup)
-app.get('/billing_checkout', billingCheckout)
-app.get('/billing_checkout_success', billingCheckoutSuccess)
-app.get('/billing_portal', billingPortal)
-app.post('/billing_webhooks', billingWebhooks)
-app.get('/checkout_redirect', checkoutRedirect)
-app.post('/connected_webhooks', connectedWebhooks)
-app.post('/create_account_feature', createAccountFeature)
-app.post('/create_pricing_table', createPricingTable)
-app.post('/delete_account_feature', deleteAccountFeature)
-app.post('/delete_pricing_table', deletePricingTable)
-app.post('/get_account', getAccount)
-app.post('/get_account_state', getAccountState)
-app.post('/get_account_features', getAccountFeatures)
-app.post('/get_customer_features', getCustomerFeatures)
-app.post('/get_customer_state', getCustomerState)
-app.post('/get_entitlements', getEntitlements)
-app.post('/get_mtr', getMtr)
-app.post('/get_mtr_estimate', getMtrEstimate)
-app.post('/get_pricing_tables', getPricingTables)
-app.post('/get_pricing_table_products', getPricingTableProducts)
-app.post('/get_pricing_table', getPricingTable)
-app.post('/get_product_features', getProductFeatures)
-app.post('/get_product_state', getProductState)
-app.post('/get_publishable_token', getPublishableToken)
-app.post('/get_subscriptions_state', getSubscriptionsState)
-app.post('/get_token', getToken)
-app.post('/identify', identify)
-app.post('/sync_account', syncAccount)
-app.post('/track', track)
-app.post('/update_account_feature', updateAccountFeature)
-app.post('/update_customer_features', updateCustomerFeatures)
-app.post('/update_pricing_table', updatePricingTable)
-app.post('/update_product_features', updateProductFeatures)
-
-export default app
+  app.post(`${basePath}/acknowledge_setup`, acknowledgeSetup)
+  app.get(`${basePath}/billing_checkout`, billingCheckout)
+  app.get(`${basePath}/billing_checkout_success`, billingCheckoutSuccess)
+  app.get(`${basePath}/billing_portal`, billingPortal)
+  app.post(`${basePath}/billing_webhooks`, billingWebhooks)
+  app.get(`${basePath}/checkout_redirect`, checkoutRedirect)
+  app.post(`${basePath}/connected_webhooks`, connectedWebhooks)
+  app.post(`${basePath}/create_account_feature`, createAccountFeature)
+  app.post(`${basePath}/create_pricing_table`, createPricingTable)
+  app.post(`${basePath}/delete_account_feature`, deleteAccountFeature)
+  app.post(`${basePath}/delete_pricing_table`, deletePricingTable)
+  app.post(`${basePath}/get_account`, getAccount)
+  app.post(`${basePath}/get_account_state`, getAccountState)
+  app.post(`${basePath}/get_account_features`, getAccountFeatures)
+  app.post(`${basePath}/get_customer_features`, getCustomerFeatures)
+  app.post(`${basePath}/get_customer_state`, getCustomerState)
+  app.post(`${basePath}/get_entitlements`, getEntitlements)
+  app.post(`${basePath}/get_mtr`, getMtr)
+  app.post(`${basePath}/get_mtr_estimate`, getMtrEstimate)
+  app.post(`${basePath}/get_pricing_tables`, getPricingTables)
+  app.post(`${basePath}/get_pricing_table_products`, getPricingTableProducts)
+  app.post(`${basePath}/get_pricing_table`, getPricingTable)
+  app.post(`${basePath}/get_product_features`, getProductFeatures)
+  app.post(`${basePath}/get_product_state`, getProductState)
+  app.post(`${basePath}/get_publishable_token`, getPublishableToken)
+  app.post(`${basePath}/get_subscriptions_state`, getSubscriptionsState)
+  app.post(`${basePath}/get_token`, getToken)
+  app.post(`${basePath}/identify`, identify)
+  app.post(`${basePath}/sync_account`, syncAccount)
+  app.post(`${basePath}/track`, track)
+  app.post(`${basePath}/update_account_feature`, updateAccountFeature)
+  app.post(`${basePath}/update_customer_features`, updateCustomerFeatures)
+  app.post(`${basePath}/update_pricing_table`, updatePricingTable)
+  app.post(`${basePath}/update_product_features`, updateProductFeatures)
+}

@@ -7,6 +7,7 @@ import productFeatures from './product_features'
 import { OpenAPIHono, createRoute } from '@hono/zod-openapi'
 import { APIHonoEnv, App } from '@/lib/hono/env'
 import { authorizeToken } from '@/lib/auth/token'
+import { otel } from '@/lib/hono/otel'
 
 const app = new OpenAPIHono() as App
 
@@ -38,6 +39,7 @@ function tokenAuth(exemptPaths: string[] = []) {
   }
 }
 
+app.use('*', otel())
 app.use(
   '*',
   tokenAuth([
