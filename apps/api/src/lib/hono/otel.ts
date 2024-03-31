@@ -1,10 +1,12 @@
+import { trace } from '@opentelemetry/api'
+
 import type { MiddlewareHandler } from 'hono'
 import type { HonoEnv } from '../hono/env'
 
 export function otel(): MiddlewareHandler<HonoEnv> {
+  const tracer = trace.getTracer('hono', '0.0.1')
+
   return async (c, next) => {
-    const { trace } = await import('@opentelemetry/api')
-    const tracer = trace.getTracer('hono', '0.0.1')
     return tracer.startActiveSpan(
       `hono: ${c.req.method} ${c.req.path}`,
       async (span) => {
