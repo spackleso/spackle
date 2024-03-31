@@ -20,7 +20,6 @@ import { instrument, ResolveConfigFn } from '@microlabs/otel-cf-workers'
 const cacheMap = new Map()
 const app = new OpenAPIHono<HonoEnv>() as App
 
-app.use('*', otel())
 app.use('*', cors())
 app.use('*', (c, next) => {
   return sentry({
@@ -32,6 +31,7 @@ app.use(
   '*',
   initServiceContext(['/customers/:id/state', '/v1/customers/:id/state']),
 )
+app.use('*', otel())
 
 app.post('/signup', signup)
 app.route('/stripe', stripe)
