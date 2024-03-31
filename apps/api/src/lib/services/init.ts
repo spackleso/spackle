@@ -12,11 +12,8 @@ import { BillingService } from '@/lib/services/billing'
 import { HonoEnv } from '@/lib/hono/env'
 import { SyncService } from './sync'
 import { PricingTablesService } from './pricing-tables'
-import { trace } from '@opentelemetry/api'
 
 export function initServices(sentry: Toucan, env: HonoEnv['Bindings']) {
-  const tracer = trace.getTracer('init')
-  const span = tracer.startSpan('initServices')
   const telemetryService = new TelemetryService(
     env.POSTHOG_API_HOST,
     env.POSTHOG_API_KEY,
@@ -52,7 +49,6 @@ export function initServices(sentry: Toucan, env: HonoEnv['Bindings']) {
     dbService,
     entitlementsService,
   )
-  span.end()
   return {
     billingService,
     client,

@@ -14,16 +14,14 @@ export function initCacheContext(
   const tracer = trace.getTracer('init')
   return async (c: Context<HonoEnv>, next: () => Promise<void>) => {
     const span = tracer.startSpan('initCacheContext')
-    let _caches: Cache[] = [CacheWithTracing.wrap(new MemoryCache(cacheMap))]
+    let _caches: Cache[] = [new MemoryCache(cacheMap)]
     if (c.env.CLOUDFLARE_API_KEY && c.env.CLOUDFLARE_ZONE_ID) {
       _caches = _caches.concat(
-        CacheWithTracing.wrap(
-          new ZoneCache({
-            domain: 'cache.spackle.so',
-            zoneId: c.env.CLOUDFLARE_ZONE_ID,
-            cloudflareApiKey: c.env.CLOUDFLARE_API_KEY,
-          }),
-        ),
+        new ZoneCache({
+          domain: 'cache.spackle.so',
+          zoneId: c.env.CLOUDFLARE_ZONE_ID,
+          cloudflareApiKey: c.env.CLOUDFLARE_API_KEY,
+        }),
       )
     }
 

@@ -9,11 +9,6 @@ import { initServices } from '@/lib/services/init'
 import { initCacheContext, initServiceContext } from '@/lib/hono/context'
 import signup from '@/routes/signup'
 import { Env } from 'hono'
-import type { Context, Span } from '@opentelemetry/api'
-import {
-  ConsoleSpanExporter,
-  ReadableSpan,
-} from '@opentelemetry/sdk-trace-base'
 import { otel } from '@/lib/hono/otel'
 import { instrument, ResolveConfigFn } from '@microlabs/otel-cf-workers'
 
@@ -31,7 +26,6 @@ app.use(
   '*',
   initServiceContext(['/customers/:id/state', '/v1/customers/:id/state']),
 )
-app.use('*', otel())
 
 app.post('/signup', signup)
 app.route('/stripe', stripe)
@@ -88,10 +82,6 @@ const config: ResolveConfigFn = (env: HonoEnv['Bindings'], _trigger) => {
     service: {
       name: `api.${env.ENVIRONMENT}`,
       version: env.VERSION,
-    },
-    postProcessor: (spans: ReadableSpan[]): ReadableSpan[] => {
-      console.log(spans.map((s) => s.name))
-      return spans
     },
   }
 }
