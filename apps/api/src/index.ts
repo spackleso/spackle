@@ -16,17 +16,23 @@ import { ConsoleSpanExporter } from '@opentelemetry/sdk-trace-base'
 const cacheMap = new Map()
 const app = new OpenAPIHono<HonoEnv>() as App
 
+app.use('*', otel())
 app.use('*', cors())
 app.use('*', (c, next) => {
   return sentry({
     enabled: !!c.env.SENTRY_DSN,
   })(c, next)
 })
-app.use('*', otel())
 app.use('*', initCacheContext(cacheMap))
 app.use(
   '*',
-  initServiceContext(['/customers/:id/state', '/v1/customers/:id/state']),
+  initServiceContext([
+    '/openapi.json',
+    '/customers/:id/state',
+    '/v1/customers/:id/state',
+    '/pricing_tables/:id/state',
+    '/v1/pricing_tables/:id/state',
+  ]),
 )
 
 app.post('/signup', signup)

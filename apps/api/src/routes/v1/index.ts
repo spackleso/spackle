@@ -39,11 +39,11 @@ function tokenAuth(exemptPaths: string[] = []) {
   }
 }
 
-app.use('*', otel())
 app.use(
   '*',
   tokenAuth([
     '/',
+    '/openapi.json',
     '/customers/:id/state',
     '/v1/customers/:id/state',
     '/pricing_tables/:id/state',
