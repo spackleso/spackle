@@ -5,15 +5,11 @@ import { TieredCache } from '@/lib/cache/tiered'
 import { Cache, Entry } from '@/lib/cache/interface'
 import { HonoEnv } from '@/lib/hono/env'
 import { initServices } from '@/lib/services/init'
-import { CacheWithTracing } from '@/lib/cache/tracing'
-import { trace } from '@opentelemetry/api'
 
 export function initCacheContext(
   cacheMap: Map<`${string}:${string}`, Entry<unknown>>,
 ) {
-  const tracer = trace.getTracer('init')
   return async (c: Context<HonoEnv>, next: () => Promise<void>) => {
-    const span = tracer.startSpan('initCacheContext')
     let _caches: Cache[] = [new MemoryCache(cacheMap)]
     if (c.env.CLOUDFLARE_API_KEY && c.env.CLOUDFLARE_ZONE_ID) {
       _caches = _caches.concat(
@@ -27,15 +23,12 @@ export function initCacheContext(
 
     const cache = new TieredCache(_caches)
     c.set('cache', cache)
-    span.end()
     await next()
   }
 }
 
 export function initServiceContext(exemptPaths: string[] = []) {
-  const tracer = trace.getTracer('init')
   return async (c: Context<HonoEnv>, next: () => Promise<void>) => {
-    const span = tracer.startSpan('initServiceContext')
     const matchedPaths = c.req.matchedRoutes
       .map((r) => r.path)
       .filter((p) => !p.includes('*'))
@@ -58,7 +51,6 @@ export function initServiceContext(exemptPaths: string[] = []) {
     c.set('pricingTablesService', services.pricingTablesService)
 
     await next()
-    span.end()
     await services.client.end()
   }
 }

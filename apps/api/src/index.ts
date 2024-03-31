@@ -21,6 +21,7 @@ app.use('*', (c, next) => {
     enabled: !!c.env.SENTRY_DSN,
   })(c, next)
 })
+app.use('*', otel())
 app.use('*', initCacheContext(cacheMap))
 app.use(
   '*',
