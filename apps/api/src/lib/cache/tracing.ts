@@ -22,18 +22,14 @@ export class CacheWithTracing implements Cache {
     namespace: string,
     key: string,
   ): Promise<[unknown | undefined, boolean]> {
-    return this.tracer.startActiveSpan(
-      `cache.${this.cache.tier}.get`,
-      async (span) => {
-        span.setAttribute('cache.namespace', namespace as string)
-        span.setAttribute('cache.key', key)
-        const res = await this.cache.get(namespace, key)
-        span.setAttribute('cache.hit', !!res[0])
-        span.setAttribute('cache.stale', res[1])
-        span.end()
-        return res
-      },
-    )
+    const span = this.tracer.startSpan(`cache.${this.cache.tier}.get`)
+    span.setAttribute('cache.namespace', namespace as string)
+    span.setAttribute('cache.key', key)
+    const res = await this.cache.get(namespace, key)
+    span.setAttribute('cache.hit', !!res[0])
+    span.setAttribute('cache.stale', res[1])
+    span.end()
+    return res
   }
 
   public async set(
@@ -41,32 +37,25 @@ export class CacheWithTracing implements Cache {
     key: string,
     value: unknown,
   ): Promise<void> {
-    return this.tracer.startActiveSpan(
-      `cache.${this.cache.tier}.set`,
-      async (span) => {
-        try {
-          span.setAttribute('cache.namespace', namespace as string)
-          span.setAttribute('cache.key', key)
-          return await this.cache.set(namespace, key, value)
-        } finally {
-          span.end()
-        }
-      },
-    )
+    const span = this.tracer.startSpan(`cache.${this.cache.tier}.set`)
+    try {
+      span.setAttribute('cache.namespace', namespace as string)
+      span.setAttribute('cache.key', key)
+      return await this.cache.set(namespace, key, value)
+    } finally {
+      span.end()
+    }
   }
 
   public async remove(namespace: string, key: string): Promise<void> {
-    return this.tracer.startActiveSpan(
-      `cache.${this.cache.tier}.remove`,
-      async (span) => {
-        try {
-          span.setAttribute('cache.namespace', namespace as string)
-          span.setAttribute('cache.key', key)
-          return await this.cache.remove(namespace, key)
-        } finally {
-          span.end()
-        }
-      },
-    )
+    const span = this.tracer.startSpan(`cache.${this.cache.tier}.remove`)
+
+    try {
+      span.setAttribute('cache.namespace', namespace as string)
+      span.setAttribute('cache.key', key)
+      return await this.cache.remove(namespace, key)
+    } finally {
+      span.end()
+    }
   }
 }
