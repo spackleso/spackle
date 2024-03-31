@@ -40,7 +40,7 @@ app.use('*', async (c: Context<APIHonoEnv>, next) => {
     c.status(403)
     return c.json({ error: 'Forbidden' })
   }
-  return next()
+  await next()
 })
 
 app.post('/', async (c: Context<APIHonoEnv>) => {

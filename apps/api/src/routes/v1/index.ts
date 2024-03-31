@@ -16,27 +16,25 @@ function tokenAuth(exemptPaths: string[] = []) {
       .map((r) => r.path)
       .filter((p) => !p.includes('*'))
 
-    if (matchedPaths.filter((p) => exemptPaths.includes(p)).length) {
-      return next()
+    if (!matchedPaths.filter((p) => exemptPaths.includes(p)).length) {
+      const authorization = c.req.header('authorization') || 'Bearer '
+      const tokenStr = authorization.split(' ')[1]
+
+      let payload
+      try {
+        payload = await authorizeToken(
+          tokenStr,
+          c.env.SUPABASE_JWT_SECRET,
+          c.get('db'),
+        )
+      } catch (error) {
+        c.status(401)
+        return c.json({ error: 'Unauthorized' })
+      }
+
+      c.set('token', payload)
     }
-
-    const authorization = c.req.header('authorization') || 'Bearer '
-    const tokenStr = authorization.split(' ')[1]
-
-    let payload
-    try {
-      payload = await authorizeToken(
-        tokenStr,
-        c.env.SUPABASE_JWT_SECRET,
-        c.get('db'),
-      )
-    } catch (error) {
-      c.status(401)
-      return c.json({ error: 'Unauthorized' })
-    }
-
-    c.set('token', payload)
-    return next()
+    await next()
   }
 }
 

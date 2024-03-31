@@ -41,24 +41,22 @@ const app = new OpenAPIHono<HonoEnv>() as App
 
 function auth(exemptPaths: string[] = []) {
   return async (c: Context, next: Next) => {
-    if (exemptPaths.includes(c.req.path)) {
-      return next()
+    if (!exemptPaths.includes(c.req.path)) {
+      const stripe = c.get('liveStripe')
+      const sig = c.req.header('stripe-signature')
+      const payload = await c.req.raw.clone().text()
+      try {
+        await stripe.webhooks.signature.verifyHeaderAsync(
+          payload,
+          sig,
+          c.env.STRIPE_SIGNING_SECRET,
+        )
+      } catch (error: any) {
+        c.status(403)
+        return c.json({ error: 'Unauthorized' })
+      }
     }
-
-    const stripe = c.get('liveStripe')
-    const sig = c.req.header('stripe-signature')
-    const payload = await c.req.raw.clone().text()
-    try {
-      await stripe.webhooks.signature.verifyHeaderAsync(
-        payload,
-        sig,
-        c.env.STRIPE_SIGNING_SECRET,
-      )
-    } catch (error: any) {
-      c.status(403)
-      return c.json({ error: 'Unauthorized' })
-    }
-    return next()
+    await next()
   }
 }
 

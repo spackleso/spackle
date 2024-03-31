@@ -34,23 +34,22 @@ export function initServiceContext(exemptPaths: string[] = []) {
       .filter((p) => !p.includes('*'))
 
     if (matchedPaths.filter((p) => exemptPaths.includes(p)).length) {
-      return next()
+      await next()
+    } else {
+      const services = initServices(c.get('sentry'), c.env)
+      c.set('telemetry', services.telemetryService)
+      c.set('db', services.db)
+      c.set('dbService', services.dbService)
+      c.set('liveStripe', services.liveStripe)
+      c.set('testStripe', services.testStripe)
+      c.set('stripeService', services.stripeService)
+      c.set('syncService', services.syncService)
+      c.set('entitlementsService', services.entitlementsService)
+      c.set('tokenService', services.tokenService)
+      c.set('billingService', services.billingService)
+      c.set('pricingTablesService', services.pricingTablesService)
+      await next()
+      await services.client.end()
     }
-
-    const services = initServices(c.get('sentry'), c.env)
-    c.set('telemetry', services.telemetryService)
-    c.set('db', services.db)
-    c.set('dbService', services.dbService)
-    c.set('liveStripe', services.liveStripe)
-    c.set('testStripe', services.testStripe)
-    c.set('stripeService', services.stripeService)
-    c.set('syncService', services.syncService)
-    c.set('entitlementsService', services.entitlementsService)
-    c.set('tokenService', services.tokenService)
-    c.set('billingService', services.billingService)
-    c.set('pricingTablesService', services.pricingTablesService)
-
-    await next()
-    await services.client.end()
   }
 }
