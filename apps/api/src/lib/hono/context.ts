@@ -5,7 +5,6 @@ import { TieredCache } from '@/lib/cache/tiered'
 import { Cache, Entry } from '@/lib/cache/interface'
 import { HonoEnv } from '@/lib/hono/env'
 import { initServices } from '@/lib/services/init'
-import { sentry } from '@hono/sentry'
 
 export function initCacheContext(
   cacheMap: Map<`${string}:${string}`, Entry<unknown>>,

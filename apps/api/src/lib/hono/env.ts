@@ -23,6 +23,8 @@ export type App = OpenAPIHono<HonoEnv> & {
 
 export type HonoEnv = {
   Bindings: {
+    AXIOM_API_TOKEN: string
+    AXIOM_DATASET: string
     BILLING_ENTITLEMENTS_PRICE_ID: string
     BILLING_STRIPE_ACCOUNT_ID: string
     DATABASE_URL: string
@@ -43,6 +45,7 @@ export type HonoEnv = {
     STRIPE_TEST_SECRET_KEY: string
     SUPABASE_JWT_SECRET: string
     SYNC: Queue<Job>
+    VERSION: string
     WEB_HOST: string
   }
   Variables: {

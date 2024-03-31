@@ -7,8 +7,11 @@ import { App, HonoEnv, Job } from '@/lib/hono/env'
 import { Toucan } from 'toucan-js'
 import { initServices } from '@/lib/services/init'
 import { initCacheContext, initServiceContext } from '@/lib/hono/context'
-import { StripeService } from '@/lib/services/stripe'
 import signup from '@/routes/signup'
+import { Env } from 'hono'
+import type { Context, Span } from '@opentelemetry/api'
+
+import { instrument, ResolveConfigFn } from '@microlabs/otel-cf-workers'
 
 const cacheMap = new Map()
 const app = new OpenAPIHono<HonoEnv>() as App
@@ -57,4 +60,51 @@ app.queue = async (batch: MessageBatch<Job>, env: HonoEnv['Bindings']) => {
   }
 }
 
-export default app
+const handler = {
+  fetch(req: Request, env: HonoEnv, executionContext: ExecutionContext) {
+    return app.fetch(req, env, executionContext)
+  },
+  queue(batch: MessageBatch<Job>, env: Env) {
+    return app.queue(batch, env as HonoEnv['Bindings'])
+  },
+  request(
+    req: Request,
+    params: RequestInit,
+    executionContext: ExecutionContext,
+  ) {
+    return app.request(req, params, executionContext)
+  },
+}
+
+const config: ResolveConfigFn = (env: HonoEnv['Bindings'], _trigger) => {
+  if (!env.AXIOM_API_TOKEN) {
+    return {
+      service: {
+        name: `api.${env.ENVIRONMENT}`,
+        version: env.VERSION,
+      },
+      spanProcessors: {
+        forceFlush: () => Promise.resolve(),
+        onStart: (_span: Span, _parentContext: Context) => {},
+        onEnd: (_span) => {},
+        shutdown: () => Promise.resolve(),
+      },
+    }
+  }
+
+  return {
+    exporter: {
+      url: 'https://api.axiom.co/v1/traces',
+      headers: {
+        Authorization: `Bearer ${env.AXIOM_API_TOKEN}`,
+        'X-Axiom-Dataset': `${env.AXIOM_DATASET}`,
+      },
+    },
+    service: {
+      name: `api.${env.ENVIRONMENT}`,
+      version: env.VERSION,
+    },
+  }
+}
+
+export default instrument(handler, config)
