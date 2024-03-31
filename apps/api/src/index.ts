@@ -106,7 +106,7 @@ const config: ResolveConfigFn = (env: HonoEnv['Bindings'], _trigger) => {
       version: env.VERSION,
     },
     postProcessor: (spans: ReadableSpan[]): ReadableSpan[] => {
-      console.log(spans)
+      console.log(spans.map((s) => s.name))
       return spans
     },
   }
