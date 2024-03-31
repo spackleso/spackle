@@ -1,7 +1,7 @@
 import { CACHE_MAX_AGE, CACHE_STALE_WHILE_REVALIDATE } from './cache-control'
 import { Cache, Entry } from './interface'
 
-export class PersistentCache implements Cache {
+export class ZoneCache implements Cache {
   constructor() {}
 
   private createCacheKey(

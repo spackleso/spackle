@@ -1,6 +1,6 @@
 import { Context } from 'hono'
 import { MemoryCache } from '@/lib/cache/memory'
-import { PersistentCache } from '@/lib/cache/persistent'
+import { ZoneCache } from '@/lib/cache/zone'
 import { TieredCache } from '@/lib/cache/tiered'
 import { Cache, Entry } from '@/lib/cache/interface'
 import { HonoEnv } from '@/lib/hono/env'
@@ -11,7 +11,7 @@ export function initCacheContext(
 ) {
   let _caches: Cache[] = [new MemoryCache(cacheMap)]
   if (typeof caches !== 'undefined') {
-    _caches = _caches.concat(new PersistentCache())
+    _caches = _caches.concat(new ZoneCache())
   }
 
   const cache = new TieredCache(_caches)
