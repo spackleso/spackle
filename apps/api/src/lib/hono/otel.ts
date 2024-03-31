@@ -10,6 +10,7 @@ export function otel(): MiddlewareHandler<HonoEnv> {
     return tracer.startActiveSpan(
       `hono: ${c.req.method} ${c.req.path}`,
       async (span) => {
+        console.log(span.spanContext())
         const requestId = `req_${span.spanContext().traceId}`
         c.set('requestId', requestId)
         c.res.headers.append('Spackle-Request-Id', requestId)
