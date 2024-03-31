@@ -1,8 +1,18 @@
 import { CACHE_MAX_AGE, CACHE_STALE_WHILE_REVALIDATE } from './cache-control'
 import { Cache, Entry } from './interface'
 
+export type ZoneCacheConfig = {
+  domain: string
+  zoneId: string
+  cloudflareApiKey: string
+}
+
 export class ZoneCache implements Cache {
-  constructor() {}
+  config: ZoneCacheConfig
+
+  constructor(config: ZoneCacheConfig) {
+    this.config = config
+  }
 
   private createCacheKey(
     namespace: string,
@@ -10,7 +20,9 @@ export class ZoneCache implements Cache {
     cacheBuster = 'v1',
   ): URL {
     return new URL(
-      `https://cache.spackle.so/${cacheBuster}/${String(namespace)}/${key}`,
+      `https://${this.config.domain}/${cacheBuster}/${String(
+        namespace,
+      )}/${key}`,
     )
   }
 
@@ -54,8 +66,22 @@ export class ZoneCache implements Cache {
   }
 
   async remove(namespace: string, key: string) {
-    await caches.default.delete(
-      new Request(this.createCacheKey(namespace, key)),
-    )
+    await Promise.all([
+      caches.default.delete(new Request(this.createCacheKey(namespace, key))),
+      fetch(
+        `https://api.cloudflare.com/client/v4zones/${this.config.zoneId}/purge_cache`,
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${this.config.cloudflareApiKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            files: [this.createCacheKey(namespace, key).toString()],
+          }),
+        },
+      ),
+    ])
+    return
   }
 }

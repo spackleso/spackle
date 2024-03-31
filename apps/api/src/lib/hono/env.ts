@@ -27,6 +27,8 @@ export type HonoEnv = {
     AXIOM_DATASET: string
     BILLING_ENTITLEMENTS_PRICE_ID: string
     BILLING_STRIPE_ACCOUNT_ID: string
+    CLOUDFLARE_API_KEY: string
+    CLOUDFLARE_ZONE_ID: string
     DATABASE_URL: string
     DB_PK_SALT: string
     ENVIRONMENT: string

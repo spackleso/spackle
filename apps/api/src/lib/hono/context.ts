@@ -9,13 +9,19 @@ import { initServices } from '@/lib/services/init'
 export function initCacheContext(
   cacheMap: Map<`${string}:${string}`, Entry<unknown>>,
 ) {
-  let _caches: Cache[] = [new MemoryCache(cacheMap)]
-  if (typeof caches !== 'undefined') {
-    _caches = _caches.concat(new ZoneCache())
-  }
-
-  const cache = new TieredCache(_caches)
   return async (c: Context<HonoEnv>, next: () => Promise<void>) => {
+    let _caches: Cache[] = [new MemoryCache(cacheMap)]
+    if (c.env.CLOUDFLARE_API_KEY && c.env.CLOUDFLARE_ZONE_ID) {
+      _caches = _caches.concat(
+        new ZoneCache({
+          domain: 'cache.spackle.so',
+          zoneId: c.env.CLOUDFLARE_ZONE_ID,
+          cloudflareApiKey: c.env.CLOUDFLARE_API_KEY,
+        }),
+      )
+    }
+
+    const cache = new TieredCache(_caches)
     c.set('cache', cache)
     await next()
   }
