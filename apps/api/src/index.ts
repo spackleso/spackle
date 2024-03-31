@@ -11,18 +11,18 @@ import signup from '@/routes/signup'
 import { Env } from 'hono'
 import { otel } from '@/lib/hono/otel'
 import { instrument, ResolveConfigFn } from '@microlabs/otel-cf-workers'
-import { ConsoleSpanExporter } from '@opentelemetry/sdk-trace-base'
+import { Context as OTContext, Span } from '@opentelemetry/api'
 
 const cacheMap = new Map()
 const app = new OpenAPIHono<HonoEnv>() as App
 
-app.use('*', otel())
 app.use('*', cors())
 app.use('*', (c, next) => {
   return sentry({
     enabled: !!c.env.SENTRY_DSN,
   })(c, next)
 })
+app.use('*', otel())
 app.use('*', initCacheContext(cacheMap))
 app.use(
   '*',
@@ -67,8 +67,8 @@ app.queue = async (batch: MessageBatch<Job>, env: HonoEnv['Bindings']) => {
 }
 
 const handler = {
-  fetch(req: Request, env: HonoEnv, executionContext: ExecutionContext) {
-    return app.fetch(req, env, executionContext)
+  fetch(req: Request, env: HonoEnv, ctx: ExecutionContext) {
+    return app.fetch(req, env, ctx)
   },
   queue(batch: MessageBatch<Job>, env: Env) {
     return app.queue(batch, env as HonoEnv['Bindings'])
@@ -81,14 +81,15 @@ const handler = {
 const config: ResolveConfigFn = (env: HonoEnv['Bindings'], _trigger) => {
   if (!env.AXIOM_API_TOKEN || !env.AXIOM_DATASET) {
     return {
-      exporter: new ConsoleSpanExporter(),
+      spanProcessors: {
+        forceFlush: () => Promise.resolve(),
+        onStart: (_span: Span, _parentContext: OTContext) => {},
+        onEnd: (_span) => console.log(_span.name),
+        shutdown: () => Promise.resolve(),
+      },
       service: {
         name: `api.${env.ENVIRONMENT}`,
         version: env.VERSION,
-      },
-      postProcessor: (spans) => {
-        console.log(spans)
-        return spans
       },
     }
   }
