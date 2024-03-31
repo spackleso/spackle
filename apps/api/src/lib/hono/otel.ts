@@ -10,7 +10,7 @@ export function otel(): MiddlewareHandler<HonoEnv> {
     return tracer.startActiveSpan(
       `hono: ${c.req.method} ${c.req.path}`,
       async (span) => {
-        console.log('before', span)
+        console.log('before', JSON.stringify(span))
         const requestId = `req_${span.spanContext().traceId}`
         c.set('requestId', requestId)
         c.res.headers.append('Spackle-Request-Id', requestId)
@@ -33,7 +33,7 @@ export function otel(): MiddlewareHandler<HonoEnv> {
         })
 
         span.end()
-        console.log('after', span)
+        console.log('after', JSON.stringify(span))
       },
     )
   }
