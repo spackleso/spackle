@@ -2,6 +2,7 @@ import { CACHE_MAX_AGE, CACHE_STALE_WHILE_REVALIDATE } from './cache-control'
 import { Cache, Entry } from './interface'
 
 export class MemoryCache implements Cache {
+  public readonly tier = 'memory'
   private readonly state: Map<`${string}:${string}`, Entry<unknown>>
 
   constructor(persistedMap: Map<`${string}:${string}`, Entry<unknown>>) {

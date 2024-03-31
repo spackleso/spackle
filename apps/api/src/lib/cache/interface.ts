@@ -5,6 +5,7 @@ export type Entry<TValue> = {
 }
 
 export interface Cache {
+  tier: string
   get(namespace: string, key: string): Promise<[unknown | undefined, boolean]>
   set(namespace: string, key: string, value: any): Promise<void>
   remove(namespace: string, key: string): Promise<void>

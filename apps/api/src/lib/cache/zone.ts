@@ -8,6 +8,8 @@ export type ZoneCacheConfig = {
 }
 
 export class ZoneCache implements Cache {
+  public readonly tier = 'zone'
+
   config: ZoneCacheConfig
 
   constructor(config: ZoneCacheConfig) {
