@@ -5,19 +5,22 @@ import { TieredCache } from '@/lib/cache/tiered'
 import { Cache, Entry } from '@/lib/cache/interface'
 import { HonoEnv } from '@/lib/hono/env'
 import { initServices } from '@/lib/services/init'
+import { CacheWithTracing } from '@/lib/cache/tracing'
 
 export function initCacheContext(
   cacheMap: Map<`${string}:${string}`, Entry<unknown>>,
 ) {
   return async (c: Context<HonoEnv>, next: () => Promise<void>) => {
-    let _caches: Cache[] = [new MemoryCache(cacheMap)]
+    let _caches: Cache[] = [CacheWithTracing.wrap(new MemoryCache(cacheMap))]
     if (c.env.CLOUDFLARE_API_KEY && c.env.CLOUDFLARE_ZONE_ID) {
       _caches = _caches.concat(
-        new ZoneCache({
-          domain: 'cache.spackle.so',
-          zoneId: c.env.CLOUDFLARE_ZONE_ID,
-          cloudflareApiKey: c.env.CLOUDFLARE_API_KEY,
-        }),
+        CacheWithTracing.wrap(
+          new ZoneCache({
+            domain: 'cache.spackle.so',
+            zoneId: c.env.CLOUDFLARE_ZONE_ID,
+            cloudflareApiKey: c.env.CLOUDFLARE_API_KEY,
+          }),
+        ),
       )
     }
 
