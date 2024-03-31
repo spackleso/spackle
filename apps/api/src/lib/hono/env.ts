@@ -58,6 +58,7 @@ export type HonoEnv = {
     entitlementsService: EntitlementsService
     liveStripe: Stripe
     pricingTablesService: PricingTablesService
+    requestId: string
     sentry: Toucan
     stripeService: StripeService
     syncService: SyncService

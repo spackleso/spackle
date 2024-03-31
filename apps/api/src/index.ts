@@ -10,19 +10,19 @@ import { initCacheContext, initServiceContext } from '@/lib/hono/context'
 import signup from '@/routes/signup'
 import { Env } from 'hono'
 import type { Context, Span } from '@opentelemetry/api'
-
+import { otel } from '@/lib/hono/otel'
 import { instrument, ResolveConfigFn } from '@microlabs/otel-cf-workers'
 
 const cacheMap = new Map()
 const app = new OpenAPIHono<HonoEnv>() as App
 
+app.use('*', otel())
 app.use('*', cors())
 app.use('*', (c, next) => {
   return sentry({
     enabled: !!c.env.SENTRY_DSN,
   })(c, next)
 })
-
 app.use('*', initCacheContext(cacheMap))
 app.use(
   '*',
