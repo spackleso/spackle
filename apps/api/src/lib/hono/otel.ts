@@ -32,6 +32,8 @@ export function otel(): MiddlewareHandler<HonoEnv> {
         })
 
         span.end()
+        console.log(`Traced request: ${requestId}`)
+        console.log(span)
       },
     )
   }

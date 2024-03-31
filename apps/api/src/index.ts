@@ -10,7 +10,10 @@ import { initCacheContext, initServiceContext } from '@/lib/hono/context'
 import signup from '@/routes/signup'
 import { Env } from 'hono'
 import type { Context, Span } from '@opentelemetry/api'
-import { ReadableSpan } from '@opentelemetry/sdk-trace-base'
+import {
+  ConsoleSpanExporter,
+  ReadableSpan,
+} from '@opentelemetry/sdk-trace-base'
 import { otel } from '@/lib/hono/otel'
 import { instrument, ResolveConfigFn } from '@microlabs/otel-cf-workers'
 
@@ -68,31 +71,12 @@ const handler = {
   queue(batch: MessageBatch<Job>, env: Env) {
     return app.queue(batch, env as HonoEnv['Bindings'])
   },
-  request(
-    req: Request,
-    params: RequestInit,
-    executionContext: ExecutionContext,
-  ) {
-    return app.request(req, params, executionContext)
+  request(req: Request, opts: RequestInit, executionContext: ExecutionContext) {
+    return app.request(req, opts, executionContext)
   },
 }
 
 const config: ResolveConfigFn = (env: HonoEnv['Bindings'], _trigger) => {
-  if (!env.AXIOM_API_TOKEN) {
-    return {
-      service: {
-        name: `api.${env.ENVIRONMENT}`,
-        version: env.VERSION,
-      },
-      spanProcessors: {
-        forceFlush: () => Promise.resolve(),
-        onStart: (_span: Span, _parentContext: Context) => {},
-        onEnd: (_span) => {},
-        shutdown: () => Promise.resolve(),
-      },
-    }
-  }
-
   return {
     exporter: {
       url: 'https://api.axiom.co/v1/traces',
@@ -112,4 +96,4 @@ const config: ResolveConfigFn = (env: HonoEnv['Bindings'], _trigger) => {
   }
 }
 
-export default instrument(handler, config)
+export default instrument(handler, config) as OpenAPIHono<HonoEnv>
