@@ -6,7 +6,7 @@ import { OpenAPIHono } from '@hono/zod-openapi'
 import { App, HonoEnv, Job } from '@/lib/hono/env'
 import { Toucan } from 'toucan-js'
 import { initServices } from '@/lib/services/init'
-import { initCacheContext, initServiceContext } from '@/lib/hono/context'
+import { initMiddlewareContext, initServiceContext } from '@/lib/hono/context'
 import signup from '@/routes/signup'
 import { Env } from 'hono'
 import { otel } from '@/lib/hono/otel'
@@ -23,7 +23,7 @@ app.use('*', (c, next) => {
   })(c, next)
 })
 app.use('*', otel())
-app.use('*', initCacheContext(cacheMap))
+app.use('*', initMiddlewareContext(cacheMap))
 app.use(
   '*',
   initServiceContext([
@@ -73,8 +73,13 @@ const handler = {
   queue(batch: MessageBatch<Job>, env: Env) {
     return app.queue(batch, env as HonoEnv['Bindings'])
   },
-  request(req: Request, opts: RequestInit, executionContext: ExecutionContext) {
-    return app.request(req, opts, executionContext)
+  request(
+    req: Request,
+    opts: RequestInit,
+    env: HonoEnv['Bindings'],
+    ctx: ExecutionContext,
+  ) {
+    return app.request(req, opts, env, ctx)
   },
 }
 

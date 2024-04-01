@@ -9,6 +9,7 @@
     "worker": "pnpm dotenv -e .dev.vars -- ts-node -r tsconfig-paths/register src/bin/worker.ts"
   },
   "dependencies": {
+    "@axiomhq/js": "1.0.0-rc.3",
     "@hono/sentry": "^1.0.1",
     "@hono/zod-openapi": "^0.9.8",
     "@microlabs/otel-cf-workers": "1.0.0-rc.29",

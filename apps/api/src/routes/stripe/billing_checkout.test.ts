@@ -3,7 +3,7 @@
  */
 
 import app from '@/index'
-import { MOCK_ENV, TestClient, genStripeId } from '@/lib/test/client'
+import { TestClient } from '@/lib/test/client'
 import { beforeAll, afterAll, describe, test, expect, vi } from 'vitest'
 import stripe from 'stripe'
 
@@ -53,12 +53,11 @@ describe('GET', () => {
         secret: client.env.STRIPE_SIGNING_SECRET,
       }),
     }
-    const res = await app.request(
+    const res = await client.request(
       `/stripe/billing_checkout?${new URLSearchParams(query).toString()}`,
       {
         method: 'GET',
       },
-      MOCK_ENV,
     )
     expect(res.status).toBe(302)
     expect(res.headers.get('location')).toBe(

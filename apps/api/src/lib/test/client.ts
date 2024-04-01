@@ -62,6 +62,18 @@ export class TestClient {
     await this.client.end()
   }
 
+  request(url: string, options: RequestInit, env?: Record<string, any>) {
+    env = {
+      ...this.env,
+      ...env,
+    }
+
+    return this.app.request(url, options, env, {
+      waitUntil: async () => {},
+      passThroughOnException: async () => {},
+    })
+  }
+
   stripeRequest(url: string, options: RequestInit, env?: Record<string, any>) {
     options = {
       ...options,
@@ -79,7 +91,10 @@ export class TestClient {
       ...env,
     }
 
-    return this.app.request(url, options, env)
+    return this.app.request(url, options, env, {
+      waitUntil: async () => {},
+      passThroughOnException: async () => {},
+    })
   }
 
   async createTestStripeAccount() {

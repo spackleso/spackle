@@ -2,7 +2,7 @@
  * @jest-environment node
  */
 import app from '@/index'
-import { MOCK_ENV, TestClient } from '@/lib/test/client'
+import { TestClient } from '@/lib/test/client'
 import { beforeAll, afterAll, test, expect, describe } from 'vitest'
 
 let client: TestClient
@@ -15,14 +15,10 @@ afterAll(async () => {
 
 describe('GET /customers/:id', () => {
   test('Requires an API token', async () => {
-    const res = await app.request(
-      '/customers/123',
-      {
-        method: 'GET',
-        headers: {},
-      },
-      MOCK_ENV,
-    )
+    const res = await client.request('/customers/123', {
+      method: 'GET',
+      headers: {},
+    })
 
     expect(res.status).toBe(401)
     expect(await res.json()).toEqual({
@@ -32,16 +28,12 @@ describe('GET /customers/:id', () => {
 
   test('Requires a non-publishable API token', async () => {
     const { token } = await client.createTestAccountWithPublishableToken()
-    const res = await app.request(
-      '/customers/123',
-      {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token.token}`,
-        },
+    const res = await client.request('/customers/123', {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token.token}`,
       },
-      MOCK_ENV,
-    )
+    })
 
     expect(res.status).toBe(403)
     expect(await res.json()).toEqual({
@@ -51,32 +43,24 @@ describe('GET /customers/:id', () => {
 
   test('Invalid methods return a 405 error', async () => {
     const { token } = await client.createTestAccountWithToken()
-    const res = await app.request(
-      '/customers/123',
-      {
-        method: 'PUT',
-        headers: {
-          Authorization: `Bearer ${token.token}`,
-        },
+    const res = await client.request('/customers/123', {
+      method: 'PUT',
+      headers: {
+        Authorization: `Bearer ${token.token}`,
       },
-      MOCK_ENV,
-    )
+    })
 
     expect(res.status).toBe(405)
   })
 
   test('Returns a 404 if the customer does not exist', async () => {
     const { token } = await client.createTestAccountWithToken()
-    const res = await app.request(
-      '/customers/123',
-      {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token.token}`,
-        },
+    const res = await client.request('/customers/123', {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token.token}`,
       },
-      MOCK_ENV,
-    )
+    })
 
     expect(res.status).toBe(404)
   })
@@ -88,16 +72,12 @@ describe('GET /customers/:id', () => {
       otherAccount.stripeId,
     )
 
-    const res = await app.request(
-      `/customers/${customer.stripeId}`,
-      {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token.token}`,
-        },
+    const res = await client.request(`/customers/${customer.stripeId}`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token.token}`,
       },
-      MOCK_ENV,
-    )
+    })
 
     expect(res.status).toBe(404)
   })
@@ -112,16 +92,12 @@ describe('GET /customers/:id', () => {
       false,
     )
 
-    const res = await app.request(
-      `/customers/${customer.stripeId}`,
-      {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token.token}`,
-        },
+    const res = await client.request(`/customers/${customer.stripeId}`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token.token}`,
       },
-      MOCK_ENV,
-    )
+    })
 
     expect(res.status).toBe(200)
     expect(await res.json()).toEqual({
@@ -139,16 +115,12 @@ describe('GET /customers/:id', () => {
       subscriptions: [],
     })
 
-    const cachedRes = await app.request(
-      `/customers/${customer.stripeId}`,
-      {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token.token}`,
-        },
+    const cachedRes = await client.request(`/customers/${customer.stripeId}`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token.token}`,
       },
-      MOCK_ENV,
-    )
+    })
 
     expect(cachedRes.status).toBe(200)
     expect(await cachedRes.json()).toEqual({
@@ -170,14 +142,10 @@ describe('GET /customers/:id', () => {
 
 describe('GET /customers/:id/state', () => {
   test('Requires an API token', async () => {
-    const res = await app.request(
-      '/customers/123/state',
-      {
-        method: 'GET',
-        headers: {},
-      },
-      MOCK_ENV,
-    )
+    const res = await client.request('/customers/123/state', {
+      method: 'GET',
+      headers: {},
+    })
 
     expect(res.status).toBe(401)
     expect(await res.json()).toEqual({
@@ -187,16 +155,12 @@ describe('GET /customers/:id/state', () => {
 
   test('Requires a non-publishable API token', async () => {
     const { token } = await client.createTestAccountWithPublishableToken()
-    const res = await app.request(
-      '/customers/123/state',
-      {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token.token}`,
-        },
+    const res = await client.request('/customers/123/state', {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token.token}`,
       },
-      MOCK_ENV,
-    )
+    })
 
     expect(res.status).toBe(403)
     expect(await res.json()).toEqual({
@@ -206,32 +170,24 @@ describe('GET /customers/:id/state', () => {
 
   test('Invalid methods return a 405 error', async () => {
     const { token } = await client.createTestAccountWithToken()
-    const res = await app.request(
-      '/customers/123/state',
-      {
-        method: 'PUT',
-        headers: {
-          Authorization: `Bearer ${token.token}`,
-        },
+    const res = await client.request('/customers/123/state', {
+      method: 'PUT',
+      headers: {
+        Authorization: `Bearer ${token.token}`,
       },
-      MOCK_ENV,
-    )
+    })
 
     expect(res.status).toBe(405)
   })
 
   test('Returns a 404 if the customer does not exist', async () => {
     const { token } = await client.createTestAccountWithToken()
-    const res = await app.request(
-      '/customers/123/state',
-      {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token.token}`,
-        },
+    const res = await client.request('/customers/123/state', {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token.token}`,
       },
-      MOCK_ENV,
-    )
+    })
 
     expect(res.status).toBe(404)
   })
@@ -243,16 +199,12 @@ describe('GET /customers/:id/state', () => {
       otherAccount.stripeId,
     )
 
-    const res = await app.request(
-      `/customers/${customer.stripeId}/state`,
-      {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token.token}`,
-        },
+    const res = await client.request(`/customers/${customer.stripeId}/state`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token.token}`,
       },
-      MOCK_ENV,
-    )
+    })
 
     expect(res.status).toBe(404)
   })
@@ -267,16 +219,12 @@ describe('GET /customers/:id/state', () => {
       false,
     )
 
-    const res = await app.request(
-      `/customers/${customer.stripeId}/state`,
-      {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token.token}`,
-        },
+    const res = await client.request(`/customers/${customer.stripeId}/state`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token.token}`,
       },
-      MOCK_ENV,
-    )
+    })
 
     expect(res.status).toBe(200)
     expect(await res.json()).toEqual({
@@ -294,7 +242,7 @@ describe('GET /customers/:id/state', () => {
       subscriptions: [],
     })
 
-    const cachedRes = await app.request(
+    const cachedRes = await client.request(
       `/customers/${customer.stripeId}/state`,
       {
         method: 'GET',
@@ -302,7 +250,6 @@ describe('GET /customers/:id/state', () => {
           Authorization: `Bearer ${token.token}`,
         },
       },
-      MOCK_ENV,
     )
 
     expect(cachedRes.status).toBe(200)

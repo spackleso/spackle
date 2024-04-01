@@ -5,25 +5,48 @@ import { TieredCache } from '@/lib/cache/tiered'
 import { Cache, Entry } from '@/lib/cache/interface'
 import { HonoEnv } from '@/lib/hono/env'
 import { initServices } from '@/lib/services/init'
+import { CacheWithTracing } from '@/lib/cache/tracing'
+import { AxiomMetrics } from '@/lib/metrics/axiom'
+import { CacheWithMetrics } from '../cache/ metrics'
+import { ConsoleMetrics } from '../metrics/console'
 
-export function initCacheContext(
+export function initMiddlewareContext(
   cacheMap: Map<`${string}:${string}`, Entry<unknown>>,
 ) {
   return async (c: Context<HonoEnv>, next: () => Promise<void>) => {
-    let _caches: Cache[] = [new MemoryCache(cacheMap)]
+    const metrics = c.env.AXIOM_API_TOKEN
+      ? new AxiomMetrics(c.env.AXIOM_DATASET, c.env.AXIOM_API_TOKEN)
+      : new ConsoleMetrics()
+    c.set('metrics', metrics)
+
+    let _caches: Cache[] = [
+      CacheWithMetrics.wrap(
+        CacheWithTracing.wrap(new MemoryCache(cacheMap)),
+        metrics,
+      ),
+    ]
+
     if (c.env.CLOUDFLARE_API_KEY && c.env.CLOUDFLARE_ZONE_ID) {
       _caches = _caches.concat(
-        new ZoneCache({
-          domain: 'cache.spackle.so',
-          zoneId: c.env.CLOUDFLARE_ZONE_ID,
-          cloudflareApiKey: c.env.CLOUDFLARE_API_KEY,
-        }),
+        CacheWithMetrics.wrap(
+          CacheWithTracing.wrap(
+            new ZoneCache({
+              domain: 'cache.spackle.so',
+              zoneId: c.env.CLOUDFLARE_ZONE_ID,
+              cloudflareApiKey: c.env.CLOUDFLARE_API_KEY,
+            }),
+          ),
+          metrics,
+        ),
       )
     }
 
     const cache = new TieredCache(_caches)
     c.set('cache', cache)
+
     await next()
+
+    c.executionCtx.waitUntil(metrics.flush())
   }
 }
 

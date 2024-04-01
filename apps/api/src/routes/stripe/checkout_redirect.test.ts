@@ -3,7 +3,7 @@
  */
 
 import app from '@/index'
-import { MOCK_ENV, TestClient, genStripeId } from '@/lib/test/client'
+import { TestClient, genStripeId } from '@/lib/test/client'
 import { schema } from '@spackle/db'
 import { beforeAll, afterAll, describe, test, expect, vi } from 'vitest'
 import stripe from 'stripe'
@@ -43,13 +43,12 @@ describe('GET', () => {
       }),
     }
 
-    const res = await app.request(
+    const res = await client.request(
       `/stripe/checkout_redirect?${new URLSearchParams(query).toString()}`,
       {
         method: 'GET',
       },
       {
-        ...MOCK_ENV,
         WEB_HOST: 'https://spackle.so',
       },
     )

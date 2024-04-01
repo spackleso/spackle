@@ -3,7 +3,7 @@
  */
 
 import app from '@/index'
-import { MOCK_ENV, TestClient } from '@/lib/test/client'
+import { TestClient } from '@/lib/test/client'
 import { beforeAll, afterAll, describe, test, expect } from 'vitest'
 
 let client: TestClient
@@ -16,14 +16,10 @@ afterAll(async () => {
 
 describe('POST', () => {
   test('Requires a signature', async () => {
-    const res = await app.request(
-      '/stripe/get_account_features',
-      {
-        method: 'POST',
-        body: JSON.stringify({}),
-      },
-      MOCK_ENV,
-    )
+    const res = await client.request('/stripe/get_account_features', {
+      method: 'POST',
+      body: JSON.stringify({}),
+    })
 
     expect(res.status).toBe(403)
     expect(await res.json()).toEqual({

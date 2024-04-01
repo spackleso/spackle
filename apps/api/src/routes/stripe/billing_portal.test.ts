@@ -3,7 +3,7 @@
  */
 
 import app from '@/index'
-import { MOCK_ENV, TestClient, genStripeId } from '@/lib/test/client'
+import { TestClient, genStripeId } from '@/lib/test/client'
 import { beforeAll, afterAll, describe, test, expect, vi } from 'vitest'
 import { schema } from '@spackle/db'
 import stripe from 'stripe'
@@ -63,12 +63,11 @@ describe('GET', () => {
       }),
     }
 
-    const res = await app.request(
+    const res = await client.request(
       `/stripe/billing_portal?${new URLSearchParams(query).toString()}`,
       {
         method: 'GET',
       },
-      MOCK_ENV,
     )
     expect(res.status).toBe(302)
     expect(res.headers.get('location')).toBe(

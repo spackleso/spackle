@@ -3,7 +3,7 @@
  */
 
 import app from '@/index'
-import { MOCK_ENV, TestClient } from '@/lib/test/client'
+import { TestClient } from '@/lib/test/client'
 import { beforeAll, afterAll, describe, test, expect } from 'vitest'
 
 let client: TestClient
@@ -15,14 +15,10 @@ afterAll(async () => {
 })
 
 test('Requires an API token', async () => {
-  const res = await app.request(
-    '/product_features',
-    {
-      method: 'GET',
-      headers: {},
-    },
-    MOCK_ENV,
-  )
+  const res = await client.request('/product_features', {
+    method: 'GET',
+    headers: {},
+  })
 
   expect(res.status).toBe(401)
   expect(await res.json()).toEqual({
@@ -32,16 +28,12 @@ test('Requires an API token', async () => {
 
 test('Requires a non-publishable API token', async () => {
   const { token } = await client.createTestAccountWithPublishableToken()
-  const res = await app.request(
-    '/product_features',
-    {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${token.token}`,
-      },
+  const res = await client.request('/product_features', {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token.token}`,
     },
-    MOCK_ENV,
-  )
+  })
 
   expect(res.status).toBe(403)
   expect(await res.json()).toEqual({
@@ -51,16 +43,12 @@ test('Requires a non-publishable API token', async () => {
 
 test('Invalid methods return a 405 error', async () => {
   const { token } = await client.createTestAccountWithToken()
-  const res = await app.request(
-    '/product_features',
-    {
-      method: 'PUT',
-      headers: {
-        Authorization: `Bearer ${token.token}`,
-      },
+  const res = await client.request('/product_features', {
+    method: 'PUT',
+    headers: {
+      Authorization: `Bearer ${token.token}`,
     },
-    MOCK_ENV,
-  )
+  })
 
   expect(res.status).toBe(405)
 })
@@ -82,16 +70,12 @@ describe('List', () => {
       productFeatures.push(productFeature)
     }
 
-    const res = await app.request(
-      '/product_features',
-      {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token.token}`,
-        },
+    const res = await client.request('/product_features', {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token.token}`,
       },
-      MOCK_ENV,
-    )
+    })
 
     expect(await res.json()).toEqual({
       data: productFeatures.map((productFeature) => ({
@@ -123,16 +107,12 @@ describe('List', () => {
         productFeatures.push(productFeature)
       }
 
-      const res = await app.request(
-        '/product_features',
-        {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${token.token}`,
-          },
+      const res = await client.request('/product_features', {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token.token}`,
         },
-        MOCK_ENV,
-      )
+      })
 
       expect(await res.json()).toEqual({
         data: productFeatures.slice(0, 10).map((productFeature) => ({
@@ -163,16 +143,12 @@ describe('List', () => {
         productFeatures.push(productFeature)
       }
 
-      const res = await app.request(
-        '/product_features?page=2',
-        {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${token.token}`,
-          },
+      const res = await client.request('/product_features?page=2', {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token.token}`,
         },
-        MOCK_ENV,
-      )
+      })
 
       expect(await res.json()).toEqual({
         data: productFeatures.slice(10, 11).map((productFeature) => ({
@@ -199,21 +175,17 @@ describe('POST', () => {
       'feature_1',
       false,
     )
-    const res = await app.request(
-      '/product_features',
-      {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token.token}`,
-        },
-        body: JSON.stringify({
-          stripe_product_id: product.stripeId,
-          feature_id: feature.id,
-          value_flag: true,
-        }),
+    const res = await client.request('/product_features', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token.token}`,
       },
-      MOCK_ENV,
-    )
+      body: JSON.stringify({
+        stripe_product_id: product.stripeId,
+        feature_id: feature.id,
+        value_flag: true,
+      }),
+    })
 
     expect(res.status).toBe(201)
     const data = await res.json()
@@ -236,20 +208,16 @@ describe('POST', () => {
       'feature_1',
       false,
     )
-    const res = await app.request(
-      '/product_features',
-      {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token.token}`,
-        },
-        body: JSON.stringify({
-          stripe_product_id: product.stripeId,
-          feature_id: feature.id,
-        }),
+    const res = await client.request('/product_features', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token.token}`,
       },
-      MOCK_ENV,
-    )
+      body: JSON.stringify({
+        stripe_product_id: product.stripeId,
+        feature_id: feature.id,
+      }),
+    })
     expect(res.status).toBe(400)
     expect(await res.json()).toEqual({
       error: {
@@ -268,20 +236,16 @@ describe('POST', () => {
       'feature_1',
       100,
     )
-    const res = await app.request(
-      '/product_features',
-      {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token.token}`,
-        },
-        body: JSON.stringify({
-          stripe_product_id: product.stripeId,
-          feature_id: feature.id,
-        }),
+    const res = await client.request('/product_features', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token.token}`,
       },
-      MOCK_ENV,
-    )
+      body: JSON.stringify({
+        stripe_product_id: product.stripeId,
+        feature_id: feature.id,
+      }),
+    })
     expect(res.status).toBe(400)
     expect(await res.json()).toEqual({
       error: {

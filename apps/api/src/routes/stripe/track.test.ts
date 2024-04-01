@@ -3,7 +3,7 @@
  */
 
 import app from '@/index'
-import { MOCK_ENV, TestClient } from '@/lib/test/client'
+import { TestClient } from '@/lib/test/client'
 import {
   beforeAll,
   afterAll,
@@ -47,14 +47,10 @@ describe('POST', () => {
   })
 
   test('Requires a signature', async () => {
-    const res = await app.request(
-      '/stripe/track',
-      {
-        method: 'POST',
-        body: JSON.stringify({}),
-      },
-      MOCK_ENV,
-    )
+    const res = await client.request('/stripe/track', {
+      method: 'POST',
+      body: JSON.stringify({}),
+    })
 
     expect(res.status).toBe(403)
     expect(await res.json()).toEqual({

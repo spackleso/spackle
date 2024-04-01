@@ -3,7 +3,7 @@
  */
 
 import app from '@/index'
-import { MOCK_ENV, TestClient } from '@/lib/test/client'
+import { TestClient } from '@/lib/test/client'
 import { schema } from '@spackle/db'
 import { beforeAll, afterAll, describe, test, expect } from 'vitest'
 
@@ -18,32 +18,24 @@ afterAll(async () => {
 describe('GET /pricing_tables/:id/state', () => {
   test('Invalid methods return a 405 error', async () => {
     const { token } = await client.createTestAccountWithToken()
-    const res = await app.request(
-      '/pricing_tables/123/state',
-      {
-        method: 'PUT',
-        headers: {
-          Authorization: `Bearer ${token.token}`,
-        },
+    const res = await client.request('/pricing_tables/123/state', {
+      method: 'PUT',
+      headers: {
+        Authorization: `Bearer ${token.token}`,
       },
-      MOCK_ENV,
-    )
+    })
 
     expect(res.status).toBe(405)
   })
 
   test('Returns a 404 if the pricing table does not exist', async () => {
     const { token } = await client.createTestAccountWithToken()
-    const res = await app.request(
-      '/pricing_tables/123/state',
-      {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token.token}`,
-        },
+    const res = await client.request('/pricing_tables/123/state', {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token.token}`,
       },
-      MOCK_ENV,
-    )
+    })
 
     expect(res.status).toBe(404)
   })
@@ -186,7 +178,7 @@ describe('GET /pricing_tables/:id/state', () => {
     await client.db.update(schema.pricingTables).set({
       monthlyEnabled: true,
     })
-    const res = await app.request(
+    const res = await client.request(
       `/pricing_tables/${pricingTable.encodedId}/state`,
       {
         method: 'GET',
@@ -194,7 +186,6 @@ describe('GET /pricing_tables/:id/state', () => {
           Authorization: `Bearer ${token.token}`,
         },
       },
-      MOCK_ENV,
     )
     expect(res.status).toBe(200)
     const data = await res.json()
@@ -344,7 +335,7 @@ describe('GET /pricing_tables/:id/state', () => {
       true,
       true,
     )
-    const res = await app.request(
+    const res = await client.request(
       `/pricing_tables/${pricingTable.encodedId}/state`,
       {
         method: 'GET',
@@ -352,7 +343,6 @@ describe('GET /pricing_tables/:id/state', () => {
           Authorization: `Bearer ${token.token}`,
         },
       },
-      MOCK_ENV,
     )
 
     expect(res.status).toBe(200)
@@ -370,32 +360,24 @@ describe('GET /pricing_tables/:id/state', () => {
 describe('GET /pricing_tables/:id', () => {
   test('Invalid methods return a 405 error', async () => {
     const { token } = await client.createTestAccountWithToken()
-    const res = await app.request(
-      '/pricing_tables/123',
-      {
-        method: 'PUT',
-        headers: {
-          Authorization: `Bearer ${token.token}`,
-        },
+    const res = await client.request('/pricing_tables/123', {
+      method: 'PUT',
+      headers: {
+        Authorization: `Bearer ${token.token}`,
       },
-      MOCK_ENV,
-    )
+    })
 
     expect(res.status).toBe(405)
   })
 
   test('Returns a 404 if the pricing table does not exist', async () => {
     const { token } = await client.createTestAccountWithToken()
-    const res = await app.request(
-      '/pricing_tables/123',
-      {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token.token}`,
-        },
+    const res = await client.request('/pricing_tables/123', {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token.token}`,
       },
-      MOCK_ENV,
-    )
+    })
 
     expect(res.status).toBe(404)
   })
@@ -538,7 +520,7 @@ describe('GET /pricing_tables/:id', () => {
     await client.db.update(schema.pricingTables).set({
       monthlyEnabled: true,
     })
-    const res = await app.request(
+    const res = await client.request(
       `/pricing_tables/${pricingTable.encodedId}`,
       {
         method: 'GET',
@@ -546,7 +528,6 @@ describe('GET /pricing_tables/:id', () => {
           Authorization: `Bearer ${token.token}`,
         },
       },
-      MOCK_ENV,
     )
     expect(res.status).toBe(200)
     const data = await res.json()
@@ -696,7 +677,7 @@ describe('GET /pricing_tables/:id', () => {
       true,
       true,
     )
-    const res = await app.request(
+    const res = await client.request(
       `/pricing_tables/${pricingTable.encodedId}`,
       {
         method: 'GET',
@@ -704,7 +685,6 @@ describe('GET /pricing_tables/:id', () => {
           Authorization: `Bearer ${token.token}`,
         },
       },
-      MOCK_ENV,
     )
 
     expect(res.status).toBe(200)

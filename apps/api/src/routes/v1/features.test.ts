@@ -3,7 +3,7 @@
  */
 
 import app from '@/index'
-import { MOCK_ENV, TestClient } from '@/lib/test/client'
+import { TestClient } from '@/lib/test/client'
 import { beforeAll, afterAll, describe, test, expect } from 'vitest'
 
 let client: TestClient
@@ -15,14 +15,10 @@ afterAll(async () => {
 })
 
 test('Requires an API token', async () => {
-  const res = await app.request(
-    '/features',
-    {
-      method: 'GET',
-      headers: {},
-    },
-    MOCK_ENV,
-  )
+  const res = await client.request('/features', {
+    method: 'GET',
+    headers: {},
+  })
 
   expect(res.status).toBe(401)
   expect(await res.json()).toEqual({
@@ -32,16 +28,12 @@ test('Requires an API token', async () => {
 
 test('Requires a non-publishable API token', async () => {
   const { token } = await client.createTestAccountWithPublishableToken()
-  const res = await app.request(
-    '/features',
-    {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${token.token}`,
-      },
+  const res = await client.request('/features', {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token.token}`,
     },
-    MOCK_ENV,
-  )
+  })
 
   expect(res.status).toBe(403)
   expect(await res.json()).toEqual({
@@ -51,16 +43,12 @@ test('Requires a non-publishable API token', async () => {
 
 test('Invalid methods return a 405 error', async () => {
   const { token } = await client.createTestAccountWithToken()
-  const res = await app.request(
-    '/features',
-    {
-      method: 'PUT',
-      headers: {
-        Authorization: `Bearer ${token.token}`,
-      },
+  const res = await client.request('/features', {
+    method: 'PUT',
+    headers: {
+      Authorization: `Bearer ${token.token}`,
     },
-    MOCK_ENV,
-  )
+  })
 
   expect(res.status).toBe(405)
 })
@@ -80,16 +68,12 @@ describe('List', () => {
       features.push(feature)
     }
 
-    const res = await app.request(
-      '/features',
-      {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token.token}`,
-        },
+    const res = await client.request('/features', {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token.token}`,
       },
-      MOCK_ENV,
-    )
+    })
 
     expect(await res.json()).toEqual({
       data: features.map((feature) => ({
@@ -120,16 +104,12 @@ describe('List', () => {
         features.push(feature)
       }
 
-      const res = await app.request(
-        '/features',
-        {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${token.token}`,
-          },
+      const res = await client.request('/features', {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token.token}`,
         },
-        MOCK_ENV,
-      )
+      })
 
       expect(await res.json()).toEqual({
         data: features.slice(0, 10).map((feature) => ({
@@ -159,16 +139,12 @@ describe('List', () => {
         features.push(feature)
       }
 
-      const res = await app.request(
-        '/features?page=2',
-        {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${token.token}`,
-          },
+      const res = await client.request('/features?page=2', {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token.token}`,
         },
-        MOCK_ENV,
-      )
+      })
 
       expect(await res.json()).toEqual({
         data: features.slice(10, 11).map((feature) => ({
@@ -189,23 +165,19 @@ describe('List', () => {
 describe('Create', () => {
   test('Creates a new feature', async () => {
     const { account, token } = await client.createTestAccountWithToken()
-    const res = await app.request(
-      '/features',
-      {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token.token}`,
-        },
-        body: JSON.stringify({
-          name: 'Feature 1',
-          key: 'feature_1',
-          type: 0,
-          value_flag: false,
-          value_limit: null,
-        }),
+    const res = await client.request('/features', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token.token}`,
       },
-      MOCK_ENV,
-    )
+      body: JSON.stringify({
+        name: 'Feature 1',
+        key: 'feature_1',
+        type: 0,
+        value_flag: false,
+        value_limit: null,
+      }),
+    })
     expect(res.status).toBe(201)
     const data = await res.json()
     expect(data).toEqual({
@@ -221,19 +193,15 @@ describe('Create', () => {
 
   test('Validates field schema for flag', async () => {
     const { token } = await client.createTestAccountWithToken()
-    const res = await app.request(
-      '/features',
-      {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token.token}`,
-        },
-        body: JSON.stringify({
-          type: 0,
-        }),
+    const res = await client.request('/features', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token.token}`,
       },
-      MOCK_ENV,
-    )
+      body: JSON.stringify({
+        type: 0,
+      }),
+    })
     expect(res.status).toBe(400)
     expect(await res.json()).toEqual({
       error: {
@@ -249,19 +217,15 @@ describe('Create', () => {
 
   test('Validates field schema for limit', async () => {
     const { token } = await client.createTestAccountWithToken()
-    const res = await app.request(
-      '/features',
-      {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token.token}`,
-        },
-        body: JSON.stringify({
-          type: 1,
-        }),
+    const res = await client.request('/features', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token.token}`,
       },
-      MOCK_ENV,
-    )
+      body: JSON.stringify({
+        type: 1,
+      }),
+    })
     expect(res.status).toBe(400)
     expect(await res.json()).toEqual({
       error: {
@@ -287,16 +251,12 @@ describe('Retrieve', () => {
       false,
     )
 
-    const res = await app.request(
-      `/features/${feature.id}`,
-      {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token.token}`,
-        },
+    const res = await client.request(`/features/${feature.id}`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token.token}`,
       },
-      MOCK_ENV,
-    )
+    })
 
     expect(res.status).toBe(200)
     expect(await res.json()).toEqual({
@@ -320,16 +280,12 @@ describe('Retrieve', () => {
       false,
     )
 
-    const res = await app.request(
-      `/features/${feature.key}`,
-      {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token.token}`,
-        },
+    const res = await client.request(`/features/${feature.key}`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token.token}`,
       },
-      MOCK_ENV,
-    )
+    })
 
     expect(await res.json()).toEqual({
       created_at: feature.createdAt,
@@ -354,16 +310,12 @@ describe('Retrieve', () => {
       false,
     )
 
-    const res = await app.request(
-      `/features/${feature.id}`,
-      {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token.token}`,
-        },
+    const res = await client.request(`/features/${feature.id}`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token.token}`,
       },
-      MOCK_ENV,
-    )
+    })
 
     expect(res.status).toBe(404)
     expect(await res.json()).toEqual({

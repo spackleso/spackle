@@ -3,7 +3,7 @@
  */
 
 import app from '@/index'
-import { MOCK_ENV, TestClient, genStripeId } from '@/lib/test/client'
+import { TestClient, genStripeId } from '@/lib/test/client'
 import { beforeAll, afterAll, describe, test, expect, vi } from 'vitest'
 
 let client: TestClient
@@ -40,13 +40,12 @@ describe('GET', () => {
   test('Redirects to settings page on success', async () => {
     const billingStripeAccount = await client.createTestStripeAccount()
 
-    const res = await app.request(
+    const res = await client.request(
       `/stripe/billing_checkout_success?sessionId=${genStripeId('cs')}`,
       {
         method: 'GET',
       },
       {
-        ...MOCK_ENV,
         STRIPE_ACCOUNT_ID: billingStripeAccount.stripeId,
         STRIPE_APP_ID: 'so.spackle.stripe',
       },
