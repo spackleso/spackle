@@ -13,7 +13,7 @@
     "@hono/sentry": "^1.0.1",
     "@hono/zod-openapi": "^0.9.8",
     "@microlabs/otel-cf-workers": "1.0.0-rc.29",
-    "@opentelemetry/api": "^1.8.0",
+    "@opentelemetry/api": "~1.6.0",
     "@spackle/db": "workspace:^",
     "@tsndr/cloudflare-worker-jwt": "^2.5.3",
     "drizzle-orm": "^0.30.1",

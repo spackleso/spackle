@@ -30,8 +30,8 @@ importers:
         specifier: 1.0.0-rc.29
         version: 1.0.0-rc.29
       '@opentelemetry/api':
-        specifier: ^1.8.0
-        version: 1.8.0
+        specifier: ~1.6.0
+        version: 1.6.0
       '@spackle/db':
         specifier: workspace:^
         version: link:../../internal/db
@@ -40,7 +40,7 @@ importers:
         version: 2.5.3
       drizzle-orm:
         specifier: ^0.30.1
-        version: 0.30.1(@cloudflare/workers-types@4.20240222.0)(@opentelemetry/api@1.8.0)(postgres@3.4.3)
+        version: 0.30.1(@cloudflare/workers-types@4.20240222.0)(@opentelemetry/api@1.6.0)(postgres@3.4.3)
       hono:
         specifier: ^4.0.9
         version: 4.0.10
@@ -277,7 +277,7 @@ importers:
     dependencies:
       drizzle-orm:
         specifier: ^0.30.1
-        version: 0.30.1(@cloudflare/workers-types@4.20240222.0)(@opentelemetry/api@1.8.0)(postgres@3.4.3)
+        version: 0.30.1(@cloudflare/workers-types@4.20240222.0)(@opentelemetry/api@1.6.0)(postgres@3.4.3)
       postgres:
         specifier: ^3.3.5
         version: 3.4.3
@@ -2990,16 +2990,11 @@ packages:
     resolution: {integrity: sha512-0CXMOYPXgAdLM2OzVkiUfAL6QQwWVhnMfUXCqLsITY42FZ9TxAhZIHkoc4mfVxvPuXsBnRYGR8UQZX86p87z4A==}
     engines: {node: '>=14'}
     dependencies:
-      '@opentelemetry/api': 1.8.0
+      '@opentelemetry/api': 1.6.0
     dev: false
 
   /@opentelemetry/api@1.6.0:
     resolution: {integrity: sha512-OWlrQAnWn9577PhVgqjUvMr1pg57Bc4jv0iL4w0PRuOSRvq67rvHW9Ie/dZVMvCzhSCB+UxhcY/PmCmFj33Q+g==}
-    engines: {node: '>=8.0.0'}
-    dev: false
-
-  /@opentelemetry/api@1.8.0:
-    resolution: {integrity: sha512-I/s6F7yKUDdtMsoBWXJe8Qz40Tui5vsuKCWJEWVL+5q9sSWRzzx6v2KeNsOBEwd94j0eWkpWCH4yB6rZg9Mf0w==}
     engines: {node: '>=8.0.0'}
     dev: false
 
@@ -5757,7 +5752,7 @@ packages:
       - supports-color
     dev: true
 
-  /drizzle-orm@0.30.1(@cloudflare/workers-types@4.20240222.0)(@opentelemetry/api@1.8.0)(postgres@3.4.3):
+  /drizzle-orm@0.30.1(@cloudflare/workers-types@4.20240222.0)(@opentelemetry/api@1.6.0)(postgres@3.4.3):
     resolution: {integrity: sha512-5P6CXl4XyWtDDiYOX/jYOJp1HTUmBlXRAwaq+muUOgaSykMEy5sJesCxceMT0oCGvxeWkKfSXo5owLnfKwCIdw==}
     peerDependencies:
       '@aws-sdk/client-rds-data': '>=3'
@@ -5832,7 +5827,7 @@ packages:
         optional: true
     dependencies:
       '@cloudflare/workers-types': 4.20240222.0
-      '@opentelemetry/api': 1.8.0
+      '@opentelemetry/api': 1.6.0
       postgres: 3.4.3
     dev: false
 
