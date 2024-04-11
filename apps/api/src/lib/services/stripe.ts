@@ -1,6 +1,6 @@
 import Stripe from 'stripe'
 import { DatabaseService } from '@/lib/services/db'
-import { TieredCache } from '../cache/tiered'
+import { Cache } from '../cache/interface'
 
 export type Mode = 'live' | 'test'
 
@@ -9,13 +9,13 @@ export class StripeService {
   public testStripe: Stripe
 
   private readonly dbService: DatabaseService
-  private readonly cache: TieredCache
+  private readonly cache: Cache
 
   constructor(
     dbService: DatabaseService,
     liveStripe: Stripe,
     testStripe: Stripe,
-    cache: TieredCache,
+    cache: Cache,
   ) {
     this.dbService = dbService
     this.liveStripe = liveStripe

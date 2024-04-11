@@ -69,7 +69,7 @@ app.get('/:id/state', async (c: Context<APIHonoEnv>) => {
   const stripeCustomerId = c.req.param('id')
 
   const fetchState = async () => {
-    const services = initServices(c.get('sentry'), c.env)
+    const services = initServices(c.get('sentry'), c.get('cache'), c.env)
 
     let token
     try {

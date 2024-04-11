@@ -12,8 +12,13 @@ import { BillingService } from '@/lib/services/billing'
 import { HonoEnv } from '@/lib/hono/env'
 import { SyncService } from './sync'
 import { PricingTablesService } from './pricing-tables'
+import { Cache } from '@/lib/cache/interface'
 
-export function initServices(sentry: Toucan, env: HonoEnv['Bindings']) {
+export function initServices(
+  sentry: Toucan,
+  cache: Cache,
+  env: HonoEnv['Bindings'],
+) {
   const telemetryService = new TelemetryService(
     env.POSTHOG_API_HOST,
     env.POSTHOG_API_KEY,
@@ -28,7 +33,12 @@ export function initServices(sentry: Toucan, env: HonoEnv['Bindings']) {
   const testStripe = new Stripe(env.STRIPE_TEST_SECRET_KEY, {
     apiVersion: '2022-08-01' as any,
   })
-  const stripeService = new StripeService(dbService, liveStripe, testStripe)
+  const stripeService = new StripeService(
+    dbService,
+    liveStripe,
+    testStripe,
+    cache,
+  )
   const syncService = new SyncService(
     db,
     dbService,

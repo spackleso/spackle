@@ -12,8 +12,9 @@ import { Env } from 'hono'
 import { otel } from '@/lib/hono/otel'
 import { instrument, ResolveConfigFn } from '@microlabs/otel-cf-workers'
 import { Context as OTContext, Span } from '@opentelemetry/api'
+import { initMetrics } from './lib/metrics/init'
+import { initCache } from './lib/cache/init'
 
-const cacheMap = new Map()
 const app = new OpenAPIHono<HonoEnv>() as App
 
 app.use('*', cors())
@@ -23,7 +24,7 @@ app.use('*', (c, next) => {
   })(c, next)
 })
 app.use('*', otel())
-app.use('*', initMiddlewareContext(cacheMap))
+app.use('*', initMiddlewareContext())
 app.use(
   '*',
   initServiceContext([
@@ -52,7 +53,9 @@ app.queue = async (batch: MessageBatch<Job>, env: HonoEnv['Bindings']) => {
     dsn: env.SENTRY_DSN,
     enabled: !!env.SENTRY_DSN,
   })
-  const services = initServices(sentry, env)
+  const metrics = initMetrics(env)
+  const cache = initCache(env, metrics)
+  const services = initServices(sentry, cache, env)
   for (const message of batch.messages) {
     const { type, payload } = message.body
     switch (type) {
