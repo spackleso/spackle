@@ -7,7 +7,7 @@ import { HonoEnv } from '@/lib/hono/env'
 import { initServices } from '@/lib/services/init'
 import { CacheWithTracing } from '@/lib/cache/tracing'
 import { AxiomMetrics } from '@/lib/metrics/axiom'
-import { CacheWithMetrics } from '../cache/ metrics'
+import { CacheWithMetrics } from '../cache/metrics'
 import { ConsoleMetrics } from '../metrics/console'
 
 export function initMiddlewareContext(

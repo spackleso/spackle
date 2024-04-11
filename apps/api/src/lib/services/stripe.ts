@@ -1,5 +1,6 @@
 import Stripe from 'stripe'
 import { DatabaseService } from '@/lib/services/db'
+import { TieredCache } from '../cache/tiered'
 
 export type Mode = 'live' | 'test'
 
@@ -8,15 +9,18 @@ export class StripeService {
   public testStripe: Stripe
 
   private readonly dbService: DatabaseService
+  private readonly cache: TieredCache
 
   constructor(
     dbService: DatabaseService,
     liveStripe: Stripe,
     testStripe: Stripe,
+    cache: TieredCache,
   ) {
     this.dbService = dbService
     this.liveStripe = liveStripe
     this.testStripe = testStripe
+    this.cache = cache
   }
 
   getOrSyncStripeAccount = async (stripeId: string, name?: string | null) => {
@@ -193,6 +197,10 @@ export class StripeService {
         mode,
       )
     }
+    await this.cache.remove(
+      'customerState',
+      `${stripeAccountId}:${stripeCustomerId}`,
+    )
   }
 
   syncStripeSubscriptionItems = async (
