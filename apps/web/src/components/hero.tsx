@@ -37,7 +37,7 @@ export function Hero() {
         transition={{ duration: 0.3, ease: 'easeOut', delay: 0.1 }}
       >
         <h1 className="font-display mx-auto text-4xl font-medium tracking-tight text-slate-900 dark:text-white sm:text-5xl">
-          Entitlements built for Stripe billing
+          Entitlements built for Stripe Billing
         </h1>
       </motion.div>
       <motion.div
