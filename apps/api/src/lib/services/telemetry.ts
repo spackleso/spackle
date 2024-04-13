@@ -68,6 +68,10 @@ export class TelemetryService {
     })
 
     if (!response.ok) {
+      this.sentry.setExtra('response', {
+        status: response.status,
+        body: await response.text(),
+      })
       this.sentry.captureMessage(
         `Failed to group identify user ${userId} in group ${groupId} in PostHog`,
       )
@@ -101,6 +105,10 @@ export class TelemetryService {
     })
 
     if (!response.ok) {
+      this.sentry.setExtra('response', {
+        status: response.status,
+        body: await response.text(),
+      })
       this.sentry.captureMessage(
         `Failed to track event ${event} for user ${distinctId} in PostHog`,
       )
