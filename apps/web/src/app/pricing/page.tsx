@@ -26,7 +26,7 @@ export default function Pricing() {
               }}
             >
               <Button href="/signup" color="violet">
-                Get Started
+                Start For Free
               </Button>
             </PriceBox>
             <PriceBox
@@ -38,7 +38,7 @@ export default function Pricing() {
               }}
             >
               <Button href="/signup" color="violet">
-                Get Started
+                Start For Free
               </Button>
             </PriceBox>
           </div>

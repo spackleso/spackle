@@ -39,9 +39,13 @@ export default async function (c: Context<HonoEnv>) {
       .upsertStripeUser(account_id, user_id, user_email, user_name)
 
     if (user) {
-      await c.get('telemetry').track(user.id.toString(), 'Created feature', {
-        $groups: { company: account_id },
-      })
+      await c.get('telemetry').track(
+        'Created feature',
+        {
+          $groups: { company: account_id },
+        },
+        user.id.toString(),
+      )
     }
   }
 

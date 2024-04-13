@@ -14,10 +14,14 @@ export default async function (c: Context<HonoEnv>) {
     return c.json({})
   }
 
-  await c.get('telemetry').track(user.id.toString(), event, {
-    ...properties,
-    $groups: { company: account_id },
-  })
+  await c.get('telemetry').track(
+    event,
+    {
+      ...properties,
+      $groups: { company: account_id },
+    },
+    user.id.toString(),
+  )
 
   return c.json({})
 }

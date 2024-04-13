@@ -13,7 +13,7 @@ import { buttonVariants } from '@/components/ui/button'
 export default function Home() {
   return (
     <>
-      <main className="mt-16 flex flex-grow flex-col items-center justify-center gap-y-24 px-4">
+      <main className="mt-40 my-24 flex flex-grow flex-col items-center justify-center gap-y-24 px-4">
         <div className="flex flex-col gap-y-24 items-center justify-center">
           <Hero />
           <div className="mx-auto max-w-6xl">

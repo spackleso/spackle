@@ -74,7 +74,7 @@ export class TelemetryService {
     }
   }
 
-  async track(distinctId: string, event: string, properties: any) {
+  async track(event: string, properties: any, distinctId?: string) {
     if (!this.enabled) {
       console.log(
         `Telemetry is disabled. Would have tracked event ${event} for user ${distinctId}`,
@@ -82,17 +82,22 @@ export class TelemetryService {
       return
     }
 
+    const data: any = {
+      api_key: this.posthogKey,
+      event,
+      properties,
+    }
+
+    if (distinctId) {
+      data.distinct_id = distinctId
+    }
+
     const response = await fetch(`${this.posthogHost}/capture`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        api_key: this.posthogKey,
-        distinct_id: distinctId,
-        event,
-        properties,
-      }),
+      body: JSON.stringify(data),
     })
 
     if (!response.ok) {

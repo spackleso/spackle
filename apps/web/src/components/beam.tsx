@@ -36,7 +36,7 @@ export function Beam() {
 
   return (
     <div
-      className="relative flex w-full max-w-[680px] items-center justify-center overflow-hidden rounded-lg border bg-background py-10 px-16 md:shadow-2xl"
+      className="relative flex w-full max-w-[680px] items-center justify-center overflow-hidden rounded-lg border bg-background py-10 px-4 sm:px-16 md:shadow-2xl"
       ref={containerRef}
     >
       <div className="flex h-full w-full flex-row items-stretch justify-between gap-10">
@@ -65,7 +65,7 @@ export function Beam() {
             <Logo />
           </Circle>
         </div>
-        <div className="flex flex-col justify-center mt-4">
+        <div className="flex flex-col justify-center mt-6">
           <div className="flex flex-col items-center gap-2">
             <Circle ref={div5Ref}>
               <ServerIcon />

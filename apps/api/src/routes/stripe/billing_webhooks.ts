@@ -30,9 +30,13 @@ export default async function handler(c: Context<HonoEnv>) {
         )
 
       if (account) {
-        await c.get('telemetry').track('group_event', 'New subscription', {
-          $groups: { company: account.stripeId },
-        })
+        await c.get('telemetry').track(
+          'New subscription',
+          {
+            $groups: { company: account.stripeId },
+          },
+          'group_event',
+        )
       }
     }
   } catch (error: any) {

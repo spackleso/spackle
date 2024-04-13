@@ -89,7 +89,7 @@ export function Footer() {
                     'group mt-4 w-full rounded-[2rem] px-6',
                   )}
                 >
-                  Sign Up Free
+                  Start For Free
                   <ChevronRight className="ml-1 size-4 transition-all duration-300 ease-out group-hover:translate-x-1" />
                 </a>
               </div>

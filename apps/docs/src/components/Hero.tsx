@@ -56,7 +56,7 @@ export function Hero() {
                 so your code never even has to run at all.
               </p>
               <div className="mt-8 flex gap-4 md:justify-center lg:justify-start">
-                <Button href="/">Get started</Button>
+                <Button href="/">Start For Free</Button>
                 <Button href="/" variant="secondary">
                   View on GitHub
                 </Button>

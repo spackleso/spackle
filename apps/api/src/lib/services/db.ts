@@ -72,9 +72,13 @@ export class DatabaseService {
         .values({ stripeId, name, stripeJson: {} })
         .returning()
 
-      await this.telemetry.track('group_event', 'New account', {
-        $groups: { company: stripeId },
-      })
+      await this.telemetry.track(
+        'New account',
+        {
+          $groups: { company: stripeId },
+        },
+        'group_event',
+      )
     }
     return result[0]
   }
@@ -127,12 +131,16 @@ export class DatabaseService {
         .values({ stripeAccountId, stripeId, email, name })
         .returning()
 
-      await this.telemetry.track(result[0].id.toString(), 'New user', {
-        email: result[0].email,
-        name: result[0].name,
-        stripe_id: result[0].stripeId,
-        $groups: { company: stripeAccountId },
-      })
+      await this.telemetry.track(
+        'New user',
+        {
+          email: result[0].email,
+          name: result[0].name,
+          stripe_id: result[0].stripeId,
+          $groups: { company: stripeAccountId },
+        },
+        result[0].id.toString(),
+      )
     }
     return result[0]
   }

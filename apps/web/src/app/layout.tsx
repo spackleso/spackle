@@ -3,7 +3,8 @@ import Script from 'next/script'
 import { inter, lexend } from '@/lib/font'
 import { Header } from '@/components/tailwindui/header'
 import { Footer } from '@/components/tailwindui/footer'
-import PHProvider from '../components/posthog'
+import { PHProvider, PostHogPageView } from '@/components/posthog'
+import { Toaster } from 'sonner'
 
 export const metadata = {
   title: 'Spackle - Entitlements for Stripe Billing',
@@ -22,10 +23,12 @@ export default function Layout({ children }: any) {
       </head>
       <PHProvider>
         <body>
+          <PostHogPageView />
           <div className="from-0 flex min-h-screen flex-col gap-y-16 bg-gradient-to-b from-violet-600/10 to-black to-[800px]">
             <Header />
-            <div className="py-24">{children}</div>
+            {children}
             <Footer />
+            <Toaster />
           </div>
         </body>
       </PHProvider>

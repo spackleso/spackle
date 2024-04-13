@@ -4,12 +4,6 @@ import { Context } from 'hono'
 import { HonoEnv } from '@/lib/hono/env'
 import { schema } from '@spackle/db'
 
-const formSchema = z.object({
-  email: z.string().email(),
-})
-
-const getOrCreateSignup = async (email: string) => {}
-
 const emailText = `
 Welcome to Spackle!
 Spackle makes it easy to build and manage your Stripe integration. We're excited to have you on board!
@@ -36,16 +30,28 @@ const emailHtml = `
 
 export default async function (c: Context<HonoEnv>) {
   try {
-    const body = await c.req.parseBody()
-    const { email } = formSchema.parse(body)
+    const { email } = await c.req.json()
 
-    const select = await c
+    if (!email) {
+      c.status(400)
+      return c.json({ error: 'Email is required' })
+    }
+
+    const signups = await c
       .get('db')
       .select()
       .from(schema.signups)
       .where(eq(schema.signups.email, email))
-    if (select.length === 0) {
-      await c.get('db').insert(schema.signups).values({ email })
+
+    let signup
+    if (signups.length === 0) {
+      signup = await c
+        .get('db')
+        .insert(schema.signups)
+        .values({ email })
+        .returning()
+    } else {
+      signup = signups[0]
     }
 
     const res = await fetch('https://api.postmarkapp.com/email', {
@@ -70,11 +76,12 @@ export default async function (c: Context<HonoEnv>) {
       )
     }
 
-    c.status(301)
-    return c.redirect('https://www.spackle.so/signed-up')
+    c.get('telemetry').track('Sign up', { email })
+    c.status(200)
+    return c.json({ success: true })
   } catch (error) {
     c.get('sentry').captureException(error)
-    c.status(301)
-    return c.redirect('https://www.spackle.so/signup?error=true')
+    c.status(500)
+    return c.json({ error: 'Failed to sign up' })
   }
 }
