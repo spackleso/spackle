@@ -30,30 +30,28 @@ const emailHtml = `
 
 export default async function (c: Context<HonoEnv>) {
   try {
-    const { email } = await c.req.json()
+    const { email, distinct_id } = await c.req.json()
 
     if (!email) {
       c.status(400)
       return c.json({ error: 'Email is required' })
     }
 
-    const signups = await c
+    let signups = await c
       .get('db')
       .select()
       .from(schema.signups)
       .where(eq(schema.signups.email, email))
 
-    let signup
     if (signups.length === 0) {
-      signup = await c
+      signups = await c
         .get('db')
         .insert(schema.signups)
         .values({ email })
         .returning()
-    } else {
-      signup = signups[0]
     }
 
+    const signup = signups[0]
     const res = await fetch('https://api.postmarkapp.com/email', {
       method: 'POST',
       headers: {
@@ -76,7 +74,11 @@ export default async function (c: Context<HonoEnv>) {
       )
     }
 
-    await c.get('telemetry').track('Sign up', { email })
+    if (distinct_id) {
+      await c
+        .get('telemetry')
+        .track('Sign up', { email: signup.email }, distinct_id)
+    }
     c.status(200)
     return c.json({ success: true })
   } catch (error) {

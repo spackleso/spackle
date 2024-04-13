@@ -8,6 +8,7 @@ import {
   FormItem,
   FormMessage,
 } from '@/components/ui/form'
+import { usePostHog } from 'posthog-js/react'
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -32,6 +33,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
       email: '',
     },
   })
+  const posthog = usePostHog()
   const [isLoading, setIsLoading] = React.useState<boolean>(false)
   const [success, setSuccess] = React.useState<boolean>(false)
 
@@ -43,7 +45,10 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ email: data.email }),
+      body: JSON.stringify({
+        email: data.email,
+        distinct_id: posthog.get_distinct_id(),
+      }),
     })
 
     setIsLoading(false)
