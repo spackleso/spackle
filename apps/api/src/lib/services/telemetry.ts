@@ -86,22 +86,17 @@ export class TelemetryService {
       return
     }
 
-    const data: any = {
-      api_key: this.posthogKey,
-      event,
-      properties,
-    }
-
-    if (distinctId) {
-      data.distinct_id = distinctId
-    }
-
     const response = await fetch(`${this.posthogHost}/capture`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(data),
+      body: JSON.stringify({
+        api_key: this.posthogKey,
+        event,
+        properties,
+        distinct_id: distinctId,
+      }),
     })
 
     if (!response.ok) {
