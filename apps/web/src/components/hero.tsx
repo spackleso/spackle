@@ -59,13 +59,13 @@ export function Hero() {
         className="flex w-full flex-row items-center justify-center gap-4"
       >
         <Button href="/signup" color="violet">
-          Get Started
+          Start for free
         </Button>
         <Button
           href="https://savvycal.com/bolderresearch/spackle"
           color="transparent"
         >
-          Schedule a Demo →
+          Schedule a demo →
         </Button>
       </motion.div>
     </div>

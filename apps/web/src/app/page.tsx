@@ -22,8 +22,8 @@ export default function Home() {
         </div>
         <div className="mx-auto flex flex-col gap-8 text-center justify-center items-center w-full">
           <p className="font-display mx-auto text-4xl font-medium tracking-tight text-slate-900 dark:text-white sm:text-5xl">
-            Don&apos;t Let Billing Code
-            <br /> Slow You Down
+            Don&apos;t let billing code
+            <br /> slow you down
           </p>
           <p className="mx-auto max-w-2xl text-lg leading-tight tracking-tight text-slate-600 dark:text-slate-400 md:text-2xl">
             Spackle decouples your billing code from your application so you can
@@ -78,7 +78,7 @@ export default function Home() {
           <GitHubLogoIcon className="mx-auto w-12 h-12 text-black dark:text-white" />
           <div className="flex flex-col gap-2">
             <p className="font-display mx-auto text-4xl font-medium tracking-tight text-slate-900 dark:text-white sm:text-5xl">
-              Open Source
+              Open source
             </p>
             <p className="mt-2 text-center">
               Spackle is open source. If you find it useful, please consider
