@@ -77,11 +77,15 @@ describe('POST', () => {
 
     expect(res.status).toBe(200)
     expect(telemetryService.track).toBeCalledTimes(1)
-    expect(telemetryService.track).toBeCalledWith(user.id.toString(), 'test', {
-      $groups: {
-        company: account.stripeId,
+    expect(telemetryService.track).toBeCalledWith(
+      'test',
+      {
+        $groups: {
+          company: account.stripeId,
+        },
+        test: 'test',
       },
-      test: 'test',
-    })
+      user.id.toString(),
+    )
   })
 })
