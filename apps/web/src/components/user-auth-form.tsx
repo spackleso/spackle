@@ -38,8 +38,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
   async function onSubmit(data: FormData) {
     setIsLoading(true)
 
-    // TODO: Add signin using preferred provider
-    const signInResult = await fetch('http://localhost:8787/signup', {
+    const signInResult = await fetch('https://api.spackle.so/signup', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
