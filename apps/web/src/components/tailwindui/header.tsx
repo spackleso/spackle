@@ -14,7 +14,7 @@ export function Header() {
       <Container className="mx-16 max-w-full">
         <nav className="relative z-50 flex justify-between">
           <div className="flex items-center md:gap-x-12">
-            <Link href="#" aria-label="Home" className="flex items-center">
+            <Link href="/" aria-label="Home" className="flex items-center">
               <Logo className="h-12 w-auto cursor-pointer" />
               <h1
                 className={`${comfortaa.className} pr-4 font-bold lowercase text-slate-900 dark:text-white`}

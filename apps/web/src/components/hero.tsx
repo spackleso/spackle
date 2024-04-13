@@ -49,7 +49,7 @@ export function Hero() {
       >
         <p className="mx-auto max-w-xl text-lg leading-tight tracking-tight text-slate-600 dark:text-slate-400 md:text-2xl">
           Unlock iterative pricing, enterprise sales, and engineering
-          productivity with Spackle&apos;s entitlements.
+          productivity with Spackle entitlements.
         </p>
       </motion.div>
       <motion.div
