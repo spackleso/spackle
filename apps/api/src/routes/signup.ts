@@ -76,7 +76,7 @@ export default async function (c: Context<HonoEnv>) {
       )
     }
 
-    c.get('telemetry').track('Sign up', { email })
+    await c.get('telemetry').track('Sign up', { email })
     c.status(200)
     return c.json({ success: true })
   } catch (error) {
