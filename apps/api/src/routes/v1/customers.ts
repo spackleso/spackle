@@ -157,10 +157,6 @@ app.get('/:id/state', async (c: Context<APIHonoEnv>) => {
   const stripeAccountId = payload.sub
   const cacheKey = `${stripeAccountId}:${stripeCustomerId}`
   const cache = c.get('cache')
-  c.env.ENTITLEMENT_CHECKS.writeDataPoint({
-    indexes: [stripeAccountId],
-    blobs: [stripeCustomerId],
-  })
 
   let [state, stale] = await cache.get('customerState', cacheKey)
   if (state) {
@@ -175,6 +171,10 @@ app.get('/:id/state', async (c: Context<APIHonoEnv>) => {
         }),
       )
     }
+    c.env.ENTITLEMENT_CHECKS.writeDataPoint({
+      indexes: [stripeAccountId],
+      blobs: [stripeCustomerId],
+    })
     return c.json(state)
   }
 
@@ -184,6 +184,11 @@ app.get('/:id/state', async (c: Context<APIHonoEnv>) => {
     return c.json({ error: 'Not found' })
   }
   await c.get('cache').set('customerState', cacheKey, state)
+
+  c.env.ENTITLEMENT_CHECKS.writeDataPoint({
+    indexes: [stripeAccountId],
+    blobs: [stripeCustomerId],
+  })
   return c.json(state)
 })
 
