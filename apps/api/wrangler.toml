@@ -2,6 +2,7 @@ name = "spackle-api"
 compatibility_date = "2023-12-01"
 main = "src/index.ts"
 compatibility_flags = [ "nodejs_compat" ]
+analytics_engine_datasets = [{ dataset = "entitlement-checks-development", binding = "ENTITLEMENT_CHECKS" }]
 
 [vars]
 ENVIRONMENT = "development"
@@ -14,6 +15,7 @@ consumers = [
   { queue = "sync-development", max_batch_size = 1, max_batch_timeout = 3, max_retries = 3 },
 ]
 
+
 [env.production]
 logpush = true
 routes = [
@@ -22,6 +24,7 @@ routes = [
   { pattern = "us-east-1.edge.spackle.so", custom_domain = true },
   { pattern = "us-west-2.edge.spackle.so", custom_domain = true }
 ]
+analytics_engine_datasets = [{ dataset = "entitlement-checks-production", binding = "ENTITLEMENT_CHECKS" }]
 
 [env.production.vars]
 ENVIRONMENT = "production"

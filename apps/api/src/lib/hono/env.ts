@@ -32,6 +32,7 @@ export type HonoEnv = {
     CLOUDFLARE_ZONE_ID: string
     DATABASE_URL: string
     DB_PK_SALT: string
+    ENTITLEMENT_CHECKS: AnalyticsEngineDataset
     ENVIRONMENT: string
     HOST: string
     POSTHOG_API_HOST: string

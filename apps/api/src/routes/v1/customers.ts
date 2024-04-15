@@ -144,6 +144,11 @@ app.get('/:id/state', async (c: Context<APIHonoEnv>) => {
     return c.json({ error: 'Unauthorized' })
   }
 
+  if (!payload.sub) {
+    c.status(401)
+    return c.json({ error: 'Unauthorized' })
+  }
+
   if (payload.publishable) {
     c.status(403)
     return c.json({ error: 'Forbidden' })
@@ -152,6 +157,10 @@ app.get('/:id/state', async (c: Context<APIHonoEnv>) => {
   const stripeAccountId = payload.sub
   const cacheKey = `${stripeAccountId}:${stripeCustomerId}`
   const cache = c.get('cache')
+  c.env.ENTITLEMENT_CHECKS.writeDataPoint({
+    indexes: [stripeAccountId],
+    blobs: [stripeCustomerId],
+  })
 
   let [state, stale] = await cache.get('customerState', cacheKey)
   if (state) {

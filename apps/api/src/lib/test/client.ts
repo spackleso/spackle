@@ -19,6 +19,9 @@ export const MOCK_ENV = {
   BILLING_ENTITLEMENTS_PRICE_ID: 'price_123',
   DATABASE_URL: 'postgresql://postgres:postgres@localhost:54322/postgres',
   DB_PK_SALT: 'salt',
+  ENTITLEMENT_CHECKS: {
+    writeDataPoint: () => {},
+  },
   ENVIRONMENT: 'test',
   STRIPE_LIVE_SECRET_KEY: 'live_123',
   STRIPE_SIGNING_SECRET: 'absec_123',
