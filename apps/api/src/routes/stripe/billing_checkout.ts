@@ -9,7 +9,6 @@ export default async function (c: Context<HonoEnv>) {
     ? 'https://dashboard.stripe.com/test/apps/settings-preview'
     : `https://dashboard.stripe.com/settings/apps/${c.env.STRIPE_APP_ID}`
   const host = c.env.HOST
-  const stripePriceId = c.env.BILLING_ENTITLEMENTS_PRICE_ID
 
   const user_id = c.req.query('user_id')
   const account_id = c.req.query('account_id')
@@ -21,8 +20,16 @@ export default async function (c: Context<HonoEnv>) {
     return c.json({ error: 'Missing required parameters' })
   }
 
+  let stripePriceId: string
+  if (product === 'entitlements') {
+    stripePriceId = c.env.BILLING_ENTITLEMENTS_PRICE_ID
+  } else {
+    stripePriceId = product
+  }
+
+  let verified = false
   try {
-    stripe.webhooks.signature.verifyHeader(
+    verified = await stripe.webhooks.signature.verifyHeaderAsync(
       JSON.stringify({
         user_id,
         account_id,
@@ -30,8 +37,9 @@ export default async function (c: Context<HonoEnv>) {
       c.req.query('sig') as string,
       c.env.STRIPE_SIGNING_SECRET,
     )
-  } catch (error: any) {
-    console.error(error)
+  } catch (error: any) {}
+
+  if (!verified) {
     c.status(403)
     return c.json({ error: 'Unauthorized' })
   }
@@ -61,7 +69,7 @@ export default async function (c: Context<HonoEnv>) {
   let session
   try {
     session = await stripe.checkout.sessions.create({
-      line_items: [{ price: stripePriceId }],
+      line_items: [{ price: stripePriceId, quantity: 1 }],
       mode: 'subscription',
       success_url: `${host}/stripe/billing_checkout_success?sessionId={CHECKOUT_SESSION_ID}`,
       cancel_url: settingsUrl,

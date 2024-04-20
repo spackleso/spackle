@@ -28,7 +28,7 @@ vi.mock('stripe', () => {
   Stripe.webhooks = Stripe.prototype.webhooks = {
     generateTestHeaderString: vi.fn(() => 'test'),
     signature: {
-      verifyHeader: vi.fn(() => true),
+      verifyHeaderAsync: vi.fn(() => Promise.resolve(true)),
     },
   }
   return {
