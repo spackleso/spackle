@@ -110,7 +110,7 @@ export class BillingService {
     const freeTierFeature = state.features.find((f) => f.id === 'free_tier')
     const freeTierDollars = freeTierFeature ? freeTierFeature.value : FREE_TIER
 
-    const usageCents = parseInt(agg[0].usage.toString() || '0')
+    const usageCents = parseInt((agg[0].usage || 0).toString())
     const grossUsageDollars = usageCents / 100
     const netUsageDollars = Math.max(grossUsageDollars - FREE_TIER, 0)
     const mtr = Math.ceil(netUsageDollars / 1000)
