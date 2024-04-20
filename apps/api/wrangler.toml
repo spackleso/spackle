@@ -6,6 +6,7 @@ analytics_engine_datasets = [{ dataset = "entitlement-checks-development", bindi
 
 [vars]
 ENVIRONMENT = "development"
+WEB_HOST = "http://localhost:3000"
 
 [queues]
 producers = [

@@ -12,8 +12,9 @@ export default async function handler(c: Context<HonoEnv>) {
   const user_id = c.req.query('user_id')
   const account_id = c.req.query('account_id')
 
+  let verified = false
   try {
-    stripe.webhooks.signature.verifyHeader(
+    verified = await stripe.webhooks.signature.verifyHeaderAsync(
       JSON.stringify({
         user_id,
         account_id,
@@ -21,7 +22,9 @@ export default async function handler(c: Context<HonoEnv>) {
       c.req.query('sig') as string,
       c.env.STRIPE_SIGNING_SECRET,
     )
-  } catch (error: any) {
+  } catch (error: any) {}
+
+  if (!verified) {
     c.status(403)
     return c.json({
       error: 'Unauthorized',
