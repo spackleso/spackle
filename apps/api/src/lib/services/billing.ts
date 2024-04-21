@@ -83,18 +83,18 @@ export class BillingService {
       current_period_end: currentPeriodEnd,
     } = subscription
 
-    const before = new Date(currentPeriodEnd * 1000)
-    const after = new Date(currentPeriodStart * 1000)
-
-    const entitlementChecks = await this.analyticsService.query(`
+    const query = `
       SELECT
         count()
       FROM
         'entitlement-checks-${this.environment}'
       WHERE
-        timestamp > toDateTime(${after.toISOString()})
-        AND timestamp < toDateTime(${before.toISOString()});
-    `)
+        index1 = '${stripeAccountId}'
+        AND timestamp > toDateTime(${currentPeriodStart})
+        AND timestamp < toDateTime(${currentPeriodEnd});
+    `
+
+    const entitlementChecks = await this.analyticsService.query(query)
 
     return {
       numFeatures: features[0].value,
