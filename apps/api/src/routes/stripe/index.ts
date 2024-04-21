@@ -29,6 +29,7 @@ import getProductState from './get_product_state'
 import getPublishableToken from './get_publishable_token'
 import getSubscriptionsState from './get_subscriptions_state'
 import getToken from './get_token'
+import getUsage from './get_usage'
 import identify from './identify'
 import syncAccount from './sync_account'
 import track from './track'
@@ -99,6 +100,7 @@ app.post('/get_product_state', getProductState)
 app.post('/get_publishable_token', getPublishableToken)
 app.post('/get_subscriptions_state', getSubscriptionsState)
 app.post('/get_token', getToken)
+app.post('/get_usage', getUsage)
 app.post('/identify', identify)
 app.post('/sync_account', syncAccount)
 app.post('/track', track)

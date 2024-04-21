@@ -1,6 +1,17 @@
-import { Database, and, eq, gte, isNotNull, lt, schema, sql } from '@spackle/db'
+import {
+  Database,
+  and,
+  count,
+  eq,
+  gte,
+  isNotNull,
+  lt,
+  schema,
+  sql,
+} from '@spackle/db'
 import { DatabaseService } from '@/lib/services/db'
 import { EntitlementsService } from '@/lib/services/entitlements'
+import { AnalyticsService } from '@/lib/services/analytics'
 
 export const FREE_TIER = 1000
 
@@ -9,17 +20,89 @@ export class BillingService {
   private readonly dbService: DatabaseService
   private readonly entitlementsService: EntitlementsService
   private readonly billingAccountStripeId: string
+  private readonly environment: string
+  private readonly analyticsService: AnalyticsService
 
   constructor(
     db: Database,
     dbService: DatabaseService,
     entitlementsService: EntitlementsService,
     billingAccountStripeId: string,
+    environment: string,
+    analyticsService: AnalyticsService,
   ) {
     this.db = db
     this.dbService = dbService
     this.entitlementsService = entitlementsService
     this.billingAccountStripeId = billingAccountStripeId
+    this.environment = environment
+    this.analyticsService = analyticsService
+  }
+
+  async getUsage(stripeAccountId: string) {
+    const stripeAccount = await this.dbService.getStripeAccount(stripeAccountId)
+    if (!stripeAccount) {
+      throw new Error(`Stripe account ${stripeAccountId} not found`)
+    }
+
+    if (!stripeAccount.billingStripeCustomerId) {
+      throw new Error(
+        `Stripe account ${stripeAccountId} has no billing customer`,
+      )
+    }
+
+    const state = await this.entitlementsService.getCustomerState(
+      this.billingAccountStripeId,
+      stripeAccount.billingStripeCustomerId,
+    )
+
+    if (state.subscriptions.length === 0) {
+      throw new Error(
+        `Stripe account ${stripeAccountId} has no active subscriptions`,
+      )
+    }
+
+    const features = await this.db
+      .select({ value: count() })
+      .from(schema.features)
+      .where(eq(schema.features.stripeAccountId, stripeAccountId))
+
+    const pricingTables = await this.db
+      .select({ value: count() })
+      .from(schema.pricingTables)
+      .where(eq(schema.pricingTables.stripeAccountId, stripeAccountId))
+
+    const users = await this.db
+      .select({ value: count() })
+      .from(schema.stripeUsers)
+      .where(eq(schema.stripeUsers.stripeAccountId, stripeAccountId))
+
+    const subscription = state.subscriptions[0]
+    const {
+      current_period_start: currentPeriodStart,
+      current_period_end: currentPeriodEnd,
+    } = subscription
+
+    const before = new Date(currentPeriodEnd * 1000)
+    const after = new Date(currentPeriodStart * 1000)
+
+    const entitlementChecks = await this.analyticsService.query(`
+      SELECT
+        count(*)
+      FROM
+        'entitlement-checks-${this.environment}'
+      WHERE
+        timestamp > toDateTime(${after.toISOString()})
+        AND timestamp < toDateTime(${before.toISOString()});
+    `)
+
+    return {
+      numFeatures: features[0].value,
+      numEntitlementChecks:
+        entitlementChecks.length > 0 ? entitlementChecks[0]['count()'] : 0,
+      numPricingTables: pricingTables[0].value,
+      numUsers: users[0].value,
+    }
   }
 
   async getMTREstimate(stripeAccountId: string) {
@@ -51,7 +134,7 @@ export class BillingService {
     }
   }
 
-  getMTR = async (stripeAccountId: string) => {
+  async getMTR(stripeAccountId: string) {
     const stripeAccount = await this.dbService.getStripeAccount(stripeAccountId)
     if (!stripeAccount) {
       throw new Error(`Stripe account ${stripeAccountId} not found`)

@@ -24,6 +24,7 @@ export function initServiceContext(exemptPaths: string[] = []) {
       await next()
     } else {
       const services = initServices(c.get('sentry'), c.get('cache'), c.env)
+      c.set('analyticsService', services.analyticsService)
       c.set('telemetry', services.telemetryService)
       c.set('db', services.db)
       c.set('dbService', services.dbService)
