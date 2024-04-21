@@ -53,6 +53,7 @@ describe('POST', () => {
           annualEnabled: schema.pricingTables.annualEnabled,
         })
         .from(schema.pricingTables)
+        .where(eq(schema.pricingTables.stripeAccountId, account.stripeId))
         .orderBy(desc(schema.pricingTables.id))
     )[0]
 
