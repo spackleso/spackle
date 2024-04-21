@@ -99,7 +99,9 @@ export class BillingService {
     return {
       numFeatures: features[0].value,
       numEntitlementChecks:
-        entitlementChecks.length > 0 ? entitlementChecks[0]['count()'] : 0,
+        entitlementChecks.length > 0
+          ? parseInt(entitlementChecks[0]['count()'])
+          : 0,
       numPricingTables: pricingTables[0].value,
       numUsers: users[0].value,
     }
