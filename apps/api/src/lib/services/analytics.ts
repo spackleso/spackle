@@ -35,7 +35,6 @@ export class AnalyticsService {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${this.cloudflareApiKey}`,
-          'Content-Type': 'application/json',
         },
         body: query,
       },

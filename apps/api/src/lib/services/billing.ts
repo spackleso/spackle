@@ -88,7 +88,7 @@ export class BillingService {
 
     const entitlementChecks = await this.analyticsService.query(`
       SELECT
-        count(*)
+        count()
       FROM
         'entitlement-checks-${this.environment}'
       WHERE
