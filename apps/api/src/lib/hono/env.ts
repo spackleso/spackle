@@ -12,6 +12,7 @@ import { OpenAPIHono } from '@hono/zod-openapi'
 import { SyncService } from '../services/sync'
 import { PricingTablesService } from '../services/pricing-tables'
 import { Metrics } from '../metrics'
+import { AnalyticsService } from '../services/analytics'
 
 export type Job = {
   type: string
@@ -28,6 +29,7 @@ export type HonoEnv = {
     AXIOM_DATASET: string
     BILLING_ENTITLEMENTS_PRICE_ID: string
     BILLING_STRIPE_ACCOUNT_ID: string
+    CLOUDFLARE_ACCOUNT_ID: string
     CLOUDFLARE_API_KEY: string
     CLOUDFLARE_ZONE_ID: string
     DATABASE_URL: string
@@ -53,6 +55,7 @@ export type HonoEnv = {
     WEB_HOST: string
   }
   Variables: {
+    analyticsService: AnalyticsService
     cache: TieredCache
     billingService: BillingService
     db: Database

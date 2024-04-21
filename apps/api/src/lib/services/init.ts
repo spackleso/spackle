@@ -13,6 +13,7 @@ import { HonoEnv } from '@/lib/hono/env'
 import { SyncService } from './sync'
 import { PricingTablesService } from './pricing-tables'
 import { Cache } from '@/lib/cache/interface'
+import { AnalyticsService } from '@/lib/services/analytics'
 
 export function initServices(
   sentry: Toucan,
@@ -48,11 +49,17 @@ export function initServices(
   )
   const entitlementsService = new EntitlementsService(db)
   const tokenService = new TokenService(db, env.SUPABASE_JWT_SECRET)
+  const analyticsService = new AnalyticsService(
+    env.CLOUDFLARE_ACCOUNT_ID,
+    env.CLOUDFLARE_API_KEY,
+  )
   const billingService = new BillingService(
     db,
     dbService,
     entitlementsService,
     env.BILLING_STRIPE_ACCOUNT_ID,
+    env.ENVIRONMENT,
+    analyticsService,
   )
   const pricingTablesService = new PricingTablesService(
     db,
@@ -60,6 +67,7 @@ export function initServices(
     entitlementsService,
   )
   return {
+    analyticsService,
     billingService,
     client,
     db,
