@@ -41,6 +41,11 @@ export class AnalyticsService {
       },
     )
 
+    if (!response.ok) {
+      const body = await response.text()
+      throw new Error(`Failed to query analytics (${response.status}): ${body}`)
+    }
+
     const body = (await response.json()) as AnalyticsResponse
     return body.data
   }
