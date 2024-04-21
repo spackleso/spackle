@@ -23,10 +23,15 @@ export function Table({ pricingTable }: { pricingTable: any }) {
     <PricingTable
       table={pricingTable}
       cta={'Get Started'}
-      onCTAClick={async (priceId: string) => {
-        router.push(
-          `${process.env.NEXT_PUBLIC_API_HOST}/stripe/billing_checkout?product=${priceId}&user_id=${user_id}&account_id=${account_id}&email=${email}&sig=${sig}`,
-        )
+      onCTAClick={(priceId: string) => {
+        if (priceId === 'custom') {
+          router.push('mailto:support@spackle.so')
+        } else {
+          router.push(
+            `${process.env.NEXT_PUBLIC_API_HOST}/stripe/billing_checkout?product=${priceId}&user_id=${user_id}&account_id=${account_id}&email=${email}&sig=${sig}`,
+          )
+        }
+        return Promise.resolve()
       }}
     />
   )

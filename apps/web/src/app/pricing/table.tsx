@@ -10,7 +10,11 @@ export function Table({ pricingTable }: { pricingTable: any }) {
       table={pricingTable}
       cta={'Get Started'}
       onCTAClick={(priceId: string) => {
-        window.location.href = '/signup'
+        if (priceId === 'custom') {
+          router.push('mailto:support@spackle.so')
+        } else {
+          window.location.href = '/signup'
+        }
         return Promise.resolve()
       }}
     />

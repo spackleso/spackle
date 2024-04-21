@@ -23,7 +23,7 @@ INSERT INTO
 VALUES
     (
         'acct_1LtR9JLoL33dwtwt',
-        'Number of Features',
+        'Features',
         'num_features',
         1,
         0,
@@ -31,7 +31,7 @@ VALUES
     ),
     (
         'acct_1LtR9JLoL33dwtwt',
-        'Number of Users',
+        'Users',
         'num_users',
         1,
         0,
@@ -39,7 +39,7 @@ VALUES
     ),
     (
         'acct_1LtR9JLoL33dwtwt',
-        'Number of Entitlement Checks',
+        'Entitlement Checks',
         'num_entitlement_checks',
         1,
         0,
@@ -47,7 +47,7 @@ VALUES
     ),
     (
         'acct_1LtR9JLoL33dwtwt',
-        'Number of Pricing Tables',
+        'Pricing Tables',
         'num_pricing_tables',
         1,
         0,
