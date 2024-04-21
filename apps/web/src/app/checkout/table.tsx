@@ -25,7 +25,7 @@ export function Table({ pricingTable }: { pricingTable: any }) {
       cta={'Get Started'}
       onCTAClick={(priceId: string) => {
         if (priceId === 'custom') {
-          router.push('mailto:support@spackle.so')
+          router.push('mailto:support@spackle.so?subject=Custom%20Pricing')
         } else {
           router.push(
             `${process.env.NEXT_PUBLIC_API_HOST}/stripe/billing_checkout?product=${priceId}&user_id=${user_id}&account_id=${account_id}&email=${email}&sig=${sig}`,
