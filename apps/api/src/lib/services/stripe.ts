@@ -316,6 +316,11 @@ export class StripeService {
         account!,
         (event.data.object as any).id,
       )
+      await this.syncStripeSubscriptions(
+        account!,
+        (event.data.object as any).customer,
+        event.livemode ? 'live' : 'test',
+      )
     } else if (event.type === 'customer.subscription.updated') {
       await this.syncStripeSubscriptions(
         account!,
