@@ -26,7 +26,7 @@
     "zod": "^3.19.1"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20240208.0",
+    "@cloudflare/workers-types": "^4.20240806.0",
     "@spackle/tsconfig": "workspace:^",
     "@types/jest": "^29.5.12",
     "dotenv-cli": "^7.4.1",
@@ -35,6 +35,6 @@
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.4.2",
     "vitest": "^1.4.0",
-    "wrangler": "^3.31.0"
+    "wrangler": "^3.70.0"
   }
 }

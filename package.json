@@ -15,8 +15,8 @@
     "dev": "turbo run dev"
   },
   "devDependencies": {
-    "turbo": "^1.10.12",
+    "turbo": "^2.0.12",
     "typescript": "^5.4.2"
   },
-  "dependencies": {}
+  "packageManager": "pnpm@9.0.4"
 }

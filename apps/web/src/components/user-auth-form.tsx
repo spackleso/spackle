@@ -18,6 +18,8 @@ import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import * as z from 'zod'
 
+const API_BASE = process.env.NEXT_PUBLIC_API_HOST ?? 'https://api.spackle.so'
+
 export const userAuthSchema = z.object({
   email: z.string().email(),
   password: z.string().optional(),
@@ -40,7 +42,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
   async function onSubmit(data: FormData) {
     setIsLoading(true)
 
-    const signInResult = await fetch('https://api.spackle.so/signup', {
+    const signInResult = await fetch(`${API_BASE}/signup`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

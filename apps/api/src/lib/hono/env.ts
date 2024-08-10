@@ -43,6 +43,7 @@ export type HonoEnv = {
     POSTMARK_FROM_EMAIL: string
     REDIS_URL: string
     SENTRY_DSN: string
+    SIGNUP_RATE_LIMIT: any
     STRIPE_APP_ID: string
     STRIPE_BILLING_WEBHOOK_SECRET: string
     STRIPE_CONNECTED_WEBHOOK_SECRET: string

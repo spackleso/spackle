@@ -1,4 +1,3 @@
-import { z } from 'zod'
 import { eq } from 'drizzle-orm'
 import { Context } from 'hono'
 import { HonoEnv } from '@/lib/hono/env'
@@ -30,6 +29,18 @@ const emailHtml = `
 
 export default async function (c: Context<HonoEnv>) {
   try {
+    // Apply rate limiting
+    const ip = c.req.header('cf-connecting-ip')
+    const rateLimitResult = await c.env.SIGNUP_RATE_LIMIT.limit({
+      key: ip,
+    })
+    console.log('rateLimitResult', rateLimitResult, 'ip', ip)
+
+    if (!rateLimitResult.success) {
+      c.status(429)
+      return c.json({ error: 'Too many requests, please try again later' })
+    }
+
     const { email, distinct_id } = await c.req.json()
 
     if (!email) {

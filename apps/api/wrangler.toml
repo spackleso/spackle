@@ -1,5 +1,5 @@
 name = "spackle-api"
-compatibility_date = "2023-12-01"
+compatibility_date = "2024-06-03"
 main = "src/index.ts"
 compatibility_flags = [ "nodejs_compat" ]
 analytics_engine_datasets = [{ dataset = "entitlement-checks-development", binding = "ENTITLEMENT_CHECKS" }]
@@ -15,7 +15,6 @@ producers = [
 consumers = [
   { queue = "sync-development", max_batch_size = 1, max_batch_timeout = 3, max_retries = 3 },
 ]
-
 
 [env.production]
 logpush = true
@@ -40,3 +39,9 @@ producers = [
 consumers = [
   { queue = "sync-production", max_batch_size = 1, max_batch_timeout = 3, max_retries = 3 },
 ]
+
+[[env.production.unsafe.bindings]]
+name = "SIGNUP_RATE_LIMIT"
+type = "ratelimit"
+simple = { limit = 2, period = 60 }
+namespace_id = "1"
